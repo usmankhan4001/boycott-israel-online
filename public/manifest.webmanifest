@@ -1,0 +1,48 @@
+{
+  "name": "BoycottIsrael - By Takweyat Foundation",
+  "short_name": "BoycottIsrael",
+  "description": "Boycott Now to Save Your Future. Comprehensive database of boycotted brands, verified local ethical alternatives, grocery conscience planner & Gaza awareness.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#059669",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "lifestyle", "productivity", "news"],
+  "shortcuts": [
+    {
+      "name": "Grocery Planner",
+      "short_name": "Grocery",
+      "description": "Manage your monthly boycott-free grocery checklist",
+      "url": "/?tab=grocery",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Barcode Scanner",
+      "short_name": "Scanner",
+      "description": "Check if a barcode is 729 or boycotted",
+      "url": "/?action=scanner",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Suggest Brand",
+      "short_name": "Suggest",
+      "description": "Contribute a new product or local alternative",
+      "url": "/?action=suggest",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
