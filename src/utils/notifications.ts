@@ -2,25 +2,29 @@ import { NotificationSettings } from '../types';
 import { GAZA_CONSCIENCE_MESSAGES } from '../data/gazaQuotes';
 
 export const requestNotificationPermission = async (): Promise<boolean> => {
-  if (!('Notification' in window)) {
+  if (typeof window === 'undefined' || !('Notification' in window) || !window.Notification) {
     alert('This browser does not support desktop/mobile notifications.');
     return false;
   }
 
-  if (Notification.permission === 'granted') {
-    return true;
-  }
+  try {
+    if (window.Notification.permission === 'granted') {
+      return true;
+    }
 
-  if (Notification.permission !== 'denied') {
-    const permission = await Notification.requestPermission();
-    return permission === 'granted';
+    if (window.Notification.permission !== 'denied') {
+      const permission = await window.Notification.requestPermission();
+      return permission === 'granted';
+    }
+  } catch (e) {
+    console.warn('Notification permission error:', e);
   }
 
   return false;
 };
 
 export const sendGazaNotification = (title?: string, body?: string): boolean => {
-  if (!('Notification' in window) || Notification.permission !== 'granted') {
+  if (typeof window === 'undefined' || !('Notification' in window) || !window.Notification || window.Notification.permission !== 'granted') {
     return false;
   }
 
@@ -40,35 +44,43 @@ export const sendGazaNotification = (title?: string, body?: string): boolean => 
             url: '/'
           }
         });
-      });
+      }).catch(() => {});
     } else {
-      new Notification(notifTitle, {
+      new window.Notification(notifTitle, {
         body: notifBody,
         icon: '/icons/icon-192.png'
       });
     }
     return true;
   } catch (e) {
-    console.error('Error firing notification:', e);
+    console.warn('Error firing notification:', e);
     return false;
   }
 };
 
 export const checkAndScheduleMonthlyReminder = (settings: NotificationSettings): void => {
-  if (!settings.enabled || Notification.permission !== 'granted') {
+  if (typeof window === 'undefined' || !('Notification' in window) || !window.Notification) {
     return;
   }
 
-  const today = new Date();
-  const currentDay = today.getDate();
-  const currentMonthYear = `${today.getFullYear()}-${today.getMonth() + 1}`;
+  try {
+    if (!settings.enabled || window.Notification.permission !== 'granted') {
+      return;
+    }
 
-  // If today matches user's preferred grocery day and hasn't triggered this month
-  if (currentDay === settings.monthlyDay && settings.lastTriggered !== currentMonthYear) {
-    sendGazaNotification(
-      '🛒 Time for Monthly Grocery Shopping!',
-      'Don’t buy the blood of your brothers and sisters in Gaza. Review your shopping list with safe, ethical alternatives now.'
-    );
-    settings.lastTriggered = currentMonthYear;
+    const today = new Date();
+    const currentDay = today.getDate();
+    const currentMonthYear = `${today.getFullYear()}-${today.getMonth() + 1}`;
+
+    // If today matches user's preferred grocery day and hasn't triggered this month
+    if (currentDay === settings.monthlyDay && settings.lastTriggered !== currentMonthYear) {
+      sendGazaNotification(
+        '🛒 Time for Monthly Grocery Shopping!',
+        'Don’t buy the blood of your brothers and sisters in Gaza. Review your shopping list with safe, ethical alternatives now.'
+      );
+      settings.lastTriggered = currentMonthYear;
+    }
+  } catch (e) {
+    console.warn('Error checking scheduled reminder:', e);
   }
 };
