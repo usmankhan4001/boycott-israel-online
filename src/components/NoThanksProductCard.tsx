@@ -82,11 +82,16 @@ export const NoThanksProductCard: React.FC<Props> = ({
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-rose-600 text-white shadow-2xs">
-                DO NOT BUY
+                {product.category === 'Celebrities & Endorsers' ? 'COMPLICIT ENDORSER' : 'DO NOT BUY'}
               </span>
               {product.israelBarcode && (
                 <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-200 dark:border-rose-800 flex items-center gap-0.5">
                   <Barcode className="w-3 h-3" /> 729 Code
+                </span>
+              )}
+              {product.behaviorNotes && (
+                <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-900/60 flex items-center gap-0.5">
+                  <ShieldAlert className="w-3 h-3" /> Documented Action
                 </span>
               )}
             </div>
@@ -94,13 +99,13 @@ export const NoThanksProductCard: React.FC<Props> = ({
               {product.name}
             </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-              Owned by: <strong className="text-zinc-700 dark:text-zinc-300">{product.parentCompany}</strong>
+              {product.category === 'Celebrities & Endorsers' ? 'Promoted Entity:' : 'Owned by:'} <strong className="text-zinc-700 dark:text-zinc-300">{product.parentCompany}</strong>
             </p>
           </div>
         </div>
 
         {/* View Details / Evidence Button */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -115,9 +120,27 @@ export const NoThanksProductCard: React.FC<Props> = ({
         </div>
       </div>
 
+      {/* Endorsed Brands Pill List (For Celebrities) */}
+      {product.endorsedBrands && product.endorsedBrands.length > 0 && (
+        <div className="p-2 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/70 dark:border-rose-900/50 text-xs">
+          <span className="text-[10px] font-black uppercase tracking-wider text-rose-700 dark:text-rose-400 block mb-1">
+            Boycotted Brands Promoted:
+          </span>
+          <div className="flex flex-wrap gap-1">
+            {product.endorsedBrands.map((brand, idx) => (
+              <span key={idx} className="px-2 py-0.5 rounded-md bg-white dark:bg-zinc-900 text-rose-700 dark:text-rose-300 font-bold text-[11px] border border-rose-200 dark:border-rose-900/60 shadow-2xs">
+                {brand}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Direct Complicity Evidence */}
       <div className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed bg-zinc-50 dark:bg-zinc-800/60 p-3 rounded-xl border border-zinc-200/80 dark:border-zinc-700/60 font-medium">
-        <strong className="text-rose-700 dark:text-rose-400 font-bold block mb-0.5">Why this brand is boycotted:</strong>
+        <strong className="text-rose-700 dark:text-rose-400 font-bold block mb-0.5">
+          {product.category === 'Celebrities & Endorsers' ? 'Why this endorser is called out:' : 'Why this brand is boycotted:'}
+        </strong>
         {product.boycottReason}
       </div>
 
@@ -126,7 +149,7 @@ export const NoThanksProductCard: React.FC<Props> = ({
         <div className="flex items-center justify-between text-[11px] font-bold text-emerald-800 dark:text-emerald-400">
           <span className="flex items-center gap-1.5">
             <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            BUY SAFE PAKISTANI ALTERNATIVE INSTEAD:
+            {product.category === 'Celebrities & Endorsers' ? 'ETHICAL CONSCIOUS ROLE MODELS:' : 'BUY SAFE PAKISTANI ALTERNATIVE INSTEAD:'}
           </span>
           <span className="text-zinc-500 dark:text-zinc-400 text-[10px] font-medium">
             {product.alternatives.length} safe options

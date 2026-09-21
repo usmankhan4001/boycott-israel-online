@@ -11,7 +11,9 @@ import {
   Shirt, 
   Laptop, 
   Store, 
-  ShieldAlert 
+  ShieldAlert,
+  Users,
+  Star
 } from 'lucide-react';
 
 interface Props {
@@ -43,6 +45,10 @@ export const CategoryIcon: React.FC<Props> = ({ name, className = 'w-5 h-5' }) =
       return <Laptop className={className} />;
     case 'Store':
       return <Store className={className} />;
+    case 'Users':
+      return <Users className={className} />;
+    case 'Star':
+      return <Star className={className} />;
     default:
       return <ShieldAlert className={className} />;
   }

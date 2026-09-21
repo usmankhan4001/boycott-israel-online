@@ -23,9 +23,1032 @@ export interface ProductItem {
   domain?: string;
   logo?: string;
   isCustom?: boolean;
+  behaviorNotes?: string;
+  behaviorTimeline?: { date: string; action: string; source?: string }[];
+  endorsedBrands?: string[];
+  categoryType?: 'brand' | 'restaurant' | 'celebrity';
 }
 
 export const INITIAL_PRODUCTS: ProductItem[] = [
+  {
+    "id": "rest-mcdonalds",
+    "name": "McDonald's Fast Food",
+    "category": "Restaurants & Places",
+    "subcategory": "Burgers & Fast Food",
+    "parentCompany": "McDonald's Corporation / Alonyal Ltd.",
+    "boycottReason": "In October 2023, McDonald's Israeli franchise announced it provided over 100,000 free meals, special military discounts, and direct supplies to Israeli IDF soldiers during the bombardment of Gaza.",
+    "severity": "Critical",
+    "domain": "mcdonalds.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Direct corporate complicity: Supplied 100,000+ meals to IDF military combatants. Global royalties, brand fees, and franchise profits directly enrich corporate headquarters heavily invested in Israeli bonds.",
+    "behaviorTimeline": [
+      {
+        "date": "Oct 2023",
+        "action": "McDonald's Israel announced free daily meals and 50% military discounts to Israeli IDF soldiers invading Gaza."
+      },
+      {
+        "date": "Jan 2024",
+        "action": "McDonald's CEO acknowledged massive financial losses across Muslim nations due to the sustained boycott."
+      },
+      {
+        "date": "Apr 2024",
+        "action": "Corporate HQ bought back all 225 Israeli branches from franchise owner Alonyal Ltd to manage PR fallout."
+      }
+    ],
+    "tags": [
+      "fast food",
+      "burgers",
+      "mcdonalds",
+      "idf meals",
+      "israel",
+      "restaurant",
+      "fries",
+      "happy meal"
+    ],
+    "alternatives": [
+      {
+        "name": "Daily Deli Co",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "dailydeli.pk"
+      },
+      {
+        "name": "Cheezious",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "cheezious.com"
+      },
+      {
+        "name": "Johnny & Jugnu",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "johnnyandjugnu.com"
+      },
+      {
+        "name": "Ranchers",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "rancherscafe.com"
+      },
+      {
+        "name": "Kababjees Fried Chicken",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "kababjees.com"
+      },
+      {
+        "name": "Howdy",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "howdy.pk"
+      }
+    ]
+  },
+  {
+    "id": "rest-kfc",
+    "name": "KFC (Kentucky Fried Chicken)",
+    "category": "Restaurants & Places",
+    "subcategory": "Fried Chicken & Fast Food",
+    "parentCompany": "Yum! Brands Inc.",
+    "boycottReason": "Parent company Yum! Brands is an active investor in Israeli tech startups (including Tik-Tik) and operates across occupied Palestinian land. Franchise royalties flow directly to US headquarters supporting Israeli commerce.",
+    "severity": "Critical",
+    "domain": "kfc.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Yum! Brands maintains commercial partnerships and technology investments in Israel while franchise royalties from every bucket sold are channeled to holding funds.",
+    "behaviorTimeline": [
+      {
+        "date": "2021",
+        "action": "Yum! Brands acquired Israeli tech developer TicTuk Technologies."
+      },
+      {
+        "date": "2023-2024",
+        "action": "Widespread public boycotts in Pakistan, Malaysia, and Middle East caused dozens of store closures."
+      }
+    ],
+    "tags": [
+      "kfc",
+      "fried chicken",
+      "fast food",
+      "yum brands",
+      "zinger",
+      "krunch burger",
+      "chicken"
+    ],
+    "alternatives": [
+      {
+        "name": "Kababjees Fried Chicken",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "kababjees.com"
+      },
+      {
+        "name": "Cheezious Fried Chicken",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "cheezious.com"
+      },
+      {
+        "name": "OPTP Fried Chicken",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "optp.biz"
+      },
+      {
+        "name": "Johnny & Jugnu",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "johnnyandjugnu.com"
+      },
+      {
+        "name": "Daily Deli Co",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "dailydeli.pk"
+      }
+    ]
+  },
+  {
+    "id": "rest-pizza-hut",
+    "name": "Pizza Hut",
+    "category": "Restaurants & Places",
+    "subcategory": "Pizza & Fast Food",
+    "parentCompany": "Yum! Brands Inc.",
+    "boycottReason": "Pizza Hut Israel mocked Palestinian hunger strikers in Israeli prisons and distributed free pizzas to Israeli soldiers deployed around Gaza borders during military assaults.",
+    "severity": "Critical",
+    "domain": "pizzahut.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Pizza Hut Israel ran offensive social media ads mocking Palestinian political prisoners and delivered hundreds of pizzas to IDF front lines.",
+    "tags": [
+      "pizza hut",
+      "pizza",
+      "yum brands",
+      "fast food",
+      "garlic bread"
+    ],
+    "alternatives": [
+      {
+        "name": "Broadway Pizza",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "broadwaypizza.com.pk"
+      },
+      {
+        "name": "California Pizza",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "californiapizza.com.pk"
+      },
+      {
+        "name": "14th Street Pizza",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "14thstreetpizza.com"
+      },
+      {
+        "name": "Cheezious Pizza",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "cheezious.com"
+      }
+    ]
+  },
+  {
+    "id": "rest-dominos",
+    "name": "Domino's Pizza",
+    "category": "Restaurants & Places",
+    "subcategory": "Pizza & Fast Food",
+    "parentCompany": "Domino's Pizza Inc.",
+    "boycottReason": "Domino's Pizza Israel branches supplied free pizza boxes and care packages to Israeli IDF military combat units during assaults on Gaza.",
+    "severity": "Critical",
+    "domain": "dominos.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Direct logistics support: Israeli branches delivered thousands of hot meals to IDF staging grounds and bases.",
+    "tags": [
+      "dominos",
+      "pizza",
+      "fast food",
+      "garlic bread",
+      "takeaway"
+    ],
+    "alternatives": [
+      {
+        "name": "Broadway Pizza",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "broadwaypizza.com.pk"
+      },
+      {
+        "name": "14th Street Pizza",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "14thstreetpizza.com"
+      },
+      {
+        "name": "California Pizza",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "californiapizza.com.pk"
+      },
+      {
+        "name": "Cheezious Pizza",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "cheezious.com"
+      }
+    ]
+  },
+  {
+    "id": "rest-starbucks",
+    "name": "Starbucks Coffee",
+    "category": "Restaurants & Places",
+    "subcategory": "Coffee & Cafes",
+    "parentCompany": "Starbucks Corporation",
+    "boycottReason": "Starbucks aggressively sued Workers United union for posting a pro-Palestinian solidarity statement, while major institutional investors back Israeli defense infrastructure.",
+    "severity": "Critical",
+    "domain": "starbucks.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Corporate lawsuit against pro-Palestine workers union, coupled with historical honors awarded by Israeli state organizations to leadership.",
+    "tags": [
+      "starbucks",
+      "coffee",
+      "frappuccino",
+      "latte",
+      "espresso",
+      "cafe"
+    ],
+    "alternatives": [
+      {
+        "name": "Coffee Wagera",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "coffeewagera.com"
+      },
+      {
+        "name": "Chaaye Khana",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "chaayekhana.com"
+      },
+      {
+        "name": "Chai Shai",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "chaishai.pk"
+      },
+      {
+        "name": "Second Cup Coffee",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "secondcup.com"
+      }
+    ]
+  },
+  {
+    "id": "rest-subway",
+    "name": "Subway Sandwiches",
+    "category": "Restaurants & Places",
+    "subcategory": "Sandwiches & Fast Food",
+    "parentCompany": "Roark Capital Group",
+    "boycottReason": "Roark Capital channels substantial investment capital into boycotted corporate networks and international holding entities tied to Israeli trade.",
+    "severity": "High",
+    "domain": "subway.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Private equity holding company funnels franchise royalties through international networks aligned with boycotted entities.",
+    "tags": [
+      "subway",
+      "sandwich",
+      "cookies",
+      "wraps",
+      "subs"
+    ],
+    "alternatives": [
+      {
+        "name": "OPTP Subs & Wraps",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "optp.biz"
+      },
+      {
+        "name": "Daily Deli Subs",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "dailydeli.pk"
+      },
+      {
+        "name": "Cheezious Subs",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "cheezious.com"
+      }
+    ]
+  },
+  {
+    "id": "rest-burger-king",
+    "name": "Burger King",
+    "category": "Restaurants & Places",
+    "subcategory": "Burgers & Fast Food",
+    "parentCompany": "Restaurant Brands International",
+    "boycottReason": "Burger King Israel supplied free meals and food packages to Israeli soldiers during military operations in Gaza and publicized the distribution on social media.",
+    "severity": "Critical",
+    "domain": "burgerking.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Direct field support: Israel branch handed out free meals to military personnel.",
+    "tags": [
+      "burger king",
+      "whopper",
+      "burgers",
+      "fast food"
+    ],
+    "alternatives": [
+      {
+        "name": "Ranchers Cafe",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "rancherscafe.com"
+      },
+      {
+        "name": "Howdy",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "howdy.pk"
+      },
+      {
+        "name": "Daily Deli Co",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "dailydeli.pk"
+      }
+    ]
+  },
+  {
+    "id": "rest-hardees",
+    "name": "Hardee's / Carl's Jr.",
+    "category": "Restaurants & Places",
+    "subcategory": "Burgers & Fast Food",
+    "parentCompany": "CKE Restaurants Holdings",
+    "boycottReason": "US fast food franchise sending royalties and management revenues to multinational private equity firms invested in Israeli technology and defense funds.",
+    "severity": "High",
+    "domain": "hardees.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Royalty extraction from local markets to parent US conglomerate.",
+    "tags": [
+      "hardees",
+      "carls jr",
+      "burgers",
+      "angus",
+      "curly fries"
+    ],
+    "alternatives": [
+      {
+        "name": "Howdy Burgers",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "howdy.pk"
+      },
+      {
+        "name": "Ranchers",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "rancherscafe.com"
+      },
+      {
+        "name": "Johnny & Jugnu",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "johnnyandjugnu.com"
+      }
+    ]
+  },
+  {
+    "id": "rest-tim-hortons",
+    "name": "Tim Hortons Cafe",
+    "category": "Restaurants & Places",
+    "subcategory": "Coffee & Donuts",
+    "parentCompany": "Restaurant Brands International",
+    "boycottReason": "Owned by Restaurant Brands International (parent of Burger King), channeling international capital and royalties to conglomerate financiers backing settlement trade.",
+    "severity": "High",
+    "domain": "timhortons.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Parent entity RBI operates boycotted fast food networks worldwide.",
+    "tags": [
+      "tim hortons",
+      "coffee",
+      "donuts",
+      "timbits",
+      "french vanilla",
+      "cafe"
+    ],
+    "alternatives": [
+      {
+        "name": "Coffee Wagera",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "coffeewagera.com"
+      },
+      {
+        "name": "Chaaye Khana",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "chaayekhana.com"
+      },
+      {
+        "name": "Second Cup",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "secondcup.com"
+      }
+    ]
+  },
+  {
+    "id": "rest-papa-johns",
+    "name": "Papa John's Pizza",
+    "category": "Restaurants & Places",
+    "subcategory": "Pizza & Fast Food",
+    "parentCompany": "Papa John's International",
+    "boycottReason": "Maintains international operations and corporate supply networks tied to boycotted entities.",
+    "severity": "High",
+    "domain": "papajohns.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Franchise royalties flow to US headquarters with commercial ties.",
+    "tags": [
+      "papa johns",
+      "pizza",
+      "garlic sauce"
+    ],
+    "alternatives": [
+      {
+        "name": "Broadway Pizza",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "broadwaypizza.com.pk"
+      },
+      {
+        "name": "California Pizza",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "californiapizza.com.pk"
+      },
+      {
+        "name": "14th Street Pizza",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "14thstreetpizza.com"
+      }
+    ]
+  },
+  {
+    "id": "rest-dunkin",
+    "name": "Dunkin' / Dunkin Donuts",
+    "category": "Restaurants & Places",
+    "subcategory": "Donuts & Coffee",
+    "parentCompany": "Inspire Brands",
+    "boycottReason": "Owned by Inspire Brands, whose institutional investors channel millions into Israeli defense and cybersecurity portfolios.",
+    "severity": "High",
+    "domain": "dunkindonuts.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Profits channeled to private equity funds heavily backing Israeli tech.",
+    "tags": [
+      "dunkin",
+      "donuts",
+      "coffee",
+      "iced coffee"
+    ],
+    "alternatives": [
+      {
+        "name": "Crusteez Donuts",
+        "country": "Pakistan",
+        "verified": true
+      },
+      {
+        "name": "Gourmet Bakery Donuts",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "gourmetfoods.com.pk"
+      }
+    ]
+  },
+  {
+    "id": "rest-costa-coffee",
+    "name": "Costa Coffee",
+    "category": "Restaurants & Places",
+    "subcategory": "Coffee & Cafes",
+    "parentCompany": "The Coca-Cola Company",
+    "boycottReason": "Costa Coffee is 100% owned by The Coca-Cola Company, which operates an illegal factory in the Atarot settlement on stolen Palestinian land in occupied West Bank.",
+    "severity": "Critical",
+    "domain": "costa.co.uk",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Direct Coca-Cola subsidiary. Every purchase directly enriches Coca-Cola's corporate profits.",
+    "tags": [
+      "costa",
+      "coffee",
+      "latte",
+      "cappuccino",
+      "cafe"
+    ],
+    "alternatives": [
+      {
+        "name": "Coffee Wagera",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "coffeewagera.com"
+      },
+      {
+        "name": "Chaaye Khana",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "chaayekhana.com"
+      },
+      {
+        "name": "Chai Shai",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "chaishai.pk"
+      }
+    ]
+  },
+  {
+    "id": "rest-cinnabon",
+    "name": "Cinnabon",
+    "category": "Restaurants & Places",
+    "subcategory": "Bakery & Desserts",
+    "parentCompany": "Focus Brands / Roark Capital",
+    "boycottReason": "Franchise royalties flow to US holding company Roark Capital, invested across multinational boycotted portfolios.",
+    "severity": "High",
+    "domain": "cinnabon.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Channeling royalties to US conglomerate holding group.",
+    "tags": [
+      "cinnabon",
+      "cinnamon rolls",
+      "bakery",
+      "desserts"
+    ],
+    "alternatives": [
+      {
+        "name": "Local Pakistani Bakeries & Cafes",
+        "country": "Pakistan",
+        "verified": true
+      },
+      {
+        "name": "Gourmet Bakery",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "gourmetfoods.com.pk"
+      }
+    ]
+  },
+  {
+    "id": "rest-gloria-jeans",
+    "name": "Gloria Jean's Coffees",
+    "category": "Restaurants & Places",
+    "subcategory": "Coffee & Cafes",
+    "parentCompany": "Retail Food Group",
+    "boycottReason": "International franchise model using boycotted beverage syrups and channeling royalty capital to foreign holding companies.",
+    "severity": "Caution",
+    "domain": "gloriajeanscoffees.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Uses foreign multinational syrups and channels royalties outside Pakistan.",
+    "tags": [
+      "gloria jeans",
+      "coffee",
+      "chillers",
+      "cafe"
+    ],
+    "alternatives": [
+      {
+        "name": "Coffee Wagera",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "coffeewagera.com"
+      },
+      {
+        "name": "Chaaye Khana",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "chaayekhana.com"
+      }
+    ]
+  },
+  {
+    "id": "rest-texas-chicken",
+    "name": "Texas Chicken / Popeyes",
+    "category": "Restaurants & Places",
+    "subcategory": "Fried Chicken",
+    "parentCompany": "Cajun Operating / RBI",
+    "boycottReason": "Multinational fast food franchise sending royalties and management revenues to foreign holding firms.",
+    "severity": "High",
+    "domain": "texaschicken.com",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Royalty extractions to foreign conglomerate holding companies.",
+    "tags": [
+      "texas chicken",
+      "popeyes",
+      "fried chicken",
+      "biscuits"
+    ],
+    "alternatives": [
+      {
+        "name": "Kababjees Fried Chicken",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "kababjees.com"
+      },
+      {
+        "name": "Cheezious",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "cheezious.com"
+      }
+    ]
+  },
+  {
+    "id": "rest-local-exclusive-venues",
+    "name": "Restaurants Serving Only Coke / Pepsi Exclusively",
+    "category": "Restaurants & Places",
+    "subcategory": "Local Dining & Cafes",
+    "parentCompany": "Various Dining Venues",
+    "boycottReason": "Certain local Pakistani restaurants and banquet halls continue exclusive pouring contracts with Coca-Cola and PepsiCo, refusing to offer Pakistani drinks like Cola Next, Pakola, or Gourmet.",
+    "severity": "Caution",
+    "domain": "takweyat.org",
+    "categoryType": "restaurant",
+    "behaviorNotes": "Corporate locking: Venues accept deep rebates/refrigerators from Coke/Pepsi to ban Pakistani drinks. Consumers must demand local alternatives.",
+    "tags": [
+      "local restaurants",
+      "banquet halls",
+      "exclusive pouring rights",
+      "coke contract",
+      "pepsi contract"
+    ],
+    "alternatives": [
+      {
+        "name": "Boycott-Compliant Halal Cafes",
+        "country": "Pakistan",
+        "verified": true
+      },
+      {
+        "name": "Restaurants Offering Cola Next & Pakola",
+        "country": "Pakistan",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "id": "celeb-babar-azam",
+    "name": "Babar Azam (Pepsi Ambassador)",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "Cricketers & Sports Stars",
+    "parentCompany": "PepsiCo Commercial Endorsements",
+    "boycottReason": "Prominently endorsed and fronted multi-million advertising campaigns for PepsiCo in Pakistan, appearing on nationwide television commercials, billboards, and social media promotions throughout the Gaza genocide despite consumer boycott appeals.",
+    "severity": "Critical",
+    "domain": "pepsi.com",
+    "categoryType": "celebrity",
+    "endorsedBrands": [
+      "Pepsi",
+      "PepsiCo Pakistan",
+      "Gatorade"
+    ],
+    "behaviorNotes": "Signed massive promotional endorsement contracts with PepsiCo; refused public solidarity or distancing from boycotted multinational sponsors.",
+    "behaviorTimeline": [
+      {
+        "date": "2023-2024",
+        "action": "Star of multi-million Pepsi TV campaigns during Pakistan cricket tournaments while Gaza faced bombing."
+      },
+      {
+        "date": "2024",
+        "action": "Public calls for ethical brand disengagement were ignored."
+      }
+    ],
+    "tags": [
+      "babar azam",
+      "cricket",
+      "pepsi",
+      "ambassador",
+      "endorsement",
+      "celebrity"
+    ],
+    "alternatives": [
+      {
+        "name": "Ushna Shah (Principled Stand for Palestine)",
+        "country": "Pakistan",
+        "verified": true
+      },
+      {
+        "name": "Conscious Pro-Palestine Athletes",
+        "country": "Pakistan",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "id": "celeb-shaheen-afridi",
+    "name": "Shaheen Shah Afridi (Pepsi Campaigns)",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "Cricketers & Sports Stars",
+    "parentCompany": "PepsiCo Commercial Endorsements",
+    "boycottReason": "Featured as a key commercial ambassador for Pepsi cricket campaigns and multinational beverage promotions across Pakistan.",
+    "severity": "High",
+    "domain": "pepsi.com",
+    "categoryType": "celebrity",
+    "endorsedBrands": [
+      "Pepsi",
+      "Pepsi Max",
+      "Lays"
+    ],
+    "behaviorNotes": "Continued commercial campaigns for PepsiCo during peak public boycott campaigns.",
+    "tags": [
+      "shaheen afridi",
+      "cricket",
+      "pepsi",
+      "celebrity",
+      "endorsement"
+    ],
+    "alternatives": [
+      {
+        "name": "Hamza Ali Abbasi (Vocal Boycott Supporter)",
+        "country": "Pakistan",
+        "verified": true
+      },
+      {
+        "name": "Conscious Pakistani Creators",
+        "country": "Pakistan",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "id": "celeb-mahira-khan",
+    "name": "Mahira Khan (L'Oréal Paris Ambassador)",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "Actors & Models",
+    "parentCompany": "L'Oréal Group Endorsements",
+    "boycottReason": "Longstanding official brand ambassador and spokesperson for L'Oréal Paris. L'Oréal operates a factory in the Israeli settlement colony of Migdal HaEmek (built on the ethnically cleansed Palestinian village of al-Mujaydil) and was awarded the 'Friend of Zion' award.",
+    "severity": "Critical",
+    "domain": "loreal.com",
+    "categoryType": "celebrity",
+    "endorsedBrands": [
+      "L'Oréal Paris",
+      "Garnier",
+      "Maybelline"
+    ],
+    "behaviorNotes": "High-profile spokesperson for L'Oréal Paris representing the brand at Paris Fashion Week and domestic media campaigns.",
+    "tags": [
+      "mahira khan",
+      "loreal",
+      "garnier",
+      "actor",
+      "fashion",
+      "celebrity",
+      "cosmetics"
+    ],
+    "alternatives": [
+      {
+        "name": "Fatima Bhutto (Global Gaza Solidarity Voice)",
+        "country": "Pakistan",
+        "verified": true
+      },
+      {
+        "name": "Conscious Pakistani Artists",
+        "country": "Pakistan",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "id": "celeb-fawad-khan",
+    "name": "Fawad Khan (Coke Studio Face)",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "Actors & Musicians",
+    "parentCompany": "The Coca-Cola Company Campaigns",
+    "boycottReason": "Headline artist and face for Coca-Cola / Coke Studio marketing initiatives and high-budget beverage promotions across Pakistan.",
+    "severity": "Critical",
+    "domain": "coca-cola.com",
+    "categoryType": "celebrity",
+    "endorsedBrands": [
+      "Coca-Cola",
+      "Coke Studio",
+      "Pepsi (past)"
+    ],
+    "behaviorNotes": "Key media figurehead used to rehabilitate Coca-Cola's youth brand image in Pakistan.",
+    "tags": [
+      "fawad khan",
+      "coke studio",
+      "coca cola",
+      "actor",
+      "singer",
+      "celebrity"
+    ],
+    "alternatives": [
+      {
+        "name": "Osman Khalid Butt (Vocal BDS Activist)",
+        "country": "Pakistan",
+        "verified": true
+      },
+      {
+        "name": "Independent Conscience Artists",
+        "country": "Pakistan",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "id": "celeb-ayeza-khan-danish",
+    "name": "Ayeza Khan & Danish Taimoor (Nestlé & Garnier)",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "Actors & Models",
+    "parentCompany": "Nestlé / L'Oréal Endorsements",
+    "boycottReason": "Featured in commercial advertisements and sponsored campaigns for Nestlé (Everyday, Cerelac) and Garnier / L'Oréal beauty products.",
+    "severity": "High",
+    "domain": "nestle.com",
+    "categoryType": "celebrity",
+    "endorsedBrands": [
+      "Nestlé Everyday",
+      "Nestlé Nido",
+      "Garnier",
+      "L'Oréal"
+    ],
+    "behaviorNotes": "Shot multiple television commercials for Nestlé and L'Oréal product lines.",
+    "tags": [
+      "ayeza khan",
+      "danish taimoor",
+      "nestle",
+      "garnier",
+      "actors",
+      "celebrity"
+    ],
+    "alternatives": [
+      {
+        "name": "Samiya Mumtaz (Principled Ethical Artist)",
+        "country": "Pakistan",
+        "verified": true
+      },
+      {
+        "name": "Ethical Local Brand Ambassadors",
+        "country": "Pakistan",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "id": "celeb-haris-shadab",
+    "name": "Haris Rauf & Shadab Khan (Pepsi Sports Promos)",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "Cricketers & Sports Stars",
+    "parentCompany": "PepsiCo Commercial Sponsorships",
+    "boycottReason": "Actively promoted Pepsi campaigns across stadium ads, digital commercials, and media endorsements.",
+    "severity": "High",
+    "domain": "pepsi.com",
+    "categoryType": "celebrity",
+    "endorsedBrands": [
+      "Pepsi",
+      "PepsiCo Beverages",
+      "Gatorade"
+    ],
+    "behaviorNotes": "Promotional campaigns for boycotted soft drink conglomerate.",
+    "tags": [
+      "haris rauf",
+      "shadab khan",
+      "cricket",
+      "pepsi",
+      "celebrity"
+    ],
+    "alternatives": [
+      {
+        "name": "Pro-Palestine Sports Figures",
+        "country": "Pakistan",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "id": "celeb-hania-aamir",
+    "name": "Hania Aamir (Multinational Beauty / Sunsilk Endorsements)",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "Actors & Influencers",
+    "parentCompany": "Unilever & Multinational Brands",
+    "boycottReason": "Actively promoted Unilever (Sunsilk, Lux) and multinational beauty lines across digital platforms and broadcast media.",
+    "severity": "High",
+    "domain": "unilever.com",
+    "categoryType": "celebrity",
+    "endorsedBrands": [
+      "Sunsilk (Unilever)",
+      "Lux (Unilever)",
+      "Multinational Cosmetics"
+    ],
+    "behaviorNotes": "Brand ambassador promoting Unilever beauty portfolios.",
+    "tags": [
+      "hania aamir",
+      "sunsilk",
+      "unilever",
+      "lux",
+      "influencer",
+      "actor"
+    ],
+    "alternatives": [
+      {
+        "name": "Conscious Pakistani Influencers",
+        "country": "Pakistan",
+        "verified": true
+      },
+      {
+        "name": "Local Organic Skincare Champions",
+        "country": "Pakistan",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "id": "celeb-fahad-mustafa",
+    "name": "Fahad Mustafa (Pepsi & Multinational FMCG Campaigns)",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "TV Hosts & Actors",
+    "parentCompany": "PepsiCo & Big FMCG Brands",
+    "boycottReason": "Fronted Pepsi beverage promotions and multinational snack brand sponsorships on prime-time game shows and commercial broadcasts.",
+    "severity": "High",
+    "domain": "pepsi.com",
+    "categoryType": "celebrity",
+    "endorsedBrands": [
+      "Pepsi",
+      "Lays",
+      "Unilever Brands"
+    ],
+    "behaviorNotes": "Prime-time host promoting multinational boycotted consumer goods.",
+    "tags": [
+      "fahad mustafa",
+      "pepsi",
+      "jeeto pakistan",
+      "tv host",
+      "actor"
+    ],
+    "alternatives": [
+      {
+        "name": "Pro-Palestine Media Personalities",
+        "country": "Pakistan",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "id": "celeb-atif-momina",
+    "name": "Atif Aslam & Momina Mustehsan (Coke Studio Headline Faces)",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "Singers & Musicians",
+    "parentCompany": "The Coca-Cola Company Campaigns",
+    "boycottReason": "Lead musical faces used by Coca-Cola marketing executives to build brand affinity and youth loyalty across South Asia.",
+    "severity": "High",
+    "domain": "coca-cola.com",
+    "categoryType": "celebrity",
+    "endorsedBrands": [
+      "Coca-Cola",
+      "Coke Studio"
+    ],
+    "behaviorNotes": "Key creative partners in Coca-Cola's primary brand marketing initiative.",
+    "tags": [
+      "atif aslam",
+      "momina mustehsan",
+      "coke studio",
+      "coca cola",
+      "music",
+      "singers"
+    ],
+    "alternatives": [
+      {
+        "name": "Independent Conscience Pakistani Musicians",
+        "country": "Pakistan",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "id": "celeb-wasim-shoaib",
+    "name": "Wasim Akram & Shoaib Malik (PepsiCo Commercial Endorsers)",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "Cricketers & Commentators",
+    "parentCompany": "PepsiCo Commercial Endorsements",
+    "boycottReason": "Veteran sports celebrities promoting boycotted soft drink brands and multinational conglomerates across international tournaments and media broadcasts.",
+    "severity": "High",
+    "domain": "pepsi.com",
+    "categoryType": "celebrity",
+    "endorsedBrands": [
+      "Pepsi",
+      "Gatorade",
+      "Lays"
+    ],
+    "behaviorNotes": "Promoted boycotted soft drinks across television and digital ads.",
+    "tags": [
+      "wasim akram",
+      "shoaib malik",
+      "pepsi",
+      "cricket",
+      "commentator"
+    ],
+    "alternatives": [
+      {
+        "name": "Conscious Sports Commentators & Role Models",
+        "country": "Pakistan",
+        "verified": true
+      }
+    ]
+  },
   {
     "id": "bev-1",
     "name": "Coca-Cola & Coke Zero / Diet",
@@ -2173,7 +3196,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "rst-1",
     "name": "McDonald's Fast Food",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Fast Food & Burgers",
     "parentCompany": "McDonald's Corporation",
     "boycottReason": "McDonald's Israeli franchise supplied tens of thousands of free meals and special discounts to IDF soldiers participating in the assault on Gaza.",
@@ -2234,7 +3257,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "rst-2",
     "name": "KFC & Pizza Hut (Yum! Brands)",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Fried Chicken & Pizza",
     "parentCompany": "Yum! Brands",
     "boycottReason": "Yum! Brands is a major investor in Israeli food tech startups (TicTuk) and runs active franchises across Israel.",
@@ -2301,7 +3324,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "rst-3",
     "name": "Domino's Pizza & Burger King",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Fast Food & Pizza",
     "parentCompany": "Domino's / Restaurant Brands International",
     "boycottReason": "Domino's and Burger King Israeli franchises provided free meals and corporate sponsorships to Israeli military forces.",
@@ -2349,7 +3372,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "rst-4",
     "name": "Subway Sandwiches",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Sandwiches & Subs",
     "parentCompany": "Roark Capital",
     "boycottReason": "Parent private equity fund Roark Capital maintains extensive commercial assets in Israeli enterprise tech.",
@@ -6441,7 +7464,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "item-225",
     "name": "Mc Donald’s",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Hotels & Restaurants",
     "parentCompany": "Global Conglomerate",
     "boycottReason": "Complicit in economic support and partnerships enabling the occupation and military actions in Palestine.",
@@ -6465,7 +7488,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "item-226",
     "name": "KFC, Inc.",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Hotels & Restaurants",
     "parentCompany": "Yum! Brands",
     "boycottReason": "Yum! Brands (KFC, Pizza Hut, Taco Bell) has major Israeli franchises and investments in Israeli tech like TicTuk.",
@@ -6489,7 +7512,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "item-227",
     "name": "Dominos",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Hotels & Restaurants",
     "parentCompany": "Global Conglomerate",
     "boycottReason": "Complicit in economic support and partnerships enabling the occupation and military actions in Palestine.",
@@ -6513,7 +7536,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "item-228",
     "name": "Pizza Hut, Inc.",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Hotels & Restaurants",
     "parentCompany": "Yum! Brands",
     "boycottReason": "Yum! Brands (KFC, Pizza Hut, Taco Bell) has major Israeli franchises and investments in Israeli tech like TicTuk.",
@@ -6537,7 +7560,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "item-229",
     "name": "Burger King",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Hotels & Restaurants",
     "parentCompany": "Global Conglomerate",
     "boycottReason": "Complicit in economic support and partnerships enabling the occupation and military actions in Palestine.",
@@ -6561,7 +7584,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "item-230",
     "name": "Dunkin donuts",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Hotels & Restaurants",
     "parentCompany": "Global Conglomerate",
     "boycottReason": "Complicit in economic support and partnerships enabling the occupation and military actions in Palestine.",
@@ -6585,7 +7608,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "item-231",
     "name": "Papa Johns",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Hotels & Restaurants",
     "parentCompany": "Global Conglomerate",
     "boycottReason": "Complicit in economic support and partnerships enabling the occupation and military actions in Palestine.",
@@ -6609,7 +7632,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "item-232",
     "name": "Tim Hortons",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Hotels & Restaurants",
     "parentCompany": "Global Conglomerate",
     "boycottReason": "Complicit in economic support and partnerships enabling the occupation and military actions in Palestine.",
@@ -6633,7 +7656,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "item-233",
     "name": "Taco Bell, Inc.",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Hotels & Restaurants",
     "parentCompany": "Yum! Brands",
     "boycottReason": "Yum! Brands (KFC, Pizza Hut, Taco Bell) has major Israeli franchises and investments in Israeli tech like TicTuk.",
@@ -15942,7 +16965,7 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
   {
     "id": "item-664",
     "name": "KFC & Pizza Hut",
-    "category": "Hotels & Restaurants",
+    "category": "Restaurants & Places",
     "subcategory": "Fast Food & Pizza",
     "parentCompany": "Yum! Brands",
     "boycottReason": "Yum! Brands invests heavily in Israeli start-ups and tech companies while running extensive operations across Israel.",

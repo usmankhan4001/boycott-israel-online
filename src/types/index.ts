@@ -20,6 +20,10 @@ export interface ProductItem {
   domain?: string;
   logo?: string;
   isCustom?: boolean;
+  behaviorNotes?: string;
+  behaviorTimeline?: { date: string; action: string; source?: string }[];
+  endorsedBrands?: string[];
+  categoryType?: 'brand' | 'restaurant' | 'celebrity';
 }
 
 export interface GroceryItem {

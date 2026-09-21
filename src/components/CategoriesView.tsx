@@ -38,7 +38,7 @@ export const CategoriesView: React.FC<Props> = ({ products, onSelectCategory }) 
       </div>
 
       {/* Grid of Categories with Clean Minimal Corners */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {POPULAR_CATEGORIES.map((cat) => {
           const categoryKey = cat.categoryName || 'All';
           const count = categoryStats[categoryKey] || 0;

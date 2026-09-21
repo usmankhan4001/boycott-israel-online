@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getBrandAsset } from '../data/brandLogos';
+import { Utensils, User, ShieldAlert, Check } from 'lucide-react';
 
 interface Props {
   name: string;
@@ -21,15 +22,16 @@ export const BrandLogo: React.FC<Props> = ({
   const [hasError, setHasError] = useState(false);
   const [retryIndex, setRetryIndex] = useState(0);
 
+  // Reset error when name or logo changes
+  useEffect(() => {
+    setHasError(false);
+    setRetryIndex(0);
+  }, [name, logo, domain]);
+
   const brandAsset = getBrandAsset(name);
   const resolvedDomain = domain || brandAsset?.domain || `${name.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
 
   // Cascading high-fidelity logo sources:
-  // 1. Explicit logo URL / brandfetch CDN
-  // 2. Brandfetch direct asset CDN (no API key required)
-  // 3. Clearbit Logo CDN
-  // 4. Google S2 High-Res Favicon
-  // 5. DuckDuckGo Icon
   const logoSources: string[] = [
     ...(logo ? [logo] : []),
     ...(brandAsset?.brandfetchCdn ? [brandAsset.brandfetchCdn] : []),
@@ -67,19 +69,23 @@ export const BrandLogo: React.FC<Props> = ({
           : 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/50 text-emerald-600 dark:text-emerald-400'
       } ${sizeClasses[size]} ${className}`}
     >
-      {!hasError ? (
-        <div className="w-full h-full bg-white p-1 flex items-center justify-center">
+      {!hasError && currentSrc ? (
+        <div className="w-full h-full bg-white flex items-center justify-center p-0.5">
           <img
             src={currentSrc}
             alt={name}
             onError={handleImageError}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain rounded-[inherit]"
             loading="lazy"
             crossOrigin="anonymous"
           />
         </div>
       ) : (
-        <span className="font-black tracking-tight">{initial}</span>
+        <div className={`w-full h-full flex flex-col items-center justify-center ${
+          isBoycott ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'
+        }`}>
+          <span className="font-black tracking-tight leading-none">{initial}</span>
+        </div>
       )}
     </div>
   );

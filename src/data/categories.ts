@@ -15,6 +15,20 @@ export const CATEGORIES_META: CategoryMeta[] = [
     color: 'from-emerald-600 to-teal-700'
   },
   {
+    id: 'Restaurants & Places',
+    name: 'Restaurants & Places',
+    icon: 'UtensilsCrossed',
+    description: 'Boycotted fast-food franchises, coffee houses, and dining spots, including corporate behavior logs and local Pakistani alternatives.',
+    color: 'from-red-600 to-rose-700'
+  },
+  {
+    id: 'Celebrities & Endorsers',
+    name: 'Celebrities & Endorsers',
+    icon: 'Users',
+    description: 'Pakistani actors, cricketers, influencers & singers endorsing boycotted multinational brands (Coke Studio, Pepsi, L\'Oréal, Nestlé).',
+    color: 'from-purple-600 to-indigo-700'
+  },
+  {
     id: 'Food & Beverages',
     name: 'Food & Drinks',
     icon: 'Utensils',
@@ -41,13 +55,6 @@ export const CATEGORIES_META: CategoryMeta[] = [
     icon: 'Baby',
     description: 'Diapers, baby formula, wipes & infant soaps.',
     color: 'from-violet-600 to-purple-700'
-  },
-  {
-    id: 'Hotels & Restaurants',
-    name: 'Fast Food & Dining',
-    icon: 'Store',
-    description: 'Fast food chains, pizza, burgers & cafe franchises.',
-    color: 'from-red-600 to-rose-700'
   },
   {
     id: 'Fashion & Apparel',
