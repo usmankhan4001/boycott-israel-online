@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getBrandAsset } from '../data/brandLogos';
-import { Utensils, User, ShieldAlert, Check } from 'lucide-react';
 
 interface Props {
   name: string;
   domain?: string;
   logo?: string;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   isBoycott?: boolean;
   className?: string;
 }
@@ -30,10 +29,12 @@ export const BrandLogo: React.FC<Props> = ({
 
   const brandAsset = getBrandAsset(name);
   const resolvedDomain = domain || brandAsset?.domain || `${name.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
+  const isAvatar = brandAsset?.isAvatar || false;
 
-  // Cascading high-fidelity logo sources:
+  // Cascading high-fidelity logo sources - direct verified images first:
   const logoSources: string[] = [
     ...(logo ? [logo] : []),
+    ...(brandAsset?.directImage ? [brandAsset.directImage] : []),
     ...(brandAsset?.brandfetchCdn ? [brandAsset.brandfetchCdn] : []),
     `https://cdn.brandfetch.io/${resolvedDomain}/w/400/h/400`,
     `https://logo.clearbit.com/${resolvedDomain}`,
@@ -52,11 +53,12 @@ export const BrandLogo: React.FC<Props> = ({
   };
 
   const sizeClasses = {
-    xs: 'w-6 h-6 text-[10px] rounded-md',
-    sm: 'w-8 h-8 text-xs rounded-lg',
-    md: 'w-10 h-10 text-sm rounded-xl',
-    lg: 'w-12 h-12 text-base rounded-2xl',
-    xl: 'w-16 h-16 text-xl rounded-2xl'
+    xs: 'w-8 h-8 text-xs rounded-lg',
+    sm: 'w-12 h-12 text-sm rounded-xl',
+    md: 'w-16 h-16 text-base rounded-2xl',
+    lg: 'w-20 h-20 text-lg rounded-2xl',
+    xl: 'w-28 h-28 text-2xl rounded-3xl',
+    '2xl': 'w-36 h-36 text-3xl rounded-3xl'
   };
 
   const initial = name.charAt(0).toUpperCase();
@@ -70,12 +72,12 @@ export const BrandLogo: React.FC<Props> = ({
       } ${sizeClasses[size]} ${className}`}
     >
       {!hasError && currentSrc ? (
-        <div className="w-full h-full bg-white flex items-center justify-center p-0.5">
+        <div className={`w-full h-full flex items-center justify-center ${isAvatar ? 'bg-zinc-100 dark:bg-zinc-800' : 'bg-white p-1.5'}`}>
           <img
             src={currentSrc}
             alt={name}
             onError={handleImageError}
-            className="w-full h-full object-contain rounded-[inherit]"
+            className={`w-full h-full ${isAvatar ? 'object-cover object-top' : 'object-contain'} rounded-[inherit]`}
             loading="lazy"
             crossOrigin="anonymous"
           />

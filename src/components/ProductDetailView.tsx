@@ -114,14 +114,14 @@ export const ProductDetailView: React.FC<Props> = ({
 
             {/* Brand/Celebrity Avatar or Logo Display */}
             <div className="flex justify-center py-2">
-              <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-inner">
+              <div className="p-2 rounded-3xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-inner">
                 <BrandLogo
                   name={product.name}
                   domain={product.domain}
                   logo={product.logo}
                   size="xl"
                   isBoycott={true}
-                  className="w-20 h-20 rounded-xl"
+                  className="shadow-sm"
                 />
               </div>
             </div>
