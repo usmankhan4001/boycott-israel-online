@@ -28,19 +28,24 @@ export const BrandLogo: React.FC<Props> = ({
   }, [name, logo, domain]);
 
   const brandAsset = getBrandAsset(name);
-  const resolvedDomain = domain || brandAsset?.domain || `${name.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
   const isAvatar = brandAsset?.isAvatar || false;
+  const resolvedDomain = (isAvatar ? brandAsset?.domain : (domain || brandAsset?.domain)) || `${name.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
 
   // Cascading high-fidelity logo sources - direct verified images first:
-  const logoSources: string[] = [
-    ...(logo ? [logo] : []),
-    ...(brandAsset?.directImage ? [brandAsset.directImage] : []),
-    ...(brandAsset?.brandfetchCdn ? [brandAsset.brandfetchCdn] : []),
-    `https://cdn.brandfetch.io/${resolvedDomain}/w/400/h/400`,
-    `https://logo.clearbit.com/${resolvedDomain}`,
-    `https://www.google.com/s2/favicons?domain=${resolvedDomain}&sz=128`,
-    `https://icons.duckduckgo.com/ip3/${resolvedDomain}.ico`
-  ];
+  const logoSources: string[] = isAvatar
+    ? [
+        ...(brandAsset?.directImage ? [brandAsset.directImage] : []),
+        ...(logo ? [logo] : [])
+      ]
+    : [
+        ...(brandAsset?.directImage ? [brandAsset.directImage] : []),
+        ...(logo ? [logo] : []),
+        ...(brandAsset?.brandfetchCdn ? [brandAsset.brandfetchCdn] : []),
+        `https://cdn.brandfetch.io/${resolvedDomain}/w/400/h/400`,
+        `https://logo.clearbit.com/${resolvedDomain}`,
+        `https://www.google.com/s2/favicons?domain=${resolvedDomain}&sz=128`,
+        `https://icons.duckduckgo.com/ip3/${resolvedDomain}.ico`
+      ];
 
   const currentSrc = logoSources[retryIndex] || logoSources[0];
 
@@ -80,6 +85,7 @@ export const BrandLogo: React.FC<Props> = ({
             className={`w-full h-full ${isAvatar ? 'object-cover object-top' : 'object-contain'} rounded-[inherit]`}
             loading="lazy"
             crossOrigin="anonymous"
+            referrerPolicy="no-referrer"
           />
         </div>
       ) : (
