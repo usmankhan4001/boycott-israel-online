@@ -62,7 +62,10 @@ export const ProductDetailView: React.FC<Props> = ({
     return `🌐 ${country}`;
   };
 
-  const isCelebrity = product.category === 'Celebrities & Endorsers';
+  const isCelebrity = 
+    product.category === 'Celebrities & Endorsers' || 
+    product.categoryType === 'celebrity' || 
+    (product.id && product.id.startsWith('celeb-'));
   const isRestaurant = product.category === 'Restaurants & Places';
 
   return (
@@ -102,8 +105,10 @@ export const ProductDetailView: React.FC<Props> = ({
             
             {/* Top Status Tag */}
             <div className="flex items-center justify-center gap-2 flex-wrap">
-              <span className="px-3 py-1 rounded-md bg-rose-600 text-white text-[11px] font-black tracking-wide uppercase shadow-2xs">
-                {isCelebrity ? '🚨 COMPLICIT ENDORSER • BOYCOTT CAMPAIGNS' : '🚨 DO NOT BUY • TARGETED FOR BOYCOTT'}
+              <span className={`px-3 py-1 rounded-md text-white text-[11px] font-black tracking-wide uppercase shadow-2xs ${
+                isCelebrity ? 'bg-purple-700' : 'bg-rose-600'
+              }`}>
+                {isCelebrity ? '👤 COMPLICIT ENDORSER • BOYCOTT PRESSURE' : '🚨 DO NOT BUY • TARGETED FOR BOYCOTT'}
               </span>
               {product.israelBarcode && (
                 <span className="px-2.5 py-1 rounded-md bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800 text-[11px] font-bold flex items-center gap-1">
@@ -114,7 +119,7 @@ export const ProductDetailView: React.FC<Props> = ({
 
             {/* Brand/Celebrity Avatar or Logo Display */}
             <div className="flex justify-center py-2">
-              <div className="p-2 rounded-3xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-inner">
+              <div className="p-2 rounded-3xl bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-700 shadow-inner">
                 <BrandLogo
                   name={product.name}
                   domain={product.domain}
@@ -138,12 +143,12 @@ export const ProductDetailView: React.FC<Props> = ({
             {/* Endorsed Brands Tags (If Celebrity) */}
             {product.endorsedBrands && product.endorsedBrands.length > 0 && (
               <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                <span className="text-[11px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-wider block mb-1.5">
+                <span className="text-[11px] font-black text-purple-700 dark:text-purple-400 uppercase tracking-wider block mb-1.5">
                   Boycotted Brands Promoted by this Personality:
                 </span>
                 <div className="flex flex-wrap items-center justify-center gap-1.5">
                   {product.endorsedBrands.map((brand, idx) => (
-                    <span key={idx} className="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 font-bold text-xs border border-rose-200 dark:border-rose-800">
+                    <span key={idx} className="px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 font-bold text-xs border border-purple-200 dark:border-purple-800">
                       {brand}
                     </span>
                   ))}
@@ -156,29 +161,41 @@ export const ProductDetailView: React.FC<Props> = ({
               <span className="px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
                 Category: {product.category}
               </span>
-              <span className="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
-                Action: 100% Uncompromising Boycott
+              <span className={`px-2.5 py-1 rounded-lg border ${
+                isCelebrity
+                  ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800'
+                  : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800'
+              }`}>
+                {isCelebrity ? 'Action: Demand Contract Termination' : 'Action: 100% Uncompromising Boycott'}
               </span>
             </div>
           </div>
 
           {/* WHY TO BOYCOTT: Documented Complicity & Evidence */}
-          <div className="p-5 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/60 space-y-3">
-            <div className="flex items-center gap-2 text-rose-800 dark:text-rose-400 font-black text-sm uppercase tracking-wide">
+          <div className={`p-5 rounded-2xl border space-y-3 ${
+            isCelebrity 
+              ? 'bg-purple-50/70 dark:bg-purple-950/30 border-purple-200 dark:border-purple-900/60'
+              : 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/60'
+          }`}>
+            <div className={`flex items-center gap-2 font-black text-sm uppercase tracking-wide ${
+              isCelebrity ? 'text-purple-800 dark:text-purple-400' : 'text-rose-800 dark:text-rose-400'
+            }`}>
               <AlertOctagon className="w-5 h-5" />
-              <span>{isCelebrity ? 'Complicity Record & Details' : 'Why You Must Boycott This Entity'}</span>
+              <span>{isCelebrity ? 'Complicity Record & Endorsement Details' : 'Why You Must Boycott This Entity'}</span>
             </div>
 
             <p className="text-sm text-zinc-900 dark:text-zinc-100 leading-relaxed font-semibold">
               {product.boycottReason}
             </p>
 
-            <div className="p-3.5 rounded-xl bg-white/90 dark:bg-zinc-900/90 border border-rose-200 dark:border-rose-900/60 text-xs text-zinc-700 dark:text-zinc-300 space-y-1.5">
-              <p className="font-bold text-rose-700 dark:text-rose-400">
-                Financial Impact on Oppression:
+            <div className="p-3.5 rounded-xl bg-white/90 dark:bg-zinc-900/90 border border-purple-200 dark:border-purple-900/60 text-xs text-zinc-700 dark:text-zinc-300 space-y-1.5">
+              <p className={`font-bold ${isCelebrity ? 'text-purple-700 dark:text-purple-400' : 'text-rose-700 dark:text-rose-400'}`}>
+                {isCelebrity ? 'Ethical Stance & Cultural Influence:' : 'Financial Impact on Oppression:'}
               </p>
               <p className="leading-relaxed">
-                Every rupee or dollar spent here funnels direct royalties, advertising power, and corporate tax revenues to entities that fuel Palestinian dispossession and apartheid. Withholding funds breaks the economic spine of oppression.
+                {isCelebrity 
+                  ? 'Celebrity endorsements grant legitimacy and consumer trust to multinational corporations that fund or facilitate illegal occupations. Public pressure holds prominent figures accountable to principled moral standards.'
+                  : 'Every rupee or dollar spent here funnels direct royalties, advertising power, and corporate tax revenues to entities that fuel Palestinian dispossession and apartheid. Withholding funds breaks the economic spine of oppression.'}
               </p>
             </div>
           </div>
@@ -221,51 +238,51 @@ export const ProductDetailView: React.FC<Props> = ({
 
         </div>
 
-        {/* RIGHT COLUMN: Action Steps & Verified Safe Alternatives */}
+        {/* RIGHT COLUMN: Action Steps (or Celebrity Accountability Card) */}
         <div className="lg:col-span-5 space-y-4">
           
-          {/* VERIFIED PAKISTANI ALTERNATIVES */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3.5 shadow-xs">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-black text-sm">
-                <CheckCircle2 className="w-5 h-5" />
-                <span>{isCelebrity ? 'Conscious Pro-Palestine Voices' : `Safe Alternatives (${product.alternatives.length})`}</span>
-              </div>
-            </div>
-
-            <div className="space-y-2.5">
-              {product.alternatives.map((alt, idx) => (
-                <div
-                  key={idx}
-                  className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-3 shadow-2xs hover:border-emerald-500/40 transition-colors"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <BrandLogo
-                      name={alt.name}
-                      domain={alt.domain}
-                      logo={alt.logo}
-                      size="md"
-                      isBoycott={false}
-                      className="rounded-lg"
-                    />
-                    <div className="min-w-0">
-                      <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 truncate">
-                        {alt.name}
-                      </h4>
-                      <p className="text-xs text-emerald-700 dark:text-emerald-400 font-semibold">
-                        {getCountryFlag(alt.country)} • {isCelebrity ? 'Principled Voice' : '100% Ethical Local Brand'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <span className="px-2.5 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold text-xs shrink-0 border border-emerald-200 dark:border-emerald-800">
-                    ✓ Safe
-                  </span>
+          {/* If NOT a celebrity: render Verified Safe Alternatives */}
+          {!isCelebrity ? (
+            <div className="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3.5 shadow-xs">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-black text-sm">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>Safe Alternatives ({product.alternatives.length})</span>
                 </div>
-              ))}
-            </div>
+              </div>
 
-            {!isCelebrity && (
+              <div className="space-y-2.5">
+                {product.alternatives.map((alt, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-3 shadow-2xs hover:border-emerald-500/40 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <BrandLogo
+                        name={alt.name}
+                        domain={alt.domain}
+                        logo={alt.logo}
+                        size="md"
+                        isBoycott={false}
+                        className="rounded-lg"
+                      />
+                      <div className="min-w-0">
+                        <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 truncate">
+                          {alt.name}
+                        </h4>
+                        <p className="text-xs text-emerald-700 dark:text-emerald-400 font-semibold">
+                          {getCountryFlag(alt.country)} • 100% Ethical Local Brand
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="px-2.5 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold text-xs shrink-0 border border-emerald-200 dark:border-emerald-800">
+                      ✓ Safe
+                    </span>
+                  </div>
+                ))}
+              </div>
+
               <button
                 onClick={() => onAddToGrocery(product)}
                 className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-[0.98]"
@@ -273,8 +290,45 @@ export const ProductDetailView: React.FC<Props> = ({
                 <Plus className="w-4 h-4" />
                 <span>Add Safe Alternative to Grocery Planner</span>
               </button>
-            )}
-          </div>
+            </div>
+          ) : (
+            /* If CELEBRITY: render Dedicated Ethical Accountability Demands Card (NO ALTERNATIVES) */
+            <div className="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3.5 shadow-xs">
+              <div className="flex items-center gap-2 text-purple-700 dark:text-purple-400 font-black text-sm">
+                <Users className="w-5 h-5 text-purple-600" />
+                <span>Ethical Demands for Public Figures</span>
+              </div>
+
+              <div className="space-y-2.5">
+                <div className="p-3 rounded-xl bg-purple-50/60 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-900/50 space-y-1 text-xs">
+                  <span className="font-black text-purple-800 dark:text-purple-300 block text-[11px] uppercase tracking-wider">
+                    1. Terminate Complicit Contracts
+                  </span>
+                  <p className="text-zinc-600 dark:text-zinc-400 leading-tight">
+                    Immediately cease commercial ambassadorships, ad campaigns, and sponsorships with boycotted multinational conglomerates.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-purple-50/60 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-900/50 space-y-1 text-xs">
+                  <span className="font-black text-purple-800 dark:text-purple-300 block text-[11px] uppercase tracking-wider">
+                    2. Unfollow & Mute Sponsored Ads
+                  </span>
+                  <p className="text-zinc-600 dark:text-zinc-400 leading-tight">
+                    Refuse to boost engagement on paid promotional posts and commercial content until ethical severance is announced.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-purple-50/60 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-900/50 space-y-1 text-xs">
+                  <span className="font-black text-purple-800 dark:text-purple-300 block text-[11px] uppercase tracking-wider">
+                    3. Stand Uncompromisingly with Palestine
+                  </span>
+                  <p className="text-zinc-600 dark:text-zinc-400 leading-tight">
+                    Use their public platform to support justice, human rights, and the Palestinian liberation cause rather than corporate interests.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* HOW TO BOYCOTT: Action Steps */}
           <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3 shadow-2xs">
@@ -283,20 +337,37 @@ export const ProductDetailView: React.FC<Props> = ({
               <span>Action Plan: How to Enforce This Boycott</span>
             </div>
 
-            <ul className="text-xs text-zinc-600 dark:text-zinc-400 space-y-2.5 leading-relaxed">
-              <li className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-black flex items-center justify-center shrink-0 text-[10px]">1</span>
-                <span><strong>Total Disengagement:</strong> Never buy {product.name} or patronize brands endorsed by complicit figures.</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-black flex items-center justify-center shrink-0 text-[10px]">2</span>
-                <span><strong>Support Pakistani Industry:</strong> Shift 100% of your household and dining spend to patriotic Pakistani enterprises.</span>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <span className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-black flex items-center justify-center shrink-0 text-[10px]">3</span>
-                <span><strong>Spread the Truth:</strong> Share this evidence page with friends, family, shopkeepers, and community groups.</span>
-              </li>
-            </ul>
+            {isCelebrity ? (
+              <ul className="text-xs text-zinc-600 dark:text-zinc-400 space-y-2.5 leading-relaxed">
+                <li className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 font-black flex items-center justify-center shrink-0 text-[10px]">1</span>
+                  <span><strong>Boycott Endorsed Brands:</strong> Never purchase products promoted by {product.name}.</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 font-black flex items-center justify-center shrink-0 text-[10px]">2</span>
+                  <span><strong>Public Ethical Calls:</strong> Leave polite, firm comments calling on them to terminate complicit brand deals.</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 font-black flex items-center justify-center shrink-0 text-[10px]">3</span>
+                  <span><strong>Support Principled Figures:</strong> Amplify artists and public figures who have actively rejected sponsorship from complicit brands.</span>
+                </li>
+              </ul>
+            ) : (
+              <ul className="text-xs text-zinc-600 dark:text-zinc-400 space-y-2.5 leading-relaxed">
+                <li className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-black flex items-center justify-center shrink-0 text-[10px]">1</span>
+                  <span><strong>Total Disengagement:</strong> Never buy {product.name} or patronize brands endorsed by complicit figures.</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-black flex items-center justify-center shrink-0 text-[10px]">2</span>
+                  <span><strong>Support Pakistani Industry:</strong> Shift 100% of your household and dining spend to patriotic Pakistani enterprises.</span>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-black flex items-center justify-center shrink-0 text-[10px]">3</span>
+                  <span><strong>Spread the Truth:</strong> Share this evidence page with friends, family, shopkeepers, and community groups.</span>
+                </li>
+              </ul>
+            )}
           </div>
 
         </div>
@@ -308,9 +379,13 @@ export const ProductDetailView: React.FC<Props> = ({
         <div className="max-w-md mx-auto flex items-center gap-2.5">
           <button
             onClick={handleShare}
-            className="flex-1 py-3 px-4 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-xs font-bold transition-all text-center"
+            className={`py-3 px-4 rounded-xl text-xs font-bold transition-all text-center ${
+              isCelebrity
+                ? 'w-full bg-purple-600 hover:bg-purple-500 text-white font-black'
+                : 'flex-1 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100'
+            }`}
           >
-            Share Evidence
+            {isCelebrity ? 'Share Callout Evidence' : 'Share Evidence'}
           </button>
 
           {!isCelebrity && (

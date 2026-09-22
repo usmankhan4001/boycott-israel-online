@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ProductItem } from '../../types';
 import { BrandLogo } from '../BrandLogo';
-import { Plus, CheckCircle2, ShieldAlert, Share2 } from 'lucide-react';
+import { Plus, CheckCircle2, ShieldAlert, Share2, Users } from 'lucide-react';
 import { useGroceryStore } from '../../stores/groceryStore';
 import { useUIStore } from '../../stores/uiStore';
 
@@ -14,10 +14,17 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
   const addItem = useGroceryStore(state => state.addItem);
   const showToast = useUIStore(state => state.showToast);
 
+  const isCelebrity = 
+    product.category === 'Celebrities & Endorsers' || 
+    product.categoryType === 'celebrity' ||
+    (product.id && product.id.startsWith('celeb-'));
+
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
+    if (isCelebrity) return;
+
     const defaultAlt = product.alternatives[0]?.name || 'Local Safe Brand';
     const defaultCountry = product.alternatives[0]?.country || 'Pakistan';
     
@@ -50,7 +57,9 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const text = `🚨 BOYCOTT TARGET: ${product.name} (${product.parentCompany || product.category})\nWhy: ${product.boycottReason}\n✅ Safe Alternative: ${product.alternatives.map(a => a.name).join(', ') || 'Local Pakistani Brand'}\nCheck evidence on: https://boycottisraelonline.com/product/${product.id}`;
+    const text = isCelebrity
+      ? `🚨 BOYCOTT ENDORSER CALLOUT: ${product.name}\nWhy Called Out: ${product.boycottReason}\nPromoting: ${product.endorsedBrands?.join(', ') || product.parentCompany}\nDetails: https://boycottisraelonline.com/product/${product.id}`
+      : `🚨 BOYCOTT TARGET: ${product.name} (${product.parentCompany || product.category})\nWhy: ${product.boycottReason}\n✅ Safe Alternative: ${product.alternatives.map(a => a.name).join(', ') || 'Local Pakistani Brand'}\nCheck evidence on: https://boycottisraelonline.com/product/${product.id}`;
 
     if (navigator.share) {
       navigator.share({
@@ -60,7 +69,7 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
       }).catch(() => {});
     } else {
       navigator.clipboard.writeText(text);
-      showToast('Boycott evidence copied to clipboard!');
+      showToast('Evidence copied to clipboard!');
     }
   };
 
@@ -70,7 +79,7 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
     Caution: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950/80 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-900'
   };
 
-  const topAlternative = product.alternatives?.[0];
+  const topAlternative = isCelebrity ? null : product.alternatives?.[0];
 
   return (
     <Link 
@@ -90,8 +99,12 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
           />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${severityStyles[product.severity] || severityStyles.High}`}>
-                {product.severity === 'Critical' ? '🔴 Critical' : 'DO NOT BUY'}
+              <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${
+                isCelebrity 
+                  ? 'bg-purple-100 text-purple-800 dark:bg-purple-950/80 dark:text-purple-300 border border-purple-200 dark:border-purple-900'
+                  : severityStyles[product.severity] || severityStyles.High
+              }`}>
+                {isCelebrity ? '👤 Endorser' : product.severity === 'Critical' ? '🔴 Critical' : 'DO NOT BUY'}
               </span>
             </div>
             
@@ -110,8 +123,15 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
           {product.boycottReason}
         </p>
 
-        {/* Safe Alternative Pill */}
-        {topAlternative ? (
+        {/* Section: Safe Alternative (for goods) OR Callout Notice (for celebrities) */}
+        {isCelebrity ? (
+          <div className="flex items-center gap-1.5 p-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/80 dark:border-purple-900/60 text-purple-800 dark:text-purple-300 text-xs font-bold">
+            <Users className="w-3.5 h-3.5 shrink-0 text-purple-500" />
+            <span className="truncate text-[11px]">
+              Demand ethical stance • Cancel complicit contracts
+            </span>
+          </div>
+        ) : topAlternative ? (
           <div className="flex items-center justify-between p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold">
             <div className="flex items-center gap-1.5 min-w-0 pr-2">
               <span className="shrink-0 text-sm">🇵🇰</span>
@@ -135,25 +155,28 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
       {/* Footer Actions */}
       <div className="pt-3 mt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between">
         <span className="text-[11px] text-zinc-400 font-bold group-hover:text-zinc-600 dark:group-hover:text-zinc-200 transition-colors">
-          View full evidence →
+          {isCelebrity ? 'View Timeline & Brands →' : 'View full evidence →'}
         </span>
 
         <div className="flex items-center gap-1.5">
           <button
             onClick={handleQuickShare}
             className="p-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors active:scale-90"
-            title="Share Evidence"
+            title="Share Callout"
           >
             <Share2 className="w-3.5 h-3.5" />
           </button>
-          <button
-            onClick={handleAdd}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold text-xs shadow-2xs transition-colors active:scale-90"
-            title="Add Safe Swap to Grocery List"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span className="text-[10px]">Add Alt</span>
-          </button>
+          
+          {!isCelebrity && (
+            <button
+              onClick={handleAdd}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold text-xs shadow-2xs transition-colors active:scale-90"
+              title="Add Safe Swap to Grocery List"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span className="text-[10px]">Add Alt</span>
+            </button>
+          )}
         </div>
       </div>
     </Link>

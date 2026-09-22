@@ -50,7 +50,10 @@ export const NoThanksProductCard: React.FC<Props> = ({
     }
   };
 
-  const isCelebrity = product.category === 'Celebrities & Endorsers';
+  const isCelebrity = 
+    product.category === 'Celebrities & Endorsers' || 
+    product.categoryType === 'celebrity' || 
+    (product.id && product.id.startsWith('celeb-'));
 
   return (
     <div 
@@ -62,8 +65,10 @@ export const NoThanksProductCard: React.FC<Props> = ({
         
         {/* Floating Top-Right DO NOT BUY Tag */}
         <div className="absolute top-2.5 right-2.5 z-10 flex items-center gap-1">
-          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-rose-600 text-white shadow-2xs tracking-wider">
-            {isCelebrity ? 'COMPLICIT' : 'DO NOT BUY'}
+          <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md text-white shadow-2xs tracking-wider ${
+            isCelebrity ? 'bg-purple-700' : 'bg-rose-600'
+          }`}>
+            {isCelebrity ? 'ENDORSER' : 'DO NOT BUY'}
           </span>
           {product.israelBarcode && (
             <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 bg-white/90 dark:bg-zinc-900/90 px-1.5 py-0.5 rounded-md border border-rose-200 dark:border-rose-800 shadow-2xs flex items-center gap-0.5">
@@ -106,13 +111,13 @@ export const NoThanksProductCard: React.FC<Props> = ({
 
       {/* Endorsed Brands Pill List (For Celebrities) */}
       {product.endorsedBrands && product.endorsedBrands.length > 0 && (
-        <div className="p-2 rounded-xl bg-rose-50/60 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-900/40 text-xs">
-          <span className="text-[9px] font-black uppercase tracking-wider text-rose-700 dark:text-rose-400 block mb-1">
+        <div className="p-2 rounded-xl bg-purple-50/60 dark:bg-purple-950/30 border border-purple-200/60 dark:border-purple-900/40 text-xs">
+          <span className="text-[9px] font-black uppercase tracking-wider text-purple-700 dark:text-purple-400 block mb-1">
             Boycotted Brands Promoted:
           </span>
           <div className="flex flex-wrap gap-1">
             {product.endorsedBrands.slice(0, 3).map((brand, idx) => (
-              <span key={idx} className="px-1.5 py-0.5 rounded bg-white dark:bg-zinc-900 text-rose-700 dark:text-rose-300 font-bold text-[10px] border border-rose-200 dark:border-rose-900/60 shadow-2xs">
+              <span key={idx} className="px-1.5 py-0.5 rounded bg-white dark:bg-zinc-900 text-purple-700 dark:text-purple-300 font-bold text-[10px] border border-purple-200 dark:border-purple-900/60 shadow-2xs">
                 {brand}
               </span>
             ))}
@@ -120,9 +125,17 @@ export const NoThanksProductCard: React.FC<Props> = ({
         </div>
       )}
 
-      {/* Bottom Row: Highlighted Alternative with Chevron */}
+      {/* Bottom Row: Highlighted Alternative with Chevron or Demand Action */}
       <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-2">
-        {topAlternative ? (
+        {isCelebrity ? (
+          <div className="flex items-center justify-between w-full group/alt text-purple-700 dark:text-purple-400">
+            <span className="text-xs font-bold truncate flex items-center gap-1">
+              <span>Action:</span>
+              <span className="text-zinc-900 dark:text-zinc-100 font-extrabold">Demand Contract Termination</span>
+            </span>
+            <ChevronRight className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 transition-transform group-hover:translate-x-0.5" />
+          </div>
+        ) : topAlternative ? (
           <div className="flex items-center justify-between w-full group/alt">
             <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 truncate flex items-center gap-1">
               <span>Alt:</span>

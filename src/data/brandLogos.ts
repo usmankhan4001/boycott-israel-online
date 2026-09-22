@@ -400,13 +400,11 @@ export const BRAND_ASSETS: Record<string, BrandAsset> = {
   },
   'sania mirza': {
     domain: 'instagram.com',
-    directImage: 'https://upload.wikimedia.org/wikipedia/commons/5/52/Sania_Mirza_at_the_launch_of_her_book_%27Ace_Against_Odds%27.jpg',
     color: '#004B93',
     isAvatar: true
   },
   'mahira khan': {
     domain: 'loreal.com',
-    directImage: 'https://upload.wikimedia.org/wikipedia/commons/5/56/Mahira_Khan_2024_%281%29.png',
     color: '#E31B23',
     isAvatar: true
   },
@@ -418,7 +416,6 @@ export const BRAND_ASSETS: Record<string, BrandAsset> = {
   },
   'ayeza khan': {
     domain: 'nestle.com',
-    directImage: 'https://unavatar.io/instagram/ayezakhan.ak',
     color: '#005CA9',
     isAvatar: true
   },
@@ -430,7 +427,6 @@ export const BRAND_ASSETS: Record<string, BrandAsset> = {
   },
   'hania aamir': {
     domain: 'unilever.com',
-    directImage: 'https://unavatar.io/instagram/haniaheheofficial',
     color: '#1F36C7',
     isAvatar: true
   },
@@ -448,7 +444,6 @@ export const BRAND_ASSETS: Record<string, BrandAsset> = {
   },
   'momina mustehsan': {
     domain: 'coca-cola.com',
-    directImage: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/Momina_Mustehsan_at_New_Islamabad_Airport_-_2020_%28cropped%29.jpg',
     color: '#F40009',
     isAvatar: true
   },
@@ -460,31 +455,26 @@ export const BRAND_ASSETS: Record<string, BrandAsset> = {
   },
   'sajal aly': {
     domain: 'instagram.com',
-    directImage: 'https://unavatar.io/instagram/sajalaly',
     color: '#004B93',
     isAvatar: true
   },
   'sajal ali': {
     domain: 'instagram.com',
-    directImage: 'https://unavatar.io/instagram/sajalaly',
     color: '#004B93',
     isAvatar: true
   },
   'yumna zaidi': {
     domain: 'instagram.com',
-    directImage: 'https://upload.wikimedia.org/wikipedia/commons/a/ae/Yumna_Zaidi.png',
     color: '#004B93',
     isAvatar: true
   },
   'maya ali': {
     domain: 'instagram.com',
-    directImage: 'https://upload.wikimedia.org/wikipedia/commons/d/d2/Maya_Ali_2020.png',
     color: '#004B93',
     isAvatar: true
   },
   'iqra aziz': {
     domain: 'instagram.com',
-    directImage: 'https://unavatar.io/instagram/iiqraaziz',
     color: '#004B93',
     isAvatar: true
   },
@@ -496,7 +486,6 @@ export const BRAND_ASSETS: Record<string, BrandAsset> = {
   },
   'ushna shah': {
     domain: 'instagram.com',
-    directImage: 'https://upload.wikimedia.org/wikipedia/commons/6/62/Usnah_Shah.jpg',
     color: '#059669',
     isAvatar: true
   },
@@ -508,8 +497,17 @@ export const BRAND_ASSETS: Record<string, BrandAsset> = {
   },
   'fatima bhutto': {
     domain: 'twitter.com',
-    directImage: 'https://upload.wikimedia.org/wikipedia/commons/4/40/Fatima_Bhutto_9296410.jpg',
     color: '#059669',
+    isAvatar: true
+  },
+  'gal gadot': {
+    domain: 'instagram.com',
+    color: '#E31B23',
+    isAvatar: true
+  },
+  'amy schumer': {
+    domain: 'instagram.com',
+    color: '#E31B23',
     isAvatar: true
   },
   'osman khalid butt': {

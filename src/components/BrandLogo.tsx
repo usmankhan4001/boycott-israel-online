@@ -10,6 +10,29 @@ interface Props {
   className?: string;
 }
 
+const FEMALE_CELEBRITY_KEYWORDS = [
+  'mahira', 'ayeza', 'hania', 'momina', 'sajal', 'yumna', 'maya ali',
+  'iqra aziz', 'ushna', 'fatima bhutto', 'sania mirza', 'mehwish',
+  'amna ilyas', 'ayesha omar', 'nida yasir', 'saboor', 'urwa',
+  'mawra', 'alizeh', 'gal gadot', 'amy schumer', 'dua lipa',
+  'gigi', 'bella', 'kylie', 'kendall', 'kardashian', 'scarlett',
+  'natalie portman', 'taylor swift', 'aimen', 'minal', 'hira mani',
+  'kinza', 'sarah khan', 'neelam', 'sohai', 'syra', 'sanah', 'kubra',
+  'ramsha', 'komal', 'zarnish', 'sonya hussyn', 'amina sheikh',
+  'sarwat gilani', 'juggun', 'shaista', 'bushra ansari', 'sanju',
+  'katrina', 'deepika', 'alia bhatt', 'priyanka', 'kareena',
+  'anushka', 'shraddha', 'kangana', 'sonam', 'saba qamar',
+  'hareem', 'dananeer', 'rabi pirzada', 'nadia khan', 'shaista lodhi',
+  'veena malik', 'mathira', 'sadia khan', 'noor zafar', 'mariyam nafees',
+  'sidra', 'momal', 'mansha', 'sunita', 'zara noor', 'yashma gill'
+];
+
+export const isFemaleCelebrity = (name: string): boolean => {
+  if (!name) return false;
+  const lower = name.toLowerCase().trim();
+  return FEMALE_CELEBRITY_KEYWORDS.some(keyword => lower.includes(keyword));
+};
+
 export const BrandLogo: React.FC<Props> = ({
   name,
   domain,
@@ -27,11 +50,46 @@ export const BrandLogo: React.FC<Props> = ({
     setRetryIndex(0);
   }, [name, logo, domain]);
 
+  const isFemale = isFemaleCelebrity(name);
+
+  const sizeClasses = {
+    xs: 'w-8 h-8 text-xs rounded-lg',
+    sm: 'w-12 h-12 text-sm rounded-xl',
+    md: 'w-16 h-16 text-base rounded-2xl',
+    lg: 'w-20 h-20 text-lg rounded-2xl',
+    xl: 'w-28 h-28 text-2xl rounded-3xl',
+    '2xl': 'w-36 h-36 text-3xl rounded-3xl'
+  };
+
+  // Female silhouette rendering (no real photo displayed for female personalities)
+  if (isFemale) {
+    return (
+      <div
+        className={`relative shrink-0 flex items-center justify-center overflow-hidden select-none border transition-all bg-gradient-to-br from-purple-100 via-pink-50 to-purple-100 dark:from-purple-950/60 dark:via-pink-950/30 dark:to-purple-950/50 border-purple-300/80 dark:border-purple-800 text-purple-600 dark:text-purple-300 shadow-inner ${sizeClasses[size]} ${className}`}
+        title={`${name} (Avatar Profile)`}
+      >
+        <svg 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="1.6" 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          className="w-3/5 h-3/5 drop-shadow-xs"
+        >
+          {/* Modest vector female silhouette */}
+          <path d="M12 2.5a4.5 4.5 0 0 0-4.5 4.5c0 2.3 1.6 4.2 3.8 4.45A7.5 7.5 0 0 0 4.5 19a.75.75 0 0 0 .75.75h13.5a.75.75 0 0 0 .75-.75 7.5 7.5 0 0 0-6.8-7.55c2.2-.25 3.8-2.15 3.8-4.45A4.5 4.5 0 0 0 12 2.5z" fill="currentColor" fillOpacity="0.85" />
+          <path d="M8.5 7c.5-2 2-3 3.5-3s3 1 3.5 3" />
+        </svg>
+      </div>
+    );
+  }
+
   const brandAsset = getBrandAsset(name);
   const isAvatar = brandAsset?.isAvatar || false;
   const resolvedDomain = (isAvatar ? brandAsset?.domain : (domain || brandAsset?.domain)) || `${name.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
 
-  // Cascading high-fidelity logo sources - direct verified images first:
+  // Cascading high-fidelity logo sources
   const logoSources: string[] = isAvatar
     ? [
         ...(brandAsset?.directImage ? [brandAsset.directImage] : []),
@@ -55,15 +113,6 @@ export const BrandLogo: React.FC<Props> = ({
     } else {
       setHasError(true);
     }
-  };
-
-  const sizeClasses = {
-    xs: 'w-8 h-8 text-xs rounded-lg',
-    sm: 'w-12 h-12 text-sm rounded-xl',
-    md: 'w-16 h-16 text-base rounded-2xl',
-    lg: 'w-20 h-20 text-lg rounded-2xl',
-    xl: 'w-28 h-28 text-2xl rounded-3xl',
-    '2xl': 'w-36 h-36 text-3xl rounded-3xl'
   };
 
   const initial = name.charAt(0).toUpperCase();
