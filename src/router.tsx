@@ -15,10 +15,21 @@ import { ProductsPage } from './pages/admin/ProductsPage';
 import { SuggestionsPage } from './pages/admin/SuggestionsPage';
 import { SettingsPage } from './pages/admin/SettingsPage';
 
+import { ErrorBoundary } from './components/ErrorBoundary';
+
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <AppShell />,
+    element: (
+      <ErrorBoundary>
+        <AppShell />
+      </ErrorBoundary>
+    ),
+    errorElement: (
+      <ErrorBoundary>
+        <AppShell />
+      </ErrorBoundary>
+    ),
     children: [
       { index: true, element: <HomePage /> },
       { path: 'categories', element: <CategoriesPage /> },
@@ -35,7 +46,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: (
+      <ErrorBoundary>
+        <AdminLayout />
+      </ErrorBoundary>
+    ),
     children: [
       { index: true, element: <Navigate to="/admin/dashboard" replace /> },
       { path: 'dashboard', element: <DashboardPage /> },

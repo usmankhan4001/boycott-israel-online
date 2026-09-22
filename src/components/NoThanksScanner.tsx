@@ -54,12 +54,12 @@ export const NoThanksScanner: React.FC<Props> = ({
       return;
     }
 
-    if (activeTab === 'camera') {
+    if (activeTab === 'camera' && !scanResult) {
       const timer = setTimeout(() => {
         if (isMountedRef.current) {
           startScanner();
         }
-      }, 200);
+      }, 150);
       return () => clearTimeout(timer);
     } else {
       stopScanner();
@@ -69,7 +69,7 @@ export const NoThanksScanner: React.FC<Props> = ({
       isMountedRef.current = false;
       stopScanner();
     };
-  }, [isOpen, activeTab]);
+  }, [isOpen, activeTab, scanResult]);
 
   const startScanner = async () => {
     try {
@@ -127,7 +127,6 @@ export const NoThanksScanner: React.FC<Props> = ({
         config,
         (decodedText) => {
           handleCheckCode(decodedText);
-          stopScanner();
         },
         () => {}
       );
@@ -141,7 +140,6 @@ export const NoThanksScanner: React.FC<Props> = ({
             { fps: 15, qrbox: (w, h) => ({ width: Math.min(w * 0.8, 260), height: Math.min(h * 0.5, 140) }) },
             (decodedText) => {
               handleCheckCode(decodedText);
-              stopScanner();
             },
             () => {}
           );
@@ -160,9 +158,8 @@ export const NoThanksScanner: React.FC<Props> = ({
         if (scannerRef.current.isScanning) {
           await scannerRef.current.stop();
         }
-        scannerRef.current.clear();
       } catch (err) {
-        // silent cleanup
+        // silent safe catch
       }
       scannerRef.current = null;
     }
@@ -189,6 +186,9 @@ export const NoThanksScanner: React.FC<Props> = ({
       (p.tags && p.tags.some(t => t.toLowerCase() === clean.toLowerCase()))
     );
 
+    // Stop scanner safely
+    stopScanner();
+
     if (is729 || matched) {
       setScanResult({
         code: clean,
@@ -208,9 +208,6 @@ export const NoThanksScanner: React.FC<Props> = ({
   const resetScan = () => {
     setScanResult(null);
     setManualInput('');
-    if (activeTab === 'camera') {
-      startScanner();
-    }
   };
 
   if (!isOpen) return null;
@@ -244,7 +241,7 @@ export const NoThanksScanner: React.FC<Props> = ({
           </button>
         </div>
 
-        {/* Tab Switcher */}
+        {/* Tab Switcher (Visible when no result is active) */}
         {!scanResult && (
           <div className="px-4 pt-3">
             <div className="grid grid-cols-2 p-1 rounded-xl bg-black/50 border border-white/[0.08] text-xs font-bold">
@@ -274,7 +271,7 @@ export const NoThanksScanner: React.FC<Props> = ({
         <div className="p-4 space-y-4 overflow-y-auto">
           
           {/* Result View */}
-          {scanResult ? (
+          {scanResult && (
             <div className="space-y-4 animate-in zoom-in-95 duration-200">
               
               {scanResult.isBoycott ? (
@@ -435,101 +432,109 @@ export const NoThanksScanner: React.FC<Props> = ({
               )}
 
             </div>
-          ) : (
-            /* Live Camera or Manual Input */
-            <div className="space-y-4">
-              {activeTab === 'camera' ? (
-                <div className="space-y-3">
-                  <div 
-                    id="no-thanks-camera-view"
-                    className="w-full min-h-[250px] bg-black rounded-2xl overflow-hidden border-2 border-dashed border-rose-500/40 relative flex items-center justify-center text-xs text-gray-400"
-                  >
-                    {!isScanning && <span>Initializing camera viewfinder...</span>}
-                  </div>
+          )}
 
-                  {cameraError && (
-                    <div className="p-3 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs">
-                      {cameraError}
-                    </div>
-                  )}
-
-                  <div className="pt-1">
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={manualInput}
-                        onChange={(e) => setManualInput(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleCheckCode(manualInput)}
-                        placeholder="Quick barcode (729...) or brand name"
-                        className="flex-1 px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/[0.1] text-white text-xs focus:outline-none focus:border-rose-500 font-medium"
-                      />
-                      <button
-                        onClick={() => handleCheckCode(manualInput)}
-                        className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow-md active:scale-95 transition-all"
-                      >
-                        Check
-                      </button>
-                    </div>
-                  </div>
-
-                  <p className="text-[11px] text-gray-400 text-center font-medium">
-                    Align barcode inside frame. Barcodes with <strong>729</strong> (Israel) or matching boycotted multinationals are instantly identified.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold text-gray-300 mb-1.5">
-                      Enter Barcode (e.g. 729...) or Brand Name:
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={manualInput}
-                        onChange={(e) => setManualInput(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleCheckCode(manualInput)}
-                        placeholder="e.g. 72900123 or Pepsi, KFC, Oreo..."
-                        className="flex-1 px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/[0.1] text-white text-sm focus:outline-none focus:border-rose-500 font-medium"
-                        autoFocus
-                      />
-                      <button
-                        onClick={() => handleCheckCode(manualInput)}
-                        className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow-md active:scale-95 transition-all"
-                      >
-                        Verify
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Quick sample tests */}
-                  <div>
-                    <span className="text-[11px] text-gray-400 block mb-1.5 font-bold">Quick Barcode & Brand Checks:</span>
-                    <div className="flex flex-wrap gap-1.5 text-xs">
-                      {[
-                        { label: 'Israeli Barcode (72900123)', val: '72900123' },
-                        { label: 'SodaStream (72901234)', val: '72901234' },
-                        { label: 'McDonalds', val: "McDonald's" },
-                        { label: 'KFC', val: 'KFC' },
-                        { label: 'Oreo Biscuit', val: 'Oreo' },
-                        { label: 'Lays Chips', val: 'Lays' }
-                      ].map((s, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => {
-                            setManualInput(s.val);
-                            handleCheckCode(s.val);
-                          }}
-                          className="px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-gray-200 border border-white/[0.08] text-[11px] font-medium transition-colors"
-                        >
-                          {s.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+          {/* Camera View Mode (Persistently mounted in DOM to prevent React removeChild reconciliation errors) */}
+          <div 
+            style={{ display: !scanResult && activeTab === 'camera' ? 'block' : 'none' }}
+            className="space-y-3"
+          >
+            <div className="relative w-full min-h-[250px] bg-black rounded-2xl overflow-hidden border-2 border-dashed border-rose-500/40 flex items-center justify-center">
+              {/* Isolated camera mount point — NO React children inside */}
+              <div id="no-thanks-camera-view" className="w-full h-full" />
+              
+              {/* Sibling overlay for loading state */}
+              {!isScanning && (
+                <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-400 pointer-events-none p-4 text-center">
+                  <span>Initializing camera viewfinder...</span>
                 </div>
               )}
             </div>
-          )}
+
+            {cameraError && (
+              <div className="p-3 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs">
+                {cameraError}
+              </div>
+            )}
+
+            <div className="pt-1">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={manualInput}
+                  onChange={(e) => setManualInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleCheckCode(manualInput)}
+                  placeholder="Quick barcode (729...) or brand name"
+                  className="flex-1 px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/[0.1] text-white text-xs focus:outline-none focus:border-rose-500 font-medium"
+                />
+                <button
+                  onClick={() => handleCheckCode(manualInput)}
+                  className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow-md active:scale-95 transition-all"
+                >
+                  Check
+                </button>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-gray-400 text-center font-medium">
+              Align barcode inside frame. Barcodes with <strong>729</strong> (Israel) or matching boycotted multinationals are instantly identified.
+            </p>
+          </div>
+
+          {/* Manual Input View Mode */}
+          <div 
+            style={{ display: !scanResult && activeTab === 'manual' ? 'block' : 'none' }}
+            className="space-y-4"
+          >
+            <div>
+              <label className="block text-xs font-bold text-gray-300 mb-1.5">
+                Enter Barcode (e.g. 729...) or Brand Name:
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={manualInput}
+                  onChange={(e) => setManualInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleCheckCode(manualInput)}
+                  placeholder="e.g. 72900123 or Pepsi, KFC, Oreo..."
+                  className="flex-1 px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/[0.1] text-white text-sm focus:outline-none focus:border-rose-500 font-medium"
+                  autoFocus
+                />
+                <button
+                  onClick={() => handleCheckCode(manualInput)}
+                  className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow-md active:scale-95 transition-all"
+                >
+                  Verify
+                </button>
+              </div>
+            </div>
+
+            {/* Quick sample tests */}
+            <div>
+              <span className="text-[11px] text-gray-400 block mb-1.5 font-bold">Quick Barcode & Brand Checks:</span>
+              <div className="flex flex-wrap gap-1.5 text-xs">
+                {[
+                  { label: 'Israeli Barcode (72900123)', val: '72900123' },
+                  { label: 'SodaStream (72901234)', val: '72901234' },
+                  { label: 'McDonalds', val: "McDonald's" },
+                  { label: 'KFC', val: 'KFC' },
+                  { label: 'Oreo Biscuit', val: 'Oreo' },
+                  { label: 'Lays Chips', val: 'Lays' }
+                ].map((s, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setManualInput(s.val);
+                      handleCheckCode(s.val);
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-gray-200 border border-white/[0.08] text-[11px] font-medium transition-colors"
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
 
         </div>
 

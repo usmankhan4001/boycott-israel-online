@@ -88,9 +88,8 @@ export const BarcodeScannerModal: React.FC<Props> = ({
     if (html5QrCodeRef.current && html5QrCodeRef.current.isScanning) {
       try {
         await html5QrCodeRef.current.stop();
-        html5QrCodeRef.current.clear();
       } catch (e) {
-        console.error('Error stopping camera:', e);
+        // silent safe catch
       }
     }
     setIsScanning(false);
@@ -193,12 +192,13 @@ export const BarcodeScannerModal: React.FC<Props> = ({
           
           {activeMode === 'camera' ? (
             <div className="space-y-3">
-              <div 
-                id="barcode-reader-box" 
-                className="w-full min-h-[260px] bg-black rounded-2xl overflow-hidden border border-white/[0.1] relative flex items-center justify-center text-xs text-gray-500"
-              >
+              <div className="relative w-full min-h-[260px] bg-black rounded-2xl overflow-hidden border border-white/[0.1] flex items-center justify-center">
+                {/* Isolated pure camera DOM node */}
+                <div id="barcode-reader-box" className="w-full h-full" />
                 {!isScanning && (
-                  <span className="p-4 text-center">Starting camera...</span>
+                  <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-500 pointer-events-none p-4 text-center">
+                    <span>Starting camera...</span>
+                  </div>
                 )}
               </div>
 
