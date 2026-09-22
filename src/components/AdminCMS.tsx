@@ -18,7 +18,9 @@ import {
   CheckCircle2,
   RefreshCw,
   Send,
-  AlertCircle
+  AlertCircle,
+  Cloud,
+  Database
 } from 'lucide-react';
 import { 
   getStoredSuggestions, 
@@ -31,6 +33,11 @@ import {
   getAdminWebhookUrl,
   saveAdminWebhookUrl
 } from '../utils/storage';
+import { 
+  isSanityConfigured, 
+  fetchSanityProducts, 
+  batchSyncAllToSanity 
+} from '../lib/sanity';
 
 interface Props {
   products: ProductItem[];
@@ -39,7 +46,15 @@ interface Props {
 }
 
 export const AdminCMS: React.FC<Props> = ({ products, setProducts, onClose }) => {
-  const [activeTab, setActiveTab] = useState<'submissions' | 'products' | 'export' | 'webhook'>('submissions');
+  const [activeTab, setActiveTab] = useState<'submissions' | 'products' | 'sanity' | 'export' | 'webhook'>('sanity');
+  
+  // Sanity State
+  const [sanityProjectId, setSanityProjectId] = useState(() => localStorage.getItem('SANITY_PROJECT_ID') || '');
+  const [sanityDataset, setSanityDataset] = useState(() => localStorage.getItem('SANITY_DATASET') || 'production');
+  const [sanityToken, setSanityToken] = useState(() => localStorage.getItem('SANITY_API_TOKEN') || '');
+  const [isSyncingSanity, setIsSyncingSanity] = useState(false);
+  const [syncProgress, setSyncProgress] = useState<{ current: number; total: number } | null>(null);
+  const [sanityStatusMsg, setSanityStatusMsg] = useState('');
   
   // Suggestions queue
   const [suggestions, setSuggestions] = useState<UserSuggestion[]>(() => getStoredSuggestions());
@@ -211,6 +226,67 @@ export const AdminCMS: React.FC<Props> = ({ products, setProducts, onClose }) =>
     reader.readAsText(file);
   };
 
+  // Save Sanity Credentials
+  const handleSaveSanityConfig = (e: React.FormEvent) => {
+    e.preventDefault();
+    localStorage.setItem('SANITY_PROJECT_ID', sanityProjectId.trim());
+    localStorage.setItem('SANITY_DATASET', sanityDataset.trim() || 'production');
+    if (sanityToken.trim()) {
+      localStorage.setItem('SANITY_API_TOKEN', sanityToken.trim());
+    } else {
+      localStorage.removeItem('SANITY_API_TOKEN');
+    }
+    setSanityStatusMsg('✓ Sanity configuration saved!');
+    setTimeout(() => setSanityStatusMsg(''), 3000);
+  };
+
+  // Pull live data from Sanity
+  const handlePullFromSanity = async () => {
+    setIsSyncingSanity(true);
+    setSanityStatusMsg('Fetching live dataset from Sanity...');
+    try {
+      const sanityProducts = await fetchSanityProducts();
+      if (sanityProducts && sanityProducts.length > 0) {
+        setProducts(sanityProducts);
+        setSanityStatusMsg(`✓ Successfully loaded ${sanityProducts.length} live products from Sanity!`);
+      } else {
+        setSanityStatusMsg('⚠️ No products found on Sanity yet, or project ID was empty.');
+      }
+    } catch (err: any) {
+      setSanityStatusMsg(`❌ Error fetching from Sanity: ${err.message}`);
+    } finally {
+      setIsSyncingSanity(false);
+      setTimeout(() => setSanityStatusMsg(''), 5000);
+    }
+  };
+
+  // Push all local products to Sanity
+  const handleBatchSyncToSanity = async () => {
+    if (!sanityToken.trim()) {
+      alert('Please enter a Sanity API Token with "Editor" or "Administrator" role to upload data to Sanity.');
+      return;
+    }
+    if (!window.confirm(`This will sync/upload all ${products.length} catalog items to your Sanity dataset. Continue?`)) {
+      return;
+    }
+
+    setIsSyncingSanity(true);
+    setSyncProgress({ current: 0, total: products.length });
+
+    try {
+      const result = await batchSyncAllToSanity(products, (current, total) => {
+        setSyncProgress({ current, total });
+      });
+      setSanityStatusMsg(`✓ Sync complete! Uploaded ${result.success} products (${result.failed} failed).`);
+    } catch (err: any) {
+      setSanityStatusMsg(`❌ Sync error: ${err.message}`);
+    } finally {
+      setIsSyncingSanity(false);
+      setSyncProgress(null);
+      setTimeout(() => setSanityStatusMsg(''), 6000);
+    }
+  };
+
   // Save Webhook
   const handleSaveWebhook = (e: React.FormEvent) => {
     e.preventDefault();
@@ -234,7 +310,7 @@ export const AdminCMS: React.FC<Props> = ({ products, setProducts, onClose }) =>
             </h1>
           </div>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Manage live boycott targets, review community suggestions & control catalog data
+            Manage live boycott targets, review community suggestions & control catalog data via Sanity.io
           </p>
         </div>
 
@@ -259,6 +335,21 @@ export const AdminCMS: React.FC<Props> = ({ products, setProducts, onClose }) =>
 
       {/* Navigation Sub-Tabs */}
       <div className="flex items-center gap-1.5 p-1 bg-zinc-100 dark:bg-zinc-800/80 rounded-2xl overflow-x-auto text-xs font-bold">
+        <button
+          onClick={() => setActiveTab('sanity')}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl transition-all shrink-0 ${
+            activeTab === 'sanity'
+              ? 'bg-red-600 text-white shadow-sm'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
+          }`}
+        >
+          <Cloud className="w-3.5 h-3.5" />
+          <span>Sanity.io Studio Control</span>
+          {isSanityConfigured() && (
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          )}
+        </button>
+
         <button
           onClick={() => setActiveTab('submissions')}
           className={`flex items-center gap-1.5 px-4 py-2 rounded-xl transition-all shrink-0 ${
@@ -312,6 +403,167 @@ export const AdminCMS: React.FC<Props> = ({ products, setProducts, onClose }) =>
           <span>Team Webhook Alert</span>
         </button>
       </div>
+
+      {/* TAB: Sanity.io Studio Control Panel */}
+      {activeTab === 'sanity' && (
+        <div className="space-y-5 animate-in fade-in">
+          
+          {/* Status & Connection Card */}
+          <div className="p-5 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-4 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100 dark:border-zinc-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-red-50 dark:bg-red-950/40 text-red-600 flex items-center justify-center font-black">
+                  <Cloud className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100">
+                    Sanity.io Headless CMS Connection
+                  </h3>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    Connect your Sanity Studio dataset for visual content editing, photo asset hosting, and live cloud sync
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className={`px-3 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 border ${
+                  isSanityConfigured()
+                    ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800'
+                    : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+                }`}>
+                  <span className={`w-2 h-2 rounded-full ${isSanityConfigured() ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+                  <span>{isSanityConfigured() ? 'Connected' : 'Not Connected'}</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Status Message Banner */}
+            {sanityStatusMsg && (
+              <div className="p-3 rounded-2xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                <RefreshCw className={`w-4 h-4 shrink-0 ${isSyncingSanity ? 'animate-spin text-red-600' : ''}`} />
+                <span>{sanityStatusMsg}</span>
+              </div>
+            )}
+
+            {/* Progress Bar when uploading */}
+            {syncProgress && (
+              <div className="space-y-1.5 p-3 rounded-2xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50">
+                <div className="flex justify-between text-xs font-bold text-red-700 dark:text-red-400">
+                  <span>Uploading to Sanity...</span>
+                  <span>{syncProgress.current} / {syncProgress.total}</span>
+                </div>
+                <div className="w-full h-2 bg-red-200 dark:bg-red-900/60 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-red-600 rounded-full transition-all duration-150"
+                    style={{ width: `${(syncProgress.current / syncProgress.total) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Sanity Project Credentials Form */}
+            <form onSubmit={handleSaveSanityConfig} className="space-y-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    Sanity Project ID *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={sanityProjectId}
+                    onChange={(e) => setSanityProjectId(e.target.value)}
+                    placeholder="e.g. abc123xy"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-xs font-medium focus:outline-none focus:border-red-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                    Dataset Name
+                  </label>
+                  <input
+                    type="text"
+                    value={sanityDataset}
+                    onChange={(e) => setSanityDataset(e.target.value)}
+                    placeholder="production"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-xs font-medium focus:outline-none focus:border-red-500"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                  Sanity API Token (Write/Editor Permission)
+                </label>
+                <input
+                  type="password"
+                  value={sanityToken}
+                  onChange={(e) => setSanityToken(e.target.value)}
+                  placeholder="sk..."
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-xs font-medium focus:outline-none focus:border-red-500 font-mono"
+                />
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                  Required only if you want to push data from this web dashboard directly into Sanity. Create one at <a href="https://sanity.io/manage" target="_blank" rel="noreferrer" className="text-red-600 hover:underline">sanity.io/manage</a> under API &gt; Tokens.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Save Configuration</span>
+                </button>
+
+                <button
+                  type="button"
+                  disabled={isSyncingSanity || !sanityProjectId}
+                  onClick={handlePullFromSanity}
+                  className="px-4 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-bold flex items-center gap-1.5 transition-all border border-zinc-200 dark:border-zinc-700 disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isSyncingSanity ? 'animate-spin' : ''}`} />
+                  <span>Pull Live from Sanity</span>
+                </button>
+
+                <button
+                  type="button"
+                  disabled={isSyncingSanity || !sanityToken}
+                  onClick={handleBatchSyncToSanity}
+                  className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Sync Catalog to Sanity ({products.length} items)</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Quick Setup Instructions & Studio Links */}
+          <div className="p-5 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-850/50 space-y-3">
+            <h4 className="text-xs font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+              Sanity Studio Setup Guide:
+            </h4>
+            
+            <ol className="text-xs text-zinc-600 dark:text-zinc-400 space-y-2 list-decimal list-inside leading-relaxed">
+              <li>
+                <strong>Create your free Sanity Project:</strong> Go to <a href="https://sanity.io" target="_blank" rel="noreferrer" className="text-red-600 font-bold hover:underline">sanity.io</a> and create a project.
+              </li>
+              <li>
+                <strong>Copy your Project ID:</strong> Paste your Project ID in the input box above and click Save.
+              </li>
+              <li>
+                <strong>Pre-configured Studio Ready:</strong> The schemas are already pre-built in the <code className="px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800 font-mono text-[11px]">sanity-studio/</code> folder in this codebase.
+              </li>
+              <li>
+                <strong>Upload Catalog in 1-Click:</strong> Add your write token above and click <strong>"Sync Catalog to Sanity"</strong> to populate your Sanity Studio instantly with all Boycott products and safe alternatives!
+              </li>
+            </ol>
+          </div>
+
+        </div>
+      )}
 
       {/* TAB 1: Community Submissions Inbox */}
       {activeTab === 'submissions' && (

@@ -10,6 +10,7 @@ import {
   setDataSaverMode
 } from './utils/storage';
 import { checkAndScheduleMonthlyReminder } from './utils/notifications';
+import { isSanityConfigured, fetchSanityProducts } from './lib/sanity';
 
 // No Thanks Components
 import { NoThanksScanner } from './components/NoThanksScanner';
@@ -22,6 +23,7 @@ import { AboutFaqSection } from './components/AboutFaqSection';
 import { CategoriesView } from './components/CategoriesView';
 import { CategoryIcon } from './components/CategoryIcon';
 import { BrandLogo } from './components/BrandLogo';
+import { AdminCMS } from './components/AdminCMS';
 import { POPULAR_CATEGORIES } from './data/laymanCategories';
 
 // Icons
@@ -88,6 +90,20 @@ export function App() {
   // Modals
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState<boolean>(() => {
+    return window.location.search.includes('admin=true') || window.location.hash === '#admin';
+  });
+
+  // Fetch live products from Sanity if configured
+  useEffect(() => {
+    if (isSanityConfigured()) {
+      fetchSanityProducts().then((sanityData) => {
+        if (sanityData && sanityData.length > 0) {
+          setProducts(sanityData);
+        }
+      }).catch(() => {});
+    }
+  }, []);
 
   // Grocery State
   const [groceryList, setGroceryList] = useState<GroceryItem[]>(() => getStoredGroceryList());
@@ -398,6 +414,14 @@ export function App() {
                     {groceryList.length}
                   </span>
                 )}
+              </button>
+
+              <button
+                onClick={() => setIsAdminOpen(true)}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition-all"
+                title="Sanity & Catalog Control Panel"
+              >
+                <span>CMS Control</span>
               </button>
 
               <button
@@ -858,6 +882,24 @@ export function App() {
         onClose={() => setIsSuggestOpen(false)}
         onProductAdded={() => handleProductAdded()}
       />
+
+      {/* Admin CMS Modal */}
+      {isAdminOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-md animate-in fade-in flex items-center justify-center p-3 sm:p-6">
+          <div className="w-full max-w-5xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl p-2 sm:p-6 relative max-h-[95vh] overflow-y-auto">
+            <AdminCMS
+              products={products}
+              setProducts={setProducts}
+              onClose={() => {
+                setIsAdminOpen(false);
+                if (window.location.search.includes('admin=true')) {
+                  window.history.replaceState({}, '', window.location.pathname);
+                }
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Toast Notification */}
       {toastMessage && (
