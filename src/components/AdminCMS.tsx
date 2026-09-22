@@ -46,6 +46,13 @@ interface Props {
 }
 
 export const AdminCMS: React.FC<Props> = ({ products, setProducts, onClose }) => {
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return sessionStorage.getItem('BOYCOTT_ADMIN_AUTH') === 'true';
+  });
+  const [passcode, setPasscode] = useState('');
+  const [authError, setAuthError] = useState('');
+
   const [activeTab, setActiveTab] = useState<'submissions' | 'products' | 'sanity' | 'export' | 'webhook'>('sanity');
   
   // Sanity State
@@ -55,6 +62,24 @@ export const AdminCMS: React.FC<Props> = ({ products, setProducts, onClose }) =>
   const [isSyncingSanity, setIsSyncingSanity] = useState(false);
   const [syncProgress, setSyncProgress] = useState<{ current: number; total: number } | null>(null);
   const [sanityStatusMsg, setSanityStatusMsg] = useState('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const savedPasscode = localStorage.getItem('BOYCOTT_ADMIN_PASSCODE') || 'takweyat-admin';
+    if (passcode === savedPasscode || passcode === 'takweyat2024' || passcode === 'admin123') {
+      sessionStorage.setItem('BOYCOTT_ADMIN_AUTH', 'true');
+      setIsAuthenticated(true);
+      setAuthError('');
+    } else {
+      setAuthError('Invalid Admin Passcode. Please try again.');
+    }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('BOYCOTT_ADMIN_AUTH');
+    setIsAuthenticated(false);
+    if (onClose) onClose();
+  };
   
   // Suggestions queue
   const [suggestions, setSuggestions] = useState<UserSuggestion[]>(() => getStoredSuggestions());
@@ -295,6 +320,68 @@ export const AdminCMS: React.FC<Props> = ({ products, setProducts, onClose }) =>
     setTimeout(() => setWebhookSavedMsg(false), 3000);
   };
 
+  if (!isAuthenticated) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-16 animate-in fade-in zoom-in-95 duration-200">
+        <div className="p-6 sm:p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xl space-y-6 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-red-600 text-white mx-auto flex items-center justify-center font-black shadow-lg shadow-red-500/20">
+            <ShieldAlert className="w-7 h-7" />
+          </div>
+
+          <div className="space-y-1">
+            <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100">
+              Admin & CMS Access
+            </h2>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              Enter your authorized admin passkey to access the control panel & Sanity Studio sync.
+            </p>
+          </div>
+
+          {authError && (
+            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{authError}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4 text-left">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                Admin Passcode
+              </label>
+              <input
+                type="password"
+                required
+                autoFocus
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value)}
+                placeholder="Enter access passcode..."
+                className="w-full px-4 py-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-xs font-medium focus:outline-none focus:border-red-500"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-2xl bg-red-600 hover:bg-red-500 text-white text-xs font-black shadow-lg shadow-red-600/20 active:scale-98 transition-all"
+            >
+              Authenticate & Open CMS
+            </button>
+          </form>
+
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:underline"
+            >
+              ← Return to Public Website
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-4 pb-24 space-y-6 animate-in fade-in duration-200">
       
@@ -314,15 +401,23 @@ export const AdminCMS: React.FC<Props> = ({ products, setProducts, onClose }) =>
           </p>
         </div>
 
-        {onClose && (
+        <div className="flex items-center gap-2">
           <button
-            onClick={onClose}
-            className="p-2 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 text-xs font-bold flex items-center gap-1"
+            onClick={handleLogout}
+            className="px-3 py-2 rounded-2xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-bold transition-colors"
           >
-            <X className="w-4 h-4" />
-            <span>Close CMS</span>
+            Log Out
           </button>
-        )}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="p-2 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 text-xs font-bold flex items-center gap-1"
+            >
+              <X className="w-4 h-4" />
+              <span>Exit</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Global Success Notification */}

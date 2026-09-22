@@ -87,12 +87,31 @@ export function App() {
   // Selected Product for Full-Screen Detail View
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
 
-  // Modals
+  // Modals & Routing
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
-  const [isAdminOpen, setIsAdminOpen] = useState<boolean>(() => {
-    return window.location.search.includes('admin=true') || window.location.hash === '#admin';
-  });
+  
+  const checkAdminRoute = () => {
+    const p = window.location.pathname.toLowerCase();
+    const h = window.location.hash.toLowerCase();
+    const s = window.location.search.toLowerCase();
+    return p === '/admin' || p === '/admin/' || h === '#admin' || h === '#/admin' || s.includes('admin=true');
+  };
+
+  const [isAdminOpen, setIsAdminOpen] = useState<boolean>(() => checkAdminRoute());
+
+  // Listen for /admin navigation changes
+  useEffect(() => {
+    const handleRoute = () => {
+      setIsAdminOpen(checkAdminRoute());
+    };
+    window.addEventListener('popstate', handleRoute);
+    window.addEventListener('hashchange', handleRoute);
+    return () => {
+      window.removeEventListener('popstate', handleRoute);
+      window.removeEventListener('hashchange', handleRoute);
+    };
+  }, []);
 
   // Fetch live products from Sanity if configured
   useEffect(() => {
@@ -414,14 +433,6 @@ export function App() {
                     {groceryList.length}
                   </span>
                 )}
-              </button>
-
-              <button
-                onClick={() => setIsAdminOpen(true)}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition-all"
-                title="Sanity & Catalog Control Panel"
-              >
-                <span>CMS Control</span>
               </button>
 
               <button
@@ -892,9 +903,7 @@ export function App() {
               setProducts={setProducts}
               onClose={() => {
                 setIsAdminOpen(false);
-                if (window.location.search.includes('admin=true')) {
-                  window.history.replaceState({}, '', window.location.pathname);
-                }
+                window.history.pushState({}, '', '/');
               }}
             />
           </div>
