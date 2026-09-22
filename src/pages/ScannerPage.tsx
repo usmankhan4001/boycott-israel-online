@@ -39,22 +39,12 @@ export const ScannerPage: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col">
-      <div className="absolute top-4 left-4 z-[60]">
-        <button 
-          onClick={() => navigate(-1)}
-          className="p-3 bg-black/50 text-white rounded-full backdrop-blur-md"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-      </div>
-      <NoThanksScanner 
-        isOpen={true} 
-        onClose={() => navigate(-1)} 
-        products={products} 
-        onAddToGrocery={handleAddProductToGrocery}
-        onViewProof={handleViewProof}
-      />
-    </div>
+    <NoThanksScanner 
+      isOpen={true} 
+      onClose={() => navigate(-1)} 
+      products={products} 
+      onAddToGrocery={handleAddProductToGrocery}
+      onViewProof={handleViewProof}
+    />
   );
 };

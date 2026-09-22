@@ -11,6 +11,8 @@ import {
   Users,
   ExternalLink,
   Search,
+  Upload,
+  RefreshCw,
   Sparkles
 } from 'lucide-react';
 import { ProductItem } from '../types';
@@ -35,6 +37,10 @@ export const NoThanksScanner: React.FC<Props> = ({
   const [manualInput, setManualInput] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [cameraError, setCameraError] = useState('');
+  const [availableCameras, setAvailableCameras] = useState<{ id: string; label: string }[]>([]);
+  const [selectedCameraIndex, setSelectedCameraIndex] = useState(0);
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
+
   const [scanResult, setScanResult] = useState<{
     code: string;
     isBoycott: boolean;
@@ -44,9 +50,11 @@ export const NoThanksScanner: React.FC<Props> = ({
 
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const isMountedRef = useRef(true);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     isMountedRef.current = true;
+
     if (!isOpen) {
       stopScanner();
       setScanResult(null);
@@ -69,7 +77,33 @@ export const NoThanksScanner: React.FC<Props> = ({
       isMountedRef.current = false;
       stopScanner();
     };
-  }, [isOpen, activeTab, scanResult]);
+  }, [isOpen, activeTab, scanResult, selectedCameraIndex]);
+
+  const initScannerEngine = () => {
+    if (scannerRef.current) return scannerRef.current;
+
+    const qrEngine = new Html5Qrcode('no-thanks-camera-view', {
+      verbose: false,
+      experimentalFeatures: {
+        useBarCodeDetectorIfSupported: true
+      },
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.QR_CODE,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.CODE_93,
+        Html5QrcodeSupportedFormats.ITF,
+        Html5QrcodeSupportedFormats.DATA_MATRIX
+      ]
+    });
+
+    scannerRef.current = qrEngine;
+    return qrEngine;
+  };
 
   const startScanner = async () => {
     try {
@@ -81,73 +115,75 @@ export const NoThanksScanner: React.FC<Props> = ({
       }
 
       if (typeof window !== 'undefined' && !window.isSecureContext && window.location.hostname !== 'localhost') {
-        setCameraError('Camera scanning requires a secure HTTPS connection. Please type or paste barcode below.');
+        setCameraError('Camera access requires HTTPS. Please type barcode or upload an image below.');
         return;
       }
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setCameraError('Camera access is not supported by your current browser. Please enter barcode manually.');
+        setCameraError('Camera is not supported on this browser. Please use manual entry or upload image.');
         return;
       }
 
-      // Stop previous instance if any
       await stopScanner();
-
-      const html5QrCode = new Html5Qrcode('no-thanks-camera-view', {
-        verbose: false,
-        formatsToSupport: [
-          Html5QrcodeSupportedFormats.EAN_13,
-          Html5QrcodeSupportedFormats.EAN_8,
-          Html5QrcodeSupportedFormats.UPC_A,
-          Html5QrcodeSupportedFormats.UPC_E,
-          Html5QrcodeSupportedFormats.CODE_128,
-          Html5QrcodeSupportedFormats.CODE_39,
-          Html5QrcodeSupportedFormats.QR_CODE
-        ]
-      });
-      scannerRef.current = html5QrCode;
+      const qrEngine = initScannerEngine();
       setIsScanning(true);
 
-      const qrboxConfig = (viewfinderWidth: number, viewfinderHeight: number) => {
-        const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-        return {
-          width: Math.max(Math.floor(minEdge * 0.85), 200),
-          height: Math.max(Math.floor(minEdge * 0.5), 120)
-        };
-      };
-
-      const config = { 
-        fps: 15, 
-        qrbox: qrboxConfig
-      };
-
-      // Try environment (back) camera first
-      await html5QrCode.start(
-        { facingMode: 'environment' },
-        config,
-        (decodedText) => {
-          handleCheckCode(decodedText);
-        },
-        () => {}
-      );
-    } catch (e: any) {
-      console.warn('Camera failed with environment facingMode, attempting fallback...', e);
-      try {
-        if (scannerRef.current && isMountedRef.current) {
-          // Fallback to default user camera
-          await scannerRef.current.start(
-            { facingMode: 'user' },
-            { fps: 15, qrbox: (w, h) => ({ width: Math.min(w * 0.8, 260), height: Math.min(h * 0.5, 140) }) },
-            (decodedText) => {
-              handleCheckCode(decodedText);
-            },
-            () => {}
-          );
+      const scanConfig = {
+        fps: 20,
+        qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+          const minDim = Math.min(viewfinderWidth, viewfinderHeight);
+          return {
+            width: Math.max(Math.floor(minDim * 0.85), 220),
+            height: Math.max(Math.floor(minDim * 0.55), 140)
+          };
         }
+      };
+
+      // Try camera device enumeration
+      let devices: { id: string; label: string }[] = [];
+      try {
+        devices = await Html5Qrcode.getCameras();
+        if (devices && devices.length > 0) {
+          setAvailableCameras(devices);
+        }
+      } catch (err) {
+        console.warn('Camera enumeration error, falling back to facingMode:', err);
+      }
+
+      if (devices && devices.length > 0) {
+        const targetCam = devices[selectedCameraIndex] || devices.find(d => 
+          /back|rear|environment|wide|main/i.test(d.label)
+        ) || devices[devices.length - 1];
+
+        await qrEngine.start(
+          targetCam.id,
+          scanConfig,
+          (decodedText) => handleCheckCode(decodedText),
+          () => {}
+        );
+      } else {
+        // Direct facingMode fallback
+        await qrEngine.start(
+          { facingMode: 'environment' },
+          scanConfig,
+          (decodedText) => handleCheckCode(decodedText),
+          () => {}
+        );
+      }
+    } catch (e: any) {
+      console.warn('Primary camera start failed, attempting user camera fallback...', e);
+      try {
+        const qrEngine = initScannerEngine();
+        await qrEngine.start(
+          { facingMode: 'user' },
+          { fps: 15 },
+          (decodedText) => handleCheckCode(decodedText),
+          () => {}
+        );
       } catch (errFallback) {
-        console.warn('Camera fallback failed:', errFallback);
+        console.warn('All camera initialization failed:', errFallback);
         setIsScanning(false);
-        setCameraError('Camera permission was denied or camera is in use. Please type barcode (729...) or brand name below.');
+        setCameraError('Camera permission was denied or camera is unavailable. You can enter the barcode/name or upload an image below.');
       }
     }
   };
@@ -159,11 +195,37 @@ export const NoThanksScanner: React.FC<Props> = ({
           await scannerRef.current.stop();
         }
       } catch (err) {
-        // silent safe catch
+        // safe catch
       }
       scannerRef.current = null;
     }
     setIsScanning(false);
+  };
+
+  const switchCamera = () => {
+    if (availableCameras.length > 1) {
+      setSelectedCameraIndex(prev => (prev + 1) % availableCameras.length);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsProcessingImage(true);
+      await stopScanner();
+      const qrEngine = initScannerEngine();
+      const decodedText = await qrEngine.scanFile(file, true);
+      handleCheckCode(decodedText);
+    } catch (err) {
+      alert('Could not detect a clear barcode or QR code in this image. Please try another photo or enter manually.');
+    } finally {
+      setIsProcessingImage(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
   };
 
   const handleCheckCode = (code: string) => {
@@ -186,7 +248,6 @@ export const NoThanksScanner: React.FC<Props> = ({
       (p.tags && p.tags.some(t => t.toLowerCase() === clean.toLowerCase()))
     );
 
-    // Stop scanner safely
     stopScanner();
 
     if (is729 || matched) {
@@ -220,7 +281,7 @@ export const NoThanksScanner: React.FC<Props> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/90 backdrop-blur-md animate-in fade-in">
       <div 
-        className="relative w-full max-w-lg bg-[#18181B] rounded-3xl border border-white/[0.1] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+        className="relative w-full max-w-lg bg-[#18181B] rounded-3xl border border-white/[0.1] shadow-2xl overflow-hidden flex flex-col max-h-[94vh]"
         onClick={(e) => e.stopPropagation()}
       >
         
@@ -230,7 +291,7 @@ export const NoThanksScanner: React.FC<Props> = ({
             <span className="text-xl">🇵🇸</span>
             <div>
               <h3 className="text-base font-black text-white">Barcode & 729 Scanner</h3>
-              <p className="text-[11px] text-gray-400">Instant camera detection or Israeli 729 prefix check</p>
+              <p className="text-[11px] text-gray-400">Live barcode scanning, photo scanner & 729 detector</p>
             </div>
           </div>
           <button
@@ -241,7 +302,7 @@ export const NoThanksScanner: React.FC<Props> = ({
           </button>
         </div>
 
-        {/* Tab Switcher (Visible when no result is active) */}
+        {/* Tab Switcher (When no active scan result) */}
         {!scanResult && (
           <div className="px-4 pt-3">
             <div className="grid grid-cols-2 p-1 rounded-xl bg-black/50 border border-white/[0.08] text-xs font-bold">
@@ -434,20 +495,32 @@ export const NoThanksScanner: React.FC<Props> = ({
             </div>
           )}
 
-          {/* Camera View Mode (Persistently mounted in DOM to prevent React removeChild reconciliation errors) */}
+          {/* Camera View Mode */}
           <div 
             style={{ display: !scanResult && activeTab === 'camera' ? 'block' : 'none' }}
             className="space-y-3"
           >
-            <div className="relative w-full min-h-[250px] bg-black rounded-2xl overflow-hidden border-2 border-dashed border-rose-500/40 flex items-center justify-center">
+            <div className="relative w-full min-h-[280px] bg-black rounded-2xl overflow-hidden border-2 border-dashed border-rose-500/40 flex items-center justify-center">
               {/* Isolated camera mount point — NO React children inside */}
-              <div id="no-thanks-camera-view" className="w-full h-full" />
+              <div 
+                id="no-thanks-camera-view" 
+                className="w-full min-h-[280px]" 
+                style={{ width: '100%', minHeight: '280px' }}
+              />
               
               {/* Sibling overlay for loading state */}
               {!isScanning && (
-                <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-400 pointer-events-none p-4 text-center">
-                  <span>Initializing camera viewfinder...</span>
+                <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-400 pointer-events-none p-4 text-center bg-black/60 backdrop-blur-xs">
+                  <div className="space-y-2">
+                    <div className="w-8 h-8 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto" />
+                    <span>Accessing camera viewfinder...</span>
+                  </div>
                 </div>
+              )}
+
+              {/* Scanning visual laser line */}
+              {isScanning && (
+                <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 h-0.5 bg-rose-500/80 shadow-[0_0_12px_rgba(244,63,94,0.9)] pointer-events-none animate-pulse" />
               )}
             </div>
 
@@ -457,6 +530,32 @@ export const NoThanksScanner: React.FC<Props> = ({
               </div>
             )}
 
+            {/* Camera Tools & Image Upload */}
+            <div className="flex items-center gap-2">
+              {availableCameras.length > 1 && (
+                <button
+                  onClick={switchCamera}
+                  className="px-3 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white text-xs font-bold flex items-center gap-1.5 transition-colors"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Switch Camera</span>
+                </button>
+              )}
+
+              <label className="flex-1 px-3 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors">
+                <Upload className="w-3.5 h-3.5 text-rose-400" />
+                <span>{isProcessingImage ? 'Scanning Image...' : 'Scan from Photo'}</span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {/* Quick Barcode / Brand input directly under camera */}
             <div className="pt-1">
               <div className="flex gap-2">
                 <input
@@ -464,7 +563,7 @@ export const NoThanksScanner: React.FC<Props> = ({
                   value={manualInput}
                   onChange={(e) => setManualInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleCheckCode(manualInput)}
-                  placeholder="Quick barcode (729...) or brand name"
+                  placeholder="Or type barcode (729...) / brand name"
                   className="flex-1 px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/[0.1] text-white text-xs focus:outline-none focus:border-rose-500 font-medium"
                 />
                 <button
