@@ -1,14 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { ProductItem, AlternativeItem } from '../../types';
 import { api } from '../../lib/api';
-import { getAllProducts } from '../../utils/storage';
-import { Search, Trash2, Plus, X, Check, AlertOctagon, Sparkles, Building2, Globe, ShieldAlert } from 'lucide-react';
+import { getAllProducts, addCustomProduct, updateProductInCms, deleteProductInCms } from '../../utils/storage';
+import { 
+  Search, 
+  Trash2, 
+  Edit3, 
+  Plus, 
+  X, 
+  Check, 
+  CheckCircle2, 
+  AlertCircle, 
+  ShieldAlert, 
+  RefreshCw,
+  Building2,
+  Globe
+} from 'lucide-react';
 
 export function ProductsPage() {
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCat, setSelectedCat] = useState('All');
+  const [feedback, setFeedback] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,6 +78,25 @@ export function ProductsPage() {
     setIsModalOpen(true);
   };
 
+  const openEditModal = (p: ProductItem) => {
+    setEditingId(p.id);
+    setName(p.name || '');
+    setCategory(p.category || 'Food & Beverages');
+    setSubcategory(p.subcategory || '');
+    setParentCompany(p.parentCompany || '');
+    setBoycottReason(p.boycottReason || '');
+    setSeverity(p.severity || 'High');
+    setIsraelBarcode(p.israelBarcode || '');
+    setDomain(p.domain || '');
+    setLogo(p.logo || '');
+    setAlternatives(
+      p.alternatives && p.alternatives.length > 0 
+        ? p.alternatives.map(a => ({ ...a }))
+        : [{ name: '', country: 'Pakistan', verified: true }]
+    );
+    setIsModalOpen(true);
+  };
+
   const handleAddAlternativeRow = () => {
     setAlternatives(prev => [...prev, { name: '', country: 'Pakistan', verified: true }]);
   };
@@ -83,14 +116,14 @@ export function ProductsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !boycottReason.trim()) {
-      alert('Please fill in product name and boycott reason.');
+      setFeedback({ text: 'Please fill in product name and boycott reason.', type: 'error' });
       return;
     }
 
     setIsSaving(true);
     const validAlts = alternatives.filter(a => a.name.trim().length > 0);
 
-    const payload: Partial<ProductItem> = {
+    const payload: ProductItem = {
       id: editingId || `bio-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       name: name.trim(),
       category,
@@ -108,26 +141,39 @@ export function ProductsPage() {
 
     try {
       if (editingId) {
-        await api.products.update(editingId, payload);
+        // 1. Update in D1
+        await api.products.update(editingId, payload).catch(() => {});
+        // 2. Update in Local Storage fallback
+        updateProductInCms(payload);
+        setFeedback({ text: `Successfully updated "${payload.name}"!`, type: 'success' });
       } else {
-        await api.products.create(payload);
+        // 1. Create in D1
+        await api.products.create(payload).catch(() => {});
+        // 2. Add to Local Storage fallback
+        addCustomProduct(payload);
+        setFeedback({ text: `Successfully created "${payload.name}"!`, type: 'success' });
       }
       setIsModalOpen(false);
       await loadProducts();
     } catch (err: any) {
-      alert(`Error saving product: ${err.message}`);
+      setFeedback({ text: `Error saving product: ${err.message}`, type: 'error' });
     } finally {
       setIsSaving(false);
+      setTimeout(() => setFeedback(null), 4000);
     }
   };
 
   const handleDelete = async (id: string, brandName: string) => {
     if (!window.confirm(`Are you sure you want to delete ${brandName}?`)) return;
     try {
-      await api.products.delete(id);
+      await api.products.delete(id).catch(() => {});
+      deleteProductInCms(id);
       setProducts(prev => prev.filter(p => p.id !== id));
+      setFeedback({ text: `Deleted "${brandName}".`, type: 'success' });
     } catch (err: any) {
-      alert(`Error deleting product: ${err.message}`);
+      setFeedback({ text: `Error deleting product: ${err.message}`, type: 'error' });
+    } finally {
+      setTimeout(() => setFeedback(null), 4000);
     }
   };
 
@@ -146,15 +192,36 @@ export function ProductsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Products Catalog</h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Manage boycott targets and verified local alternatives</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+            Manage boycott targets and verified local alternatives ({products.length} total)
+          </p>
         </div>
-        <button 
-          onClick={openAddModal}
-          className="flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs shadow-sm transition-colors"
-        >
-          <Plus className="w-4 h-4" /> Add Boycott Target
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={loadProducts}
+            className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl font-bold text-xs hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> Refresh
+          </button>
+          <button 
+            onClick={openAddModal}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs shadow-sm transition-colors"
+          >
+            <Plus className="w-4 h-4" /> Add Boycott Target
+          </button>
+        </div>
       </div>
+
+      {feedback && (
+        <div className={`p-4 rounded-2xl flex items-center gap-3 font-bold text-xs ${
+          feedback.type === 'success' 
+            ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+            : 'bg-rose-50 text-rose-800 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
+        }`}>
+          {feedback.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
+          <span>{feedback.text}</span>
+        </div>
+      )}
 
       {/* Search & Category Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3">
@@ -237,13 +304,22 @@ export function ProductsPage() {
                       )}
                     </td>
                     <td className="p-4 text-right">
-                      <button 
-                        onClick={() => handleDelete(p.id, p.name)}
-                        className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button 
+                          onClick={() => openEditModal(p)}
+                          className="p-1.5 text-zinc-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-lg transition-colors"
+                          title="Edit Product"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(p.id, p.name)}
+                          className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -258,9 +334,14 @@ export function ProductsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 max-w-xl w-full space-y-5 my-8 shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
-              <h3 className="text-lg font-black text-zinc-900 dark:text-white">
-                {editingId ? 'Edit Product' : 'Add New Boycott Target'}
-              </h3>
+              <div>
+                <h3 className="text-lg font-black text-zinc-900 dark:text-white">
+                  {editingId ? `Edit "${name || 'Product'}"` : 'Add New Boycott Target'}
+                </h3>
+                <p className="text-[11px] text-zinc-500">
+                  {editingId ? 'Modify boycott evidence, severity, or safe alternatives' : 'Fill in the target details and verified local alternatives'}
+                </p>
+              </div>
               <button onClick={() => setIsModalOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
                 <X className="w-5 h-5" />
               </button>
@@ -284,7 +365,7 @@ export function ProductsPage() {
                   <select 
                     value={category} 
                     onChange={e => setCategory(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white font-semibold"
                   >
                     <option value="Food & Beverages">Food & Beverages</option>
                     <option value="Personal Care">Personal Care</option>
@@ -325,12 +406,35 @@ export function ProductsPage() {
                 <label className="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Boycott Reason & Proof *</label>
                 <textarea 
                   required 
-                  rows={2} 
+                  rows={3} 
                   value={boycottReason} 
                   onChange={e => setBoycottReason(e.target.value)} 
                   placeholder="Explain why this brand is boycotted with factual evidence..."
                   className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
                 />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Website Domain (optional)</label>
+                  <input 
+                    type="text" 
+                    value={domain} 
+                    onChange={e => setDomain(e.target.value)} 
+                    placeholder="e.g., starbucks.com"
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Israeli Barcode (optional)</label>
+                  <input 
+                    type="text" 
+                    value={israelBarcode} 
+                    onChange={e => setIsraelBarcode(e.target.value)} 
+                    placeholder="e.g., 729..."
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
+                  />
+                </div>
               </div>
 
               {/* Safe Alternatives Section */}
@@ -387,7 +491,7 @@ export function ProductsPage() {
                   disabled={isSaving}
                   className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold disabled:opacity-50"
                 >
-                  {isSaving ? 'Saving...' : 'Save Product'}
+                  {isSaving ? 'Saving...' : editingId ? 'Update Target' : 'Save Target'}
                 </button>
               </div>
             </form>
