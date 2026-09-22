@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ProductItem, AlternativeItem } from '../../types';
 import { api } from '../../lib/api';
 import { getAllProducts, addCustomProduct, updateProductInCms, deleteProductInCms } from '../../utils/storage';
+import { BrandLogo } from '../../components/BrandLogo';
 import { 
   Search, 
   Trash2, 
@@ -14,7 +15,8 @@ import {
   ShieldAlert, 
   RefreshCw,
   Building2,
-  Globe
+  Globe,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export function ProductsPage() {
@@ -40,7 +42,7 @@ export function ProductsPage() {
   const [domain, setDomain] = useState('');
   const [logo, setLogo] = useState('');
   const [alternatives, setAlternatives] = useState<AlternativeItem[]>([
-    { name: '', country: 'Pakistan', verified: true }
+    { name: '', country: 'Pakistan', verified: true, logo: '' }
   ]);
 
   const loadProducts = async () => {
@@ -74,7 +76,7 @@ export function ProductsPage() {
     setIsraelBarcode('');
     setDomain('');
     setLogo('');
-    setAlternatives([{ name: '', country: 'Pakistan', verified: true }]);
+    setAlternatives([{ name: '', country: 'Pakistan', verified: true, logo: '' }]);
     setIsModalOpen(true);
   };
 
@@ -92,13 +94,13 @@ export function ProductsPage() {
     setAlternatives(
       p.alternatives && p.alternatives.length > 0 
         ? p.alternatives.map(a => ({ ...a }))
-        : [{ name: '', country: 'Pakistan', verified: true }]
+        : [{ name: '', country: 'Pakistan', verified: true, logo: '' }]
     );
     setIsModalOpen(true);
   };
 
   const handleAddAlternativeRow = () => {
-    setAlternatives(prev => [...prev, { name: '', country: 'Pakistan', verified: true }]);
+    setAlternatives(prev => [...prev, { name: '', country: 'Pakistan', verified: true, logo: '' }]);
   };
 
   const handleAlternativeChange = (index: number, field: keyof AlternativeItem, val: any) => {
@@ -121,7 +123,12 @@ export function ProductsPage() {
     }
 
     setIsSaving(true);
-    const validAlts = alternatives.filter(a => a.name.trim().length > 0);
+    const validAlts = alternatives
+      .filter(a => a.name.trim().length > 0)
+      .map(a => ({
+        ...a,
+        logo: a.logo?.trim() || undefined
+      }));
 
     const payload: ProductItem = {
       id: editingId || `bio-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
@@ -252,7 +259,7 @@ export function ProductsPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-zinc-50 dark:bg-zinc-800/60 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 text-xs font-black uppercase tracking-wider">
-                <th className="p-4">Brand / Target</th>
+                <th className="p-4">Brand / Logo</th>
                 <th className="p-4">Category</th>
                 <th className="p-4">Parent Company</th>
                 <th className="p-4">Severity</th>
@@ -277,8 +284,9 @@ export function ProductsPage() {
                 filteredProducts.slice(0, 100).map(p => (
                   <tr key={p.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors">
                     <td className="p-4 font-bold text-zinc-900 dark:text-white">
-                      <div className="flex items-center gap-2">
-                        <span className="truncate max-w-[180px]">{p.name}</span>
+                      <div className="flex items-center gap-3">
+                        <BrandLogo name={p.name} domain={p.domain} logo={p.logo} size="xs" isBoycott={true} />
+                        <span className="truncate max-w-[180px] font-bold">{p.name}</span>
                       </div>
                     </td>
                     <td className="p-4 text-zinc-600 dark:text-zinc-300">{p.category}</td>
@@ -339,7 +347,7 @@ export function ProductsPage() {
                   {editingId ? `Edit "${name || 'Product'}"` : 'Add New Boycott Target'}
                 </h3>
                 <p className="text-[11px] text-zinc-500">
-                  {editingId ? 'Modify boycott evidence, severity, or safe alternatives' : 'Fill in the target details and verified local alternatives'}
+                  {editingId ? 'Modify boycott evidence, logo, severity, or safe alternatives' : 'Fill in the target details, logo, and verified local alternatives'}
                 </p>
               </div>
               <button onClick={() => setIsModalOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
@@ -402,6 +410,34 @@ export function ProductsPage() {
                 </div>
               </div>
 
+              {/* Logo URL and Live Preview Field */}
+              <div className="p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 space-y-2">
+                <label className="block font-bold text-zinc-700 dark:text-zinc-300">
+                  Logo / Portrait Image URL
+                </label>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 p-1 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
+                    {logo || name ? (
+                      <BrandLogo name={name || 'Brand'} domain={domain} logo={logo} size="xs" isBoycott={true} />
+                    ) : (
+                      <ImageIcon className="w-5 h-5 text-zinc-400" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <input 
+                      type="url" 
+                      value={logo} 
+                      onChange={e => setLogo(e.target.value)} 
+                      placeholder="https://upload.wikimedia.org/wikipedia/commons/.../logo.svg"
+                      className="w-full px-3 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white text-xs"
+                    />
+                    <span className="text-[10px] text-zinc-400 mt-1 block">
+                      Direct image link (Wikimedia SVG/PNG, Brandfetch, or direct HTTPS link)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label className="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Boycott Reason & Proof *</label>
                 <textarea 
@@ -416,7 +452,7 @@ export function ProductsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Website Domain (optional)</label>
+                  <label className="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Website Domain (for auto-logo)</label>
                   <input 
                     type="text" 
                     value={domain} 
@@ -450,30 +486,46 @@ export function ProductsPage() {
                   </button>
                 </div>
                 {alternatives.map((alt, idx) => (
-                  <div key={idx} className="flex gap-2 items-center">
-                    <input 
-                      type="text" 
-                      placeholder="Alternative Brand (e.g. Gourmet / Tapal)" 
-                      value={alt.name} 
-                      onChange={e => handleAlternativeChange(idx, 'name', e.target.value)}
-                      className="flex-1 px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
-                    />
-                    <input 
-                      type="text" 
-                      placeholder="Country (e.g. Pakistan)" 
-                      value={alt.country} 
-                      onChange={e => handleAlternativeChange(idx, 'country', e.target.value)}
-                      className="w-28 px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
-                    />
-                    {alternatives.length > 1 && (
-                      <button 
-                        type="button" 
-                        onClick={() => handleRemoveAlternativeRow(idx)}
-                        className="p-1 text-zinc-400 hover:text-rose-500"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    )}
+                  <div key={idx} className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 space-y-2">
+                    <div className="flex gap-2 items-center">
+                      <input 
+                        type="text" 
+                        placeholder="Alternative Brand (e.g. Gourmet / Tapal)" 
+                        value={alt.name} 
+                        onChange={e => handleAlternativeChange(idx, 'name', e.target.value)}
+                        className="flex-1 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
+                      />
+                      <input 
+                        type="text" 
+                        placeholder="Country" 
+                        value={alt.country} 
+                        onChange={e => handleAlternativeChange(idx, 'country', e.target.value)}
+                        className="w-24 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
+                      />
+                      {alternatives.length > 1 && (
+                        <button 
+                          type="button" 
+                          onClick={() => handleRemoveAlternativeRow(idx)}
+                          className="p-1 text-zinc-400 hover:text-rose-500"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="url" 
+                        placeholder="Alternative Logo URL (optional)" 
+                        value={alt.logo || ''} 
+                        onChange={e => handleAlternativeChange(idx, 'logo', e.target.value)}
+                        className="flex-1 px-3 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white text-[11px]"
+                      />
+                      {alt.logo && (
+                        <div className="w-6 h-6 rounded bg-white p-0.5 border border-zinc-200 shrink-0">
+                          <img src={alt.logo} alt="alt logo" className="w-full h-full object-contain" />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
