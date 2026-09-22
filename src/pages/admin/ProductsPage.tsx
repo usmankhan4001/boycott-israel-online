@@ -1,80 +1,399 @@
-import React, { useState } from 'react';
-import { getAllProducts, deleteProductInCms } from '../../utils/storage';
-import { ProductItem } from '../../types';
-import { Search, Edit, Trash2, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ProductItem, AlternativeItem } from '../../types';
+import { api } from '../../lib/api';
+import { getAllProducts } from '../../utils/storage';
+import { Search, Trash2, Plus, X, Check, AlertOctagon, Sparkles, Building2, Globe, ShieldAlert } from 'lucide-react';
 
 export function ProductsPage() {
-  const [products, setProducts] = useState<ProductItem[]>(getAllProducts());
+  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [selectedCat, setSelectedCat] = useState('All');
+  
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(search.toLowerCase()) || 
-    p.parentCompany.toLowerCase().includes(search.toLowerCase())
-  );
+  // Form fields
+  const [name, setName] = useState('');
+  const [category, setCategory] = useState('Food & Beverages');
+  const [subcategory, setSubcategory] = useState('');
+  const [parentCompany, setParentCompany] = useState('');
+  const [boycottReason, setBoycottReason] = useState('');
+  const [severity, setSeverity] = useState<'Critical' | 'High' | 'Caution'>('High');
+  const [israelBarcode, setIsraelBarcode] = useState('');
+  const [domain, setDomain] = useState('');
+  const [logo, setLogo] = useState('');
+  const [alternatives, setAlternatives] = useState<AlternativeItem[]>([
+    { name: '', country: 'Pakistan', verified: true }
+  ]);
 
-  const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Are you sure you want to delete ${name}?`)) {
-      setProducts(deleteProductInCms(id));
+  const loadProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await api.products.list();
+      if (res?.products && res.products.length > 0) {
+        setProducts(res.products);
+      } else {
+        setProducts(getAllProducts());
+      }
+    } catch {
+      setProducts(getAllProducts());
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const openAddModal = () => {
+    setEditingId(null);
+    setName('');
+    setCategory('Food & Beverages');
+    setSubcategory('');
+    setParentCompany('');
+    setBoycottReason('');
+    setSeverity('High');
+    setIsraelBarcode('');
+    setDomain('');
+    setLogo('');
+    setAlternatives([{ name: '', country: 'Pakistan', verified: true }]);
+    setIsModalOpen(true);
+  };
+
+  const handleAddAlternativeRow = () => {
+    setAlternatives(prev => [...prev, { name: '', country: 'Pakistan', verified: true }]);
+  };
+
+  const handleAlternativeChange = (index: number, field: keyof AlternativeItem, val: any) => {
+    setAlternatives(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: val };
+      return updated;
+    });
+  };
+
+  const handleRemoveAlternativeRow = (index: number) => {
+    setAlternatives(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !boycottReason.trim()) {
+      alert('Please fill in product name and boycott reason.');
+      return;
+    }
+
+    setIsSaving(true);
+    const validAlts = alternatives.filter(a => a.name.trim().length > 0);
+
+    const payload: Partial<ProductItem> = {
+      id: editingId || `bio-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      name: name.trim(),
+      category,
+      subcategory: subcategory.trim(),
+      parentCompany: parentCompany.trim(),
+      boycottReason: boycottReason.trim(),
+      severity,
+      israelBarcode: israelBarcode.trim() || undefined,
+      domain: domain.trim() || undefined,
+      logo: logo.trim() || undefined,
+      alternatives: validAlts,
+      tags: [category, subcategory].filter(Boolean),
+      isCustom: true
+    };
+
+    try {
+      if (editingId) {
+        await api.products.update(editingId, payload);
+      } else {
+        await api.products.create(payload);
+      }
+      setIsModalOpen(false);
+      await loadProducts();
+    } catch (err: any) {
+      alert(`Error saving product: ${err.message}`);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string, brandName: string) => {
+    if (!window.confirm(`Are you sure you want to delete ${brandName}?`)) return;
+    try {
+      await api.products.delete(id);
+      setProducts(prev => prev.filter(p => p.id !== id));
+    } catch (err: any) {
+      alert(`Error deleting product: ${err.message}`);
+    }
+  };
+
+  const filteredProducts = products.filter(p => {
+    const matchesCat = selectedCat === 'All' || p.category === selectedCat;
+    const matchesSearch = !search || 
+      p.name.toLowerCase().includes(search.toLowerCase()) || 
+      p.parentCompany.toLowerCase().includes(search.toLowerCase());
+    return matchesCat && matchesSearch;
+  });
+
+  const categoriesList = ['All', 'Food & Beverages', 'Personal Care', 'Technology', 'Clothing', 'Restaurants & Places', 'Celebrities & Endorsers'];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Products Management</h2>
-        <button className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold transition-colors">
-          <Plus className="w-4 h-4" /> Add Product
+        <div>
+          <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Products Catalog</h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Manage boycott targets and verified local alternatives</p>
+        </div>
+        <button 
+          onClick={openAddModal}
+          className="flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs shadow-sm transition-colors"
+        >
+          <Plus className="w-4 h-4" /> Add Boycott Target
         </button>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 w-5 h-5" />
-        <input 
-          type="text"
-          placeholder="Search products..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:border-red-500"
-        />
+      {/* Search & Category Filter Bar */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+          <input 
+            type="text"
+            placeholder="Search by brand name or parent company..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-sm focus:outline-none focus:border-red-500 shadow-2xs"
+          />
+        </div>
+        <select
+          value={selectedCat}
+          onChange={e => setSelectedCat(e.target.value)}
+          className="px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-xs font-bold focus:outline-none focus:border-red-500"
+        >
+          {categoriesList.map(cat => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+      {/* Products Table */}
+      <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 text-sm">
-                <th className="p-4 font-bold">Brand Name</th>
-                <th className="p-4 font-bold">Category</th>
-                <th className="p-4 font-bold">Parent Company</th>
-                <th className="p-4 font-bold">Severity</th>
-                <th className="p-4 font-bold text-right">Actions</th>
+              <tr className="bg-zinc-50 dark:bg-zinc-800/60 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 text-xs font-black uppercase tracking-wider">
+                <th className="p-4">Brand / Target</th>
+                <th className="p-4">Category</th>
+                <th className="p-4">Parent Company</th>
+                <th className="p-4">Severity</th>
+                <th className="p-4">Alternatives</th>
+                <th className="p-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {filteredProducts.map(p => (
-                <tr key={p.id} className="border-b border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/30">
-                  <td className="p-4 font-bold text-zinc-900 dark:text-white">{p.name}</td>
-                  <td className="p-4 text-zinc-600 dark:text-zinc-300 text-sm">{p.category}</td>
-                  <td className="p-4 text-zinc-600 dark:text-zinc-300 text-sm">{p.parentCompany}</td>
-                  <td className="p-4">
-                    <span className={`px-2 py-1 rounded-lg text-xs font-bold ${p.severity === 'Critical' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : p.severity === 'High' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'}`}>
-                      {p.severity}
-                    </span>
-                  </td>
-                  <td className="p-4 flex items-center justify-end gap-2">
-                    <button className="p-2 text-zinc-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors">
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => handleDelete(p.id, p.name)} className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-xs">
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-zinc-400 font-bold">
+                    Loading products...
                   </td>
                 </tr>
-              ))}
+              ) : filteredProducts.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-zinc-400 font-bold">
+                    No products found matching your search.
+                  </td>
+                </tr>
+              ) : (
+                filteredProducts.slice(0, 100).map(p => (
+                  <tr key={p.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors">
+                    <td className="p-4 font-bold text-zinc-900 dark:text-white">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate max-w-[180px]">{p.name}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-zinc-600 dark:text-zinc-300">{p.category}</td>
+                    <td className="p-4 text-zinc-500 dark:text-zinc-400">{p.parentCompany || '—'}</td>
+                    <td className="p-4">
+                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black ${
+                        p.severity === 'Critical' 
+                          ? 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300' 
+                          : p.severity === 'High' 
+                          ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300' 
+                          : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950/60 dark:text-yellow-300'
+                      }`}>
+                        {p.severity}
+                      </span>
+                    </td>
+                    <td className="p-4 text-zinc-600 dark:text-zinc-300">
+                      {p.alternatives && p.alternatives.length > 0 ? (
+                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold truncate max-w-[160px] block">
+                          {p.alternatives[0].name} {p.alternatives.length > 1 && `+${p.alternatives.length - 1}`}
+                        </span>
+                      ) : (
+                        <span className="text-zinc-400">None</span>
+                      )}
+                    </td>
+                    <td className="p-4 text-right">
+                      <button 
+                        onClick={() => handleDelete(p.id, p.name)}
+                        className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Add / Edit Product Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 max-w-xl w-full space-y-5 my-8 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
+              <h3 className="text-lg font-black text-zinc-900 dark:text-white">
+                {editingId ? 'Edit Product' : 'Add New Boycott Target'}
+              </h3>
+              <button onClick={() => setIsModalOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Brand / Entity Name *</label>
+                  <input 
+                    type="text" 
+                    required 
+                    value={name} 
+                    onChange={e => setName(e.target.value)} 
+                    placeholder="e.g., Starbucks"
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Category *</label>
+                  <select 
+                    value={category} 
+                    onChange={e => setCategory(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
+                  >
+                    <option value="Food & Beverages">Food & Beverages</option>
+                    <option value="Personal Care">Personal Care</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Restaurants & Places">Restaurants & Places</option>
+                    <option value="Celebrities & Endorsers">Celebrities & Endorsers</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Parent Company</label>
+                  <input 
+                    type="text" 
+                    value={parentCompany} 
+                    onChange={e => setParentCompany(e.target.value)} 
+                    placeholder="e.g., PepsiCo / Unilever"
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Severity Level</label>
+                  <select 
+                    value={severity} 
+                    onChange={e => setSeverity(e.target.value as any)}
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white font-bold"
+                  >
+                    <option value="Critical">🔴 Critical (Direct Funding/IDF)</option>
+                    <option value="High">🟠 High (Settlement Factory/Investment)</option>
+                    <option value="Caution">🟡 Caution (Parent Company Links)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Boycott Reason & Proof *</label>
+                <textarea 
+                  required 
+                  rows={2} 
+                  value={boycottReason} 
+                  onChange={e => setBoycottReason(e.target.value)} 
+                  placeholder="Explain why this brand is boycotted with factual evidence..."
+                  className="w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
+                />
+              </div>
+
+              {/* Safe Alternatives Section */}
+              <div className="space-y-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-zinc-700 dark:text-zinc-300">Verified Safe Alternatives</label>
+                  <button 
+                    type="button" 
+                    onClick={handleAddAlternativeRow}
+                    className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline"
+                  >
+                    + Add Another Alternative
+                  </button>
+                </div>
+                {alternatives.map((alt, idx) => (
+                  <div key={idx} className="flex gap-2 items-center">
+                    <input 
+                      type="text" 
+                      placeholder="Alternative Brand (e.g. Gourmet / Tapal)" 
+                      value={alt.name} 
+                      onChange={e => handleAlternativeChange(idx, 'name', e.target.value)}
+                      className="flex-1 px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="Country (e.g. Pakistan)" 
+                      value={alt.country} 
+                      onChange={e => handleAlternativeChange(idx, 'country', e.target.value)}
+                      className="w-28 px-3 py-1.5 rounded-lg bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
+                    />
+                    {alternatives.length > 1 && (
+                      <button 
+                        type="button" 
+                        onClick={() => handleRemoveAlternativeRow(idx)}
+                        className="p-1 text-zinc-400 hover:text-rose-500"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <button 
+                  type="button" 
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 rounded-xl text-zinc-600 dark:text-zinc-400 font-bold hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSaving}
+                  className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold disabled:opacity-50"
+                >
+                  {isSaving ? 'Saving...' : 'Save Product'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

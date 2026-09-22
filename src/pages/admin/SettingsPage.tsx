@@ -1,20 +1,51 @@
-import React, { useState } from 'react';
-import { exportFullDatabaseJson, importFullDatabaseJson } from '../../utils/storage';
-import { Save, Download, Upload } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { exportFullDatabaseJson, importFullDatabaseJson, getAllProducts } from '../../utils/storage';
+import { api } from '../../lib/api';
+import { Database, Download, Upload, RefreshCw, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 
 export function SettingsPage() {
-  const [projectId, setProjectId] = useState(localStorage.getItem('SANITY_PROJECT_ID') || '');
-  const [dataset, setDataset] = useState(localStorage.getItem('SANITY_DATASET') || 'production');
-  const [token, setToken] = useState(localStorage.getItem('SANITY_API_TOKEN') || '');
-  const [msg, setMsg] = useState('');
+  const [dbStatus, setDbStatus] = useState<{ d1Configured: boolean; productCount: number; suggestionCount: number } | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  const handleSaveSanity = (e: React.FormEvent) => {
-    e.preventDefault();
-    localStorage.setItem('SANITY_PROJECT_ID', projectId);
-    localStorage.setItem('SANITY_DATASET', dataset);
-    localStorage.setItem('SANITY_API_TOKEN', token);
-    setMsg('Sanity config saved');
-    setTimeout(() => setMsg(''), 3000);
+  const fetchStatus = async () => {
+    try {
+      const data = await api.db.status();
+      setDbStatus(data);
+    } catch {
+      setDbStatus({ d1Configured: false, productCount: 0, suggestionCount: 0 });
+    }
+  };
+
+  useEffect(() => {
+    fetchStatus();
+  }, []);
+
+  const handleInitDb = async () => {
+    setLoading(true);
+    try {
+      const res = await api.db.init();
+      setMsg({ text: res.message || 'Database tables initialized!', type: 'success' });
+      await fetchStatus();
+    } catch (err: any) {
+      setMsg({ text: err.message || 'Failed to initialize database tables.', type: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSeedDb = async () => {
+    setLoading(true);
+    try {
+      const allProducts = getAllProducts();
+      const res = await api.products.seed(allProducts);
+      setMsg({ text: res.message || `Successfully seeded ${allProducts.length} items!`, type: 'success' });
+      await fetchStatus();
+    } catch (err: any) {
+      setMsg({ text: err.message || 'Failed to seed database.', type: 'error' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleExport = () => {
@@ -23,7 +54,7 @@ export function SettingsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'database.json';
+    a.download = `boycott-israel-backup-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -32,13 +63,19 @@ export function SettingsPage() {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (evt) => {
+      reader.onload = async (evt) => {
         try {
-          importFullDatabaseJson(evt.target?.result as string);
-          setMsg('Import successful');
-          setTimeout(() => setMsg(''), 3000);
+          const parsed = JSON.parse(evt.target?.result as string);
+          if (Array.isArray(parsed)) {
+            importFullDatabaseJson(evt.target?.result as string);
+            if (dbStatus?.d1Configured) {
+              await api.products.seed(parsed);
+            }
+            setMsg({ text: `Successfully imported ${parsed.length} products!`, type: 'success' });
+            await fetchStatus();
+          }
         } catch {
-          setMsg('Import failed');
+          setMsg({ text: 'Import failed: Invalid JSON format.', type: 'error' });
         }
       };
       reader.readAsText(file);
@@ -46,40 +83,111 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Settings</h2>
-
-      {msg && <div className="p-4 bg-green-100 text-green-800 rounded-xl font-bold">{msg}</div>}
-
-      <div className="p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-6">
-        <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Sanity CMS Configuration</h3>
-        <form onSubmit={handleSaveSanity} className="space-y-4">
-          <div>
-            <label className="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1">Project ID</label>
-            <input type="text" value={projectId} onChange={e => setProjectId(e.target.value)} className="w-full px-4 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white focus:outline-none focus:border-red-500" />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1">Dataset</label>
-            <input type="text" value={dataset} onChange={e => setDataset(e.target.value)} className="w-full px-4 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white focus:outline-none focus:border-red-500" />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1">API Token</label>
-            <input type="password" value={token} onChange={e => setToken(e.target.value)} className="w-full px-4 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white focus:outline-none focus:border-red-500" />
-          </div>
-          <button type="submit" className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold transition-colors">
-            <Save className="w-4 h-4" /> Save Configuration
-          </button>
-        </form>
+    <div className="space-y-6 max-w-3xl">
+      <div>
+        <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Database & Backend Control</h2>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          Manage your native Cloudflare D1 SQL database and data backups.
+        </p>
       </div>
 
-      <div className="p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-6">
-        <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Data Management</h3>
-        <div className="flex gap-4">
-          <button onClick={handleExport} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white rounded-xl font-bold transition-colors">
-            <Download className="w-4 h-4" /> Export Database JSON
+      {msg && (
+        <div className={`p-4 rounded-2xl flex items-center gap-3 font-bold text-sm ${
+          msg.type === 'success' 
+            ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+            : 'bg-rose-50 text-rose-800 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
+        }`}>
+          {msg.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
+          <span>{msg.text}</span>
+        </div>
+      )}
+
+      {/* Cloudflare D1 Connection Card */}
+      <div className="p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-5 shadow-xs">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <Database className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-zinc-900 dark:text-white">Cloudflare D1 SQL Database</h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">Serverless Edge SQLite backend</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+              dbStatus?.d1Configured
+                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
+                : 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300'
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${dbStatus?.d1Configured ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+              {dbStatus?.d1Configured ? 'D1 Binding Connected' : 'Local Fallback Mode'}
+            </span>
+            <button
+              onClick={fetchStatus}
+              className="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
+              title="Refresh status"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {dbStatus?.d1Configured ? (
+          <div className="grid grid-cols-2 gap-3 pt-2">
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-800">
+              <span className="text-xs font-bold text-zinc-500">Live D1 Products</span>
+              <p className="text-2xl font-black text-zinc-900 dark:text-white mt-1">{dbStatus.productCount}</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-800">
+              <span className="text-xs font-bold text-zinc-500">Live Suggestions</span>
+              <p className="text-2xl font-black text-zinc-900 dark:text-white mt-1">{dbStatus.suggestionCount}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 space-y-2">
+            <p className="font-bold">To bind Cloudflare D1 Database:</p>
+            <ol className="list-decimal pl-4 space-y-1">
+              <li>In Cloudflare Dashboard ➔ <strong>Storage & Databases</strong> ➔ Create database <code>boycottisrael-db</code>.</li>
+              <li>Go to <strong>Pages</strong> ➔ <strong>Settings</strong> ➔ <strong>Functions</strong> ➔ <strong>D1 database bindings</strong>.</li>
+              <li>Add binding with Variable name <code>DB</code> and database <code>boycottisrael-db</code>.</li>
+            </ol>
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-3 pt-2">
+          <button
+            onClick={handleInitDb}
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 rounded-xl font-bold text-xs transition-colors disabled:opacity-50"
+          >
+            <Sparkles className="w-4 h-4" /> Initialize / Update SQL Schema
           </button>
-          <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white rounded-xl font-bold transition-colors cursor-pointer">
-            <Upload className="w-4 h-4" /> Import Database JSON
+          <button
+            onClick={handleSeedDb}
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs transition-colors disabled:opacity-50"
+          >
+            <Database className="w-4 h-4" /> Seed All Products to D1
+          </button>
+        </div>
+      </div>
+
+      {/* Backup & Restore Card */}
+      <div className="p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-4 shadow-xs">
+        <h3 className="text-base font-bold text-zinc-900 dark:text-white">Backup & Restore</h3>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          Export your entire product database to JSON or import from a file.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 pt-1">
+          <button 
+            onClick={handleExport} 
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white rounded-xl font-bold text-xs transition-colors"
+          >
+            <Download className="w-4 h-4 text-emerald-600" /> Export Database JSON
+          </button>
+          <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white rounded-xl font-bold text-xs transition-colors cursor-pointer">
+            <Upload className="w-4 h-4 text-emerald-600" /> Import Database JSON
             <input type="file" accept=".json" onChange={handleImport} className="hidden" />
           </label>
         </div>

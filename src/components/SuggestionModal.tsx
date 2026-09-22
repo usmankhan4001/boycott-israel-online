@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { UserSuggestion } from '../types';
 import { saveStoredSuggestion, getAdminWebhookUrl } from '../utils/storage';
+import { api } from '../lib/api';
 
 interface Props {
   isOpen: boolean;
@@ -56,6 +57,13 @@ export const SuggestionModal: React.FC<Props> = ({
 
     // Save to local storage inbox for CMS admin moderation
     saveStoredSuggestion(newSuggestion);
+
+    // Save to native Cloudflare D1 Backend
+    try {
+      await api.suggestions.submit(newSuggestion);
+    } catch (e) {
+      console.warn('API suggestion submit error:', e);
+    }
 
     // If Admin configured a webhook (Discord/Telegram/API), dispatch it
     const webhookUrl = getAdminWebhookUrl();
