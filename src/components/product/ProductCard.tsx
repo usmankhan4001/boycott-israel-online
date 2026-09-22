@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ProductItem } from '../../types';
 import { BrandLogo } from '../BrandLogo';
-import { ChevronRight, Plus } from 'lucide-react';
+import { Plus, CheckCircle2, ShieldAlert, Share2 } from 'lucide-react';
 import { useGroceryStore } from '../../stores/groceryStore';
 import { useUIStore } from '../../stores/uiStore';
 
@@ -36,43 +36,125 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
       unit: 'item',
       logo: product.logo
     });
+
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try {
+        navigator.vibrate(15);
+      } catch {}
+    }
+
     showToast(`Added ${defaultAlt} to grocery list`);
   };
+
+  const handleQuickShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const text = `🚨 BOYCOTT TARGET: ${product.name} (${product.parentCompany || product.category})\nWhy: ${product.boycottReason}\n✅ Safe Alternative: ${product.alternatives.map(a => a.name).join(', ') || 'Local Pakistani Brand'}\nCheck evidence on: https://boycottisraelonline.com/product/${product.id}`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: `Boycott: ${product.name}`,
+        text: text,
+        url: `https://boycottisraelonline.com/product/${product.id}`
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text);
+      showToast('Boycott evidence copied to clipboard!');
+    }
+  };
+
+  const severityStyles = {
+    Critical: 'bg-red-100 text-red-800 dark:bg-red-950/80 dark:text-red-300 border border-red-200 dark:border-red-900',
+    High: 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-200 dark:border-amber-900',
+    Caution: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950/80 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-900'
+  };
+
+  const topAlternative = product.alternatives?.[0];
 
   return (
     <Link 
       to={`/product/${product.id}`}
-      className="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-rose-500/50 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between group active:scale-[0.98] h-full"
+      className="p-4 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-rose-500/50 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group active:scale-[0.99] h-full relative"
     >
-      <div className="flex items-start gap-3 min-w-0">
-        <BrandLogo name={product.name} domain={product.domain} logo={product.logo} size="md" isBoycott={true} className="rounded-xl shrink-0" />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <h4 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-rose-600 transition-colors truncate">
+      <div className="space-y-3">
+        {/* Header with Logo, Name, and Badges */}
+        <div className="flex items-start gap-3.5">
+          <BrandLogo 
+            name={product.name} 
+            domain={product.domain} 
+            logo={product.logo} 
+            size="md" 
+            isBoycott={true} 
+            className="rounded-2xl shrink-0 shadow-2xs" 
+          />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${severityStyles[product.severity] || severityStyles.High}`}>
+                {product.severity === 'Critical' ? '🔴 Critical' : 'DO NOT BUY'}
+              </span>
+            </div>
+            
+            <h4 className="font-black text-sm text-zinc-900 dark:text-zinc-50 group-hover:text-rose-600 transition-colors truncate mt-1">
               {product.name}
             </h4>
-            <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-400">
-              Boycott
-            </span>
-          </div>
-          <p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
-            {product.parentCompany}
-          </p>
-          <div className="mt-2 text-xs text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1 truncate">
-            <span>Alt: {product.alternatives[0]?.name || 'Local'}</span>
+            
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+              {product.parentCompany || product.category}
+            </p>
           </div>
         </div>
+
+        {/* Reason summary snippet */}
+        <p className="text-[11px] text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-relaxed bg-zinc-50 dark:bg-zinc-800/40 p-2.5 rounded-2xl border border-zinc-100 dark:border-zinc-800/60">
+          {product.boycottReason}
+        </p>
+
+        {/* Safe Alternative Pill */}
+        {topAlternative ? (
+          <div className="flex items-center justify-between p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold">
+            <div className="flex items-center gap-1.5 min-w-0 pr-2">
+              <span className="shrink-0 text-sm">🇵🇰</span>
+              <span className="truncate text-[11px]">
+                Safe Alt: <strong>{topAlternative.name}</strong>
+              </span>
+            </div>
+            {product.alternatives.length > 1 && (
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">
+                +{product.alternatives.length - 1} more
+              </span>
+            )}
+          </div>
+        ) : (
+          <div className="p-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 text-[11px] font-semibold text-center">
+            Look for local Pakistani equivalents
+          </div>
+        )}
       </div>
 
-      <div className="pt-3 mt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-        <span className="text-[10px] text-zinc-400 font-medium">View details</span>
-        <button
-          onClick={handleAdd}
-          className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
-          title="Add to Grocery List"
-        >
-          <Plus className="w-4 h-4" />
-        </button>
+      {/* Footer Actions */}
+      <div className="pt-3 mt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between">
+        <span className="text-[11px] text-zinc-400 font-bold group-hover:text-zinc-600 dark:group-hover:text-zinc-200 transition-colors">
+          View full evidence →
+        </span>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={handleQuickShare}
+            className="p-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors active:scale-90"
+            title="Share Evidence"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={handleAdd}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold text-xs shadow-2xs transition-colors active:scale-90"
+            title="Add Safe Swap to Grocery List"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span className="text-[10px]">Add Alt</span>
+          </button>
+        </div>
       </div>
     </Link>
   );

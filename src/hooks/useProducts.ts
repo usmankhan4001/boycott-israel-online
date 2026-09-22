@@ -2,6 +2,7 @@ import { useProductStore } from '../stores/productStore';
 
 export const useProducts = () => {
   const products = useProductStore(state => state.products);
+  const isLoading = useProductStore(state => state.isLoading);
   const searchQuery = useProductStore(state => state.searchQuery);
   const selectedCategory = useProductStore(state => state.selectedCategory);
   const setSearchQuery = useProductStore(state => state.setSearchQuery);
@@ -10,6 +11,7 @@ export const useProducts = () => {
 
   return {
     products,
+    isLoading,
     searchQuery,
     selectedCategory,
     setSearchQuery,
