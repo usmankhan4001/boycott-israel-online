@@ -17241,4 +17241,511 @@ export const INITIAL_PRODUCTS: ProductItem[] = [
     "domain": "ahava.com",
     "logo": "https://www.google.com/s2/favicons?domain=ahava.com&sz=128"
   }
+,
+  {
+    "id": "brand-hp",
+    "name": "HP (Hewlett-Packard)",
+    "category": "Electronics & Technology",
+    "subcategory": "Computers & Printers",
+    "parentCompany": "HP Inc.",
+    "boycottReason": "HP provides technology and infrastructure to the Israeli military and for checkpoints in the occupied West Bank.",
+    "severity": "Critical",
+    "domain": "hp.com",
+    "categoryType": "brand",
+    "tags": [
+      "hp",
+      "laptops",
+      "computers",
+      "printers",
+      "tech"
+    ],
+    "alternatives": [
+      {
+        "name": "Acer",
+        "country": "Taiwan",
+        "verified": true,
+        "domain": "acer.com"
+      },
+      {
+        "name": "ASUS",
+        "country": "Taiwan",
+        "verified": true,
+        "domain": "asus.com"
+      }
+    ]
+  },
+  {
+    "id": "brand-caterpillar",
+    "name": "Caterpillar",
+    "category": "Electronics & Technology",
+    "subcategory": "Industrial & Construction",
+    "parentCompany": "Caterpillar Inc.",
+    "boycottReason": "Caterpillar supplies D9 bulldozers used by the Israeli military to demolish Palestinian homes and civilian infrastructure.",
+    "severity": "Critical",
+    "domain": "caterpillar.com",
+    "categoryType": "brand",
+    "tags": [
+      "caterpillar",
+      "construction",
+      "bulldozers",
+      "industrial"
+    ],
+    "alternatives": [
+      {
+        "name": "Komatsu",
+        "country": "Japan",
+        "verified": true,
+        "domain": "komatsu.com"
+      }
+    ]
+  },
+  {
+    "id": "brand-puma",
+    "name": "Puma",
+    "category": "Fashion & Apparel",
+    "subcategory": "Sportswear",
+    "parentCompany": "Puma SE",
+    "boycottReason": "Puma is a main sponsor of the Israeli Football Association (IFA), which includes teams in illegal Israeli settlements.",
+    "severity": "High",
+    "domain": "puma.com",
+    "categoryType": "brand",
+    "tags": [
+      "puma",
+      "shoes",
+      "sportswear",
+      "fashion"
+    ],
+    "alternatives": [
+      {
+        "name": "Servis",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "servis.com"
+      },
+      {
+        "name": "Bata",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "bata.com.pk"
+      },
+      {
+        "name": "Outfitters",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "outfitters.com.pk"
+      }
+    ]
+  },
+  {
+    "id": "brand-sabra",
+    "name": "Sabra Hummus",
+    "category": "Food & Beverages",
+    "subcategory": "Spreads & Dips",
+    "parentCompany": "PepsiCo & Strauss Group",
+    "boycottReason": "Co-owned by Strauss Group, an Israeli company that financially supports the Israeli military (IDF).",
+    "severity": "Critical",
+    "domain": "sabra.com",
+    "categoryType": "brand",
+    "tags": [
+      "sabra",
+      "hummus",
+      "food"
+    ],
+    "alternatives": [
+      {
+        "name": "National Foods",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "nfoods.com"
+      },
+      {
+        "name": "Shan Foods",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "shanfoods.com"
+      }
+    ]
+  },
+  {
+    "id": "brand-axa",
+    "name": "AXA",
+    "category": "Electronics & Technology",
+    "subcategory": "Insurance & Finance",
+    "parentCompany": "AXA Group",
+    "boycottReason": "AXA invests heavily in Israeli banks which finance the construction of illegal settlements on occupied Palestinian land.",
+    "severity": "Critical",
+    "domain": "axa.com",
+    "categoryType": "brand",
+    "tags": [
+      "axa",
+      "insurance",
+      "finance"
+    ],
+    "alternatives": [
+      {
+        "name": "Jubilee Life Insurance",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "jubileelife.com"
+      },
+      {
+        "name": "State Life",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "statelife.com.pk"
+      }
+    ]
+  },
+  {
+    "id": "brand-booking",
+    "name": "Booking.com",
+    "category": "Restaurants & Places",
+    "subcategory": "Travel & Tourism",
+    "parentCompany": "Booking Holdings",
+    "boycottReason": "Lists rental properties located in illegal Israeli settlements in the occupied West Bank.",
+    "severity": "High",
+    "domain": "booking.com",
+    "categoryType": "brand",
+    "tags": [
+      "booking",
+      "travel",
+      "hotels"
+    ],
+    "alternatives": [
+      {
+        "name": "Agoda",
+        "country": "Singapore",
+        "verified": true,
+        "domain": "agoda.com"
+      }
+    ]
+  },
+  {
+    "id": "brand-airbnb",
+    "name": "Airbnb",
+    "category": "Restaurants & Places",
+    "subcategory": "Travel & Tourism",
+    "parentCompany": "Airbnb, Inc.",
+    "boycottReason": "Continues to allow property listings in illegal Israeli settlements, profiting from occupied Palestinian territories.",
+    "severity": "High",
+    "domain": "airbnb.com",
+    "categoryType": "brand",
+    "tags": [
+      "airbnb",
+      "travel",
+      "hotels",
+      "rental"
+    ],
+    "alternatives": [
+      {
+        "name": "Agoda",
+        "country": "Singapore",
+        "verified": true,
+        "domain": "agoda.com"
+      }
+    ]
+  },
+  {
+    "id": "brand-pillsbury",
+    "name": "Pillsbury",
+    "category": "Food & Beverages",
+    "subcategory": "Baking & Dough",
+    "parentCompany": "General Mills",
+    "boycottReason": "Manufactures products in the Atarot industrial zone, an illegal Israeli settlement in East Jerusalem.",
+    "severity": "High",
+    "domain": "pillsbury.com",
+    "categoryType": "brand",
+    "tags": [
+      "pillsbury",
+      "baking",
+      "food"
+    ],
+    "alternatives": [
+      {
+        "name": "Dawn Foods",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "dawnfoods.com.pk"
+      },
+      {
+        "name": "National Foods",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "nfoods.com"
+      }
+    ]
+  },
+  {
+    "id": "brand-haagendazs",
+    "name": "H\u00e4agen-Dazs",
+    "category": "Food & Beverages",
+    "subcategory": "Ice Cream",
+    "parentCompany": "General Mills / Froneri",
+    "boycottReason": "Owned by General Mills, which has a long history of complicity with Israeli settlements, and Froneri (Nestl\u00e9 joint venture).",
+    "severity": "High",
+    "domain": "haagen-dazs.com",
+    "categoryType": "brand",
+    "tags": [
+      "haagen-dazs",
+      "ice cream",
+      "dessert"
+    ],
+    "alternatives": [
+      {
+        "name": "Hico",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "hico.pk"
+      },
+      {
+        "name": "Igloo",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "igloo.com.pk"
+      },
+      {
+        "name": "Omore",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "engrofoods.com"
+      }
+    ]
+  },
+  {
+    "id": "brand-victorias-secret",
+    "name": "Victoria's Secret",
+    "category": "Fashion & Apparel",
+    "subcategory": "Clothing & Lingerie",
+    "parentCompany": "L Brands",
+    "boycottReason": "Parent company has expressed strong support for Israel, and founder Les Wexner has deep ties to Israeli institutions.",
+    "severity": "High",
+    "domain": "victoriassecret.com",
+    "categoryType": "brand",
+    "tags": [
+      "victoria's secret",
+      "lingerie",
+      "clothing",
+      "fashion"
+    ],
+    "alternatives": [
+      {
+        "name": "Khaadi",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "khaadi.com"
+      },
+      {
+        "name": "Gul Ahmed",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "gulahmedshop.com"
+      },
+      {
+        "name": "Sapphire",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "sapphireonline.pk"
+      }
+    ]
+  },
+  {
+    "id": "brand-disney",
+    "name": "Disney",
+    "category": "Electronics & Technology",
+    "subcategory": "Media & Entertainment",
+    "parentCompany": "The Walt Disney Company",
+    "boycottReason": "Disney pledged $2 million in donations to Israeli humanitarian organizations following Oct 7 and historically supports pro-Israel narratives.",
+    "severity": "Critical",
+    "domain": "disney.com",
+    "categoryType": "brand",
+    "tags": [
+      "disney",
+      "movies",
+      "entertainment",
+      "media"
+    ],
+    "alternatives": [
+      {
+        "name": "Local Media",
+        "country": "Pakistan",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "id": "brand-zara",
+    "name": "Zara",
+    "category": "Fashion & Apparel",
+    "subcategory": "Clothing",
+    "parentCompany": "Inditex",
+    "boycottReason": "Zara's head designer sent anti-Palestinian messages, and the brand ran an ad campaign resembling the destruction in Gaza.",
+    "severity": "Critical",
+    "domain": "zara.com",
+    "categoryType": "brand",
+    "tags": [
+      "zara",
+      "clothing",
+      "fashion"
+    ],
+    "alternatives": [
+      {
+        "name": "Khaadi",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "khaadi.com"
+      },
+      {
+        "name": "Junaid Jamshed",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "junaidjamshed.com"
+      },
+      {
+        "name": "Alkaram Studio",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "alkaramstudio.com"
+      },
+      {
+        "name": "Outfitters",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "outfitters.com.pk"
+      }
+    ]
+  },
+  {
+    "id": "brand-m-and-s",
+    "name": "Marks & Spencer",
+    "category": "Fashion & Apparel",
+    "subcategory": "Retail & Clothing",
+    "parentCompany": "Marks and Spencer Group",
+    "boycottReason": "M&S has a long ideological and commercial history of supporting Israel and sourcing goods from Israeli suppliers.",
+    "severity": "Critical",
+    "domain": "marksandspencer.com",
+    "categoryType": "brand",
+    "tags": [
+      "m&s",
+      "clothing",
+      "retail"
+    ],
+    "alternatives": [
+      {
+        "name": "Chase Up",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "chaseup.com.pk"
+      },
+      {
+        "name": "Imtiaz Super Market",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "imtiaz.com.pk"
+      }
+    ]
+  },
+  {
+    "id": "brand-tesco",
+    "name": "Tesco",
+    "category": "Restaurants & Places",
+    "subcategory": "Retail & Supermarkets",
+    "parentCompany": "Tesco plc",
+    "boycottReason": "Tesco sells Israeli agricultural products and goods sourced from illegal settlements.",
+    "severity": "High",
+    "domain": "tesco.com",
+    "categoryType": "brand",
+    "tags": [
+      "tesco",
+      "supermarket",
+      "retail"
+    ],
+    "alternatives": [
+      {
+        "name": "Imtiaz Super Market",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "imtiaz.com.pk"
+      },
+      {
+        "name": "Al Fatah",
+        "country": "Pakistan",
+        "verified": true,
+        "domain": "alfatah.pk"
+      }
+    ]
+  }
+,
+  {
+    "id": "celeb-gal-gadot",
+    "name": "Gal Gadot",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "Hollywood Actor",
+    "parentCompany": "Self / Entertainment Industry",
+    "boycottReason": "Former IDF soldier who actively uses her platform to support the Israeli military and has organized screenings of pro-IDF propaganda.",
+    "severity": "Critical",
+    "categoryType": "celebrity",
+    "tags": [
+      "gal gadot",
+      "actor",
+      "hollywood",
+      "celebrity"
+    ],
+    "behaviorTimeline": [
+      {
+        "date": "2014",
+        "action": "Posted public support for the IDF during the 2014 Gaza war."
+      },
+      {
+        "date": "2023",
+        "action": "Organized a Hollywood screening of IDF propaganda videos."
+      }
+    ],
+    "alternatives": []
+  },
+  {
+    "id": "celeb-jerry-seinfeld",
+    "name": "Jerry Seinfeld",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "Comedian / Actor",
+    "parentCompany": "Self / Entertainment Industry",
+    "boycottReason": "Has traveled to Israel to show support, visited military bases, and actively advocates for Israel during military campaigns.",
+    "severity": "High",
+    "categoryType": "celebrity",
+    "tags": [
+      "jerry seinfeld",
+      "comedian",
+      "actor",
+      "hollywood"
+    ],
+    "behaviorTimeline": [
+      {
+        "date": "2023",
+        "action": "Traveled to Israel to visit families and showed support for Israeli forces."
+      }
+    ],
+    "alternatives": []
+  },
+  {
+    "id": "celeb-amy-schumer",
+    "name": "Amy Schumer",
+    "category": "Celebrities & Endorsers",
+    "subcategory": "Comedian / Actor",
+    "parentCompany": "Self / Entertainment Industry",
+    "boycottReason": "Continuously uses social media to spread anti-Palestinian narratives and strong pro-Israel talking points.",
+    "severity": "High",
+    "categoryType": "celebrity",
+    "tags": [
+      "amy schumer",
+      "comedian",
+      "actor",
+      "hollywood"
+    ],
+    "behaviorTimeline": [
+      {
+        "date": "2023",
+        "action": "Posted multiple anti-Palestinian and pro-IDF posts on social media."
+      }
+    ],
+    "alternatives": []
+  }
 ];

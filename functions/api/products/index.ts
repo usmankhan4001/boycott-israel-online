@@ -1,0 +1,17 @@
+export async function onRequestGet() {
+  return new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } });
+}
+
+export async function onRequestPost(context: any) {
+  const data = await context.request.json();
+  return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
+}
+
+export async function onRequestPut(context: any) {
+  const data = await context.request.json();
+  return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
+}
+
+export async function onRequestDelete() {
+  return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
+}
