@@ -80,29 +80,83 @@
   font-display: swap;
 }
 
+/* Responsive Fluid Typography for Urdu Mode */
+html[lang="ur"] {
+  font-size: clamp(15px, 1.1vw + 11.5px, 17.5px);
+}
+
 /* Urdu Nastaliq & RTL Typography */
 .font-urdu, [lang="ur"] {
   font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Urdu Typesetting', -apple-system, sans-serif !important;
   letter-spacing: 0 !important;
   word-spacing: 0.04em;
   text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
 }
 
 [lang="ur"] {
-  line-height: 2.0;
+  line-height: 2.1;
 }
 
-[lang="ur"] h1, [lang="ur"] h2, [lang="ur"] h3, [lang="ur"] h4, [lang="ur"] h5, [lang="ur"] h6 {
+[lang="ur"] h1 {
+  font-size: clamp(1.4rem, 2.8vw, 2.15rem);
+  line-height: 1.8;
+  letter-spacing: 0 !important;
+}
+
+[lang="ur"] h2 {
+  font-size: clamp(1.2rem, 2.2vw, 1.65rem);
   line-height: 1.85;
   letter-spacing: 0 !important;
 }
 
-[lang="ur"] p, [lang="ur"] span, [lang="ur"] button, [lang="ur"] a, [lang="ur"] input, [lang="ur"] label, [lang="ur"] li {
+[lang="ur"] h3 {
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  line-height: 1.9;
   letter-spacing: 0 !important;
+}
+
+[lang="ur"] h4, [lang="ur"] h5, [lang="ur"] h6 {
+  font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+  line-height: 1.95;
+  letter-spacing: 0 !important;
+}
+
+[lang="ur"] p, [lang="ur"] li, [lang="ur"] blockquote {
+  font-size: clamp(0.9rem, 0.4vw + 0.8rem, 1.05rem);
+  line-height: 2.15;
+  letter-spacing: 0 !important;
+}
+
+/* Micro badges & labels fluid scaling in Urdu */
+[lang="ur"] .text-\[9px\] {
+  font-size: clamp(10.5px, 1.1vw, 12px) !important;
+  line-height: 1.6 !important;
+}
+
+[lang="ur"] .text-\[10px\] {
+  font-size: clamp(11.5px, 1.2vw, 13px) !important;
+  line-height: 1.65 !important;
+}
+
+[lang="ur"] .text-\[11px\] {
+  font-size: clamp(12.5px, 1.25vw, 14px) !important;
+  line-height: 1.75 !important;
+}
+
+[lang="ur"] .text-xs {
+  font-size: clamp(13px, 1.3vw, 14.5px) !important;
+  line-height: 1.85 !important;
+}
+
+[lang="ur"] .text-sm {
+  font-size: clamp(14px, 1.4vw, 16px) !important;
+  line-height: 1.95 !important;
 }
 
 [lang="ur"] input, [lang="ur"] button {
   font-family: inherit;
+  letter-spacing: 0 !important;
 }
 
 [dir="rtl"] .rtl-mirror {
