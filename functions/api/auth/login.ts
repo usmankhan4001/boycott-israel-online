@@ -16,9 +16,9 @@ export async function onRequestPost(context: any) {
     const { password } = body;
     
     if (!env.ADMIN_PASSWORD) {
-      console.warn('ADMIN_PASSWORD not set in environment, falling back to dummy check');
+      console.warn('ADMIN_PASSWORD not set in environment, falling back to Takweyat@2026');
     }
-    const validPassword = env.ADMIN_PASSWORD || 'admin';
+    const validPassword = env.ADMIN_PASSWORD || 'Takweyat@2026';
     
     if (password !== validPassword) {
       return new Response(JSON.stringify({ error: 'Invalid password' }), {
