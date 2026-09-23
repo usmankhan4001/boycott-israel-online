@@ -2,9 +2,11 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Search, LayoutGrid, ShoppingCart, Info, ScanLine } from 'lucide-react';
 import { useGroceryStore } from '../../stores/groceryStore';
+import { useTranslation } from '../../i18n/useTranslation';
 
 export const TabBar: React.FC = () => {
   const groceryList = useGroceryStore(state => state.groceryList);
+  const { t, isUrdu } = useTranslation();
   const location = useLocation();
 
   // Don't show tab bar on full-screen scanner page
@@ -35,7 +37,7 @@ export const TabBar: React.FC = () => {
             }`}
           >
             <Search className="w-5 h-5" />
-            <span className="text-[10px]">Search</span>
+            <span className={`text-[10px] ${isUrdu ? 'leading-none mt-0.5' : ''}`}>{t.allBrands}</span>
           </NavLink>
         </li>
 
@@ -51,7 +53,7 @@ export const TabBar: React.FC = () => {
             }`}
           >
             <LayoutGrid className="w-5 h-5" />
-            <span className="text-[10px]">Categories</span>
+            <span className={`text-[10px] ${isUrdu ? 'leading-none mt-0.5' : ''}`}>{t.categories}</span>
           </NavLink>
         </li>
 
@@ -61,7 +63,7 @@ export const TabBar: React.FC = () => {
             to="/scan" 
             onClick={handleHaptic}
             className="w-13 h-13 rounded-full bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 text-white flex flex-col items-center justify-center shadow-lg shadow-emerald-500/30 ring-4 ring-white dark:ring-zinc-900 active:scale-90 transition-transform"
-            title="Scan Barcode"
+            title={t.scanner}
           >
             <ScanLine className="w-6 h-6" />
           </NavLink>
@@ -86,7 +88,7 @@ export const TabBar: React.FC = () => {
                 </span>
               )}
             </div>
-            <span className="text-[10px]">Grocery</span>
+            <span className={`text-[10px] ${isUrdu ? 'leading-none mt-0.5' : ''}`}>{t.grocery}</span>
           </NavLink>
         </li>
 
@@ -102,7 +104,7 @@ export const TabBar: React.FC = () => {
             }`}
           >
             <Info className="w-5 h-5" />
-            <span className="text-[10px]">About</span>
+            <span className={`text-[10px] ${isUrdu ? 'leading-none mt-0.5' : ''}`}>{t.whyBoycott}</span>
           </NavLink>
         </li>
       </ul>

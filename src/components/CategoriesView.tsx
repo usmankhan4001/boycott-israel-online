@@ -3,6 +3,8 @@ import { POPULAR_CATEGORIES } from '../data/laymanCategories';
 import { CategoryIcon } from './CategoryIcon';
 import { ProductItem } from '../types';
 import { LayoutGrid, ChevronRight, ShieldCheck } from 'lucide-react';
+import { useTranslation } from '../i18n/useTranslation';
+import { getCategoryTranslation } from '../i18n/translations';
 
 interface Props {
   products: ProductItem[];
@@ -10,6 +12,8 @@ interface Props {
 }
 
 export const CategoriesView: React.FC<Props> = ({ products, onSelectCategory }) => {
+  const { t, isUrdu, language } = useTranslation();
+
   // Count items per category
   const categoryStats = React.useMemo(() => {
     const counts: Record<string, number> = {};
@@ -20,7 +24,7 @@ export const CategoriesView: React.FC<Props> = ({ products, onSelectCategory }) 
   }, [products]);
 
   return (
-    <div className="space-y-4 animate-in fade-in duration-200 pb-8">
+    <div className={`space-y-4 animate-in fade-in duration-200 pb-8 ${isUrdu ? 'font-urdu' : ''}`}>
       
       {/* Page Header */}
       <div className="space-y-1">
@@ -29,11 +33,11 @@ export const CategoriesView: React.FC<Props> = ({ products, onSelectCategory }) 
             <LayoutGrid className="w-4 h-4" />
           </div>
           <h1 className="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-            Browse Household Categories
+            {t.browseCategories}
           </h1>
         </div>
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          Purge complicit brands from every room in your house and discover 100% safe Pakistani alternatives.
+          {t.browseCategoriesSub}
         </p>
       </div>
 
@@ -42,6 +46,8 @@ export const CategoriesView: React.FC<Props> = ({ products, onSelectCategory }) 
         {POPULAR_CATEGORIES.map((cat) => {
           const categoryKey = cat.categoryName || 'All';
           const count = categoryStats[categoryKey] || 0;
+          const displayTitle = isUrdu ? getCategoryTranslation(cat.name, language) : cat.name;
+
           return (
             <button
               key={cat.id}
@@ -54,20 +60,20 @@ export const CategoriesView: React.FC<Props> = ({ products, onSelectCategory }) 
                 </div>
                 <div className="min-w-0">
                   <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
-                    {cat.name}
+                    {displayTitle}
                   </h3>
                   <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
                     {cat.subtitle}
                   </p>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span className="text-[10px] font-bold px-2 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
-                      {count > 0 ? `${count} brands tracked` : 'Explore'}
+                      {count > 0 ? `${count} ${t.brandsTracked}` : t.explore}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="w-7 h-7 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 flex items-center justify-center text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0">
+              <div className="w-7 h-7 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 flex items-center justify-center text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 rtl-mirror transition-all shrink-0">
                 <ChevronRight className="w-3.5 h-3.5" />
               </div>
             </button>
@@ -78,3 +84,4 @@ export const CategoriesView: React.FC<Props> = ({ products, onSelectCategory }) 
     </div>
   );
 };
+

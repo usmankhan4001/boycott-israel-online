@@ -5,6 +5,7 @@ import { BrandLogo } from '../BrandLogo';
 import { Plus, CheckCircle2, ShieldAlert, Share2, Users } from 'lucide-react';
 import { useGroceryStore } from '../../stores/groceryStore';
 import { useUIStore } from '../../stores/uiStore';
+import { useTranslation } from '../../i18n/useTranslation';
 
 interface Props {
   product: ProductItem;
@@ -13,6 +14,7 @@ interface Props {
 export const ProductCard: React.FC<Props> = ({ product }) => {
   const addItem = useGroceryStore(state => state.addItem);
   const showToast = useUIStore(state => state.showToast);
+  const { t, isUrdu, translateCategory } = useTranslation();
 
   const isCelebrity = 
     product.category === 'Celebrities & Endorsers' || 
@@ -50,7 +52,7 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
       } catch {}
     }
 
-    showToast(`Added ${defaultAlt} to grocery list`);
+    showToast(isUrdu ? `${defaultAlt} لسٹ میں شامل ہو گیا` : `Added ${defaultAlt} to grocery list`);
   };
 
   const handleQuickShare = (e: React.MouseEvent) => {
@@ -58,8 +60,8 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
     e.stopPropagation();
 
     const text = isCelebrity
-      ? `🚨 BOYCOTT ENDORSER CALLOUT: ${product.name}\nWhy Called Out: ${product.boycottReason}\nPromoting: ${product.endorsedBrands?.join(', ') || product.parentCompany}\nDetails: https://boycottisraelonline.com/product/${product.id}`
-      : `🚨 BOYCOTT TARGET: ${product.name} (${product.parentCompany || product.category})\nWhy: ${product.boycottReason}\n✅ Safe Alternative: ${product.alternatives.map(a => a.name).join(', ') || 'Local Pakistani Brand'}\nCheck evidence on: https://boycottisraelonline.com/product/${product.id}`;
+      ? `🚨 ${isUrdu ? 'بائیکاٹ ہدف' : 'BOYCOTT CALLOUT'}: ${product.name}\n${product.boycottReason}\nhttps://boycottisraelonline.com/product/${product.id}`
+      : `🚨 ${isUrdu ? 'بائیکاٹ ہدف' : 'BOYCOTT TARGET'}: ${product.name} (${product.parentCompany || product.category})\n${isUrdu ? 'محفوظ متبادل' : 'Safe Alternative'}: ${product.alternatives.map(a => a.name).join(', ') || 'Local Pakistani Brand'}\nhttps://boycottisraelonline.com/product/${product.id}`;
 
     if (navigator.share) {
       navigator.share({
@@ -69,7 +71,7 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
       }).catch(() => {});
     } else {
       navigator.clipboard.writeText(text);
-      showToast('Evidence copied to clipboard!');
+      showToast(isUrdu ? 'معلومات کاپی کر لی گئی ہیں' : 'Evidence copied to clipboard!');
     }
   };
 
@@ -104,7 +106,7 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
                   ? 'bg-purple-100 text-purple-800 dark:bg-purple-950/80 dark:text-purple-300 border border-purple-200 dark:border-purple-900'
                   : severityStyles[product.severity] || severityStyles.High
               }`}>
-                {isCelebrity ? '👤 Endorser' : product.severity === 'Critical' ? '🔴 Critical' : 'DO NOT BUY'}
+                {isCelebrity ? t.endorser : product.severity === 'Critical' ? `🔴 ${t.critical}` : t.doNotBuy}
               </span>
             </div>
             
@@ -113,7 +115,7 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
             </h4>
             
             <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
-              {product.parentCompany || product.category}
+              {product.parentCompany || translateCategory(product.category)}
             </p>
           </div>
         </div>
@@ -128,7 +130,7 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
           <div className="flex items-center gap-1.5 p-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/80 dark:border-purple-900/60 text-purple-800 dark:text-purple-300 text-xs font-bold">
             <Users className="w-3.5 h-3.5 shrink-0 text-purple-500" />
             <span className="truncate text-[11px]">
-              Demand ethical stance • Cancel complicit contracts
+              {t.demandContractCancellation}
             </span>
           </div>
         ) : topAlternative ? (
@@ -136,18 +138,18 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
             <div className="flex items-center gap-1.5 min-w-0 pr-2">
               <span className="shrink-0 text-sm">🇵🇰</span>
               <span className="truncate text-[11px]">
-                Safe Alt: <strong>{topAlternative.name}</strong>
+                {t.safeAlt}: <strong>{topAlternative.name}</strong>
               </span>
             </div>
             {product.alternatives.length > 1 && (
               <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">
-                +{product.alternatives.length - 1} more
+                +{product.alternatives.length - 1}
               </span>
             )}
           </div>
         ) : (
           <div className="p-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 text-[11px] font-semibold text-center">
-            Look for local Pakistani equivalents
+            {isUrdu ? 'مقامی پاکستانی متبادل تلاش کریں' : 'Look for local Pakistani equivalents'}
           </div>
         )}
       </div>
@@ -155,14 +157,14 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
       {/* Footer Actions */}
       <div className="pt-3 mt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between">
         <span className="text-[11px] text-zinc-400 font-bold group-hover:text-zinc-600 dark:group-hover:text-zinc-200 transition-colors">
-          {isCelebrity ? 'View Timeline & Brands →' : 'View full evidence →'}
+          {isUrdu ? 'تفصیلات دیکھیں ←' : 'View full evidence →'}
         </span>
 
         <div className="flex items-center gap-1.5">
           <button
             onClick={handleQuickShare}
             className="p-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors active:scale-90"
-            title="Share Callout"
+            title={t.share}
           >
             <Share2 className="w-3.5 h-3.5" />
           </button>
@@ -171,10 +173,10 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
             <button
               onClick={handleAdd}
               className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 font-bold text-xs shadow-2xs transition-colors active:scale-90"
-              title="Add Safe Swap to Grocery List"
+              title={t.addAltToGrocery}
             >
               <Plus className="w-3.5 h-3.5" />
-              <span className="text-[10px]">Add Alt</span>
+              <span className="text-[10px]">{t.safeAlt}</span>
             </button>
           )}
         </div>

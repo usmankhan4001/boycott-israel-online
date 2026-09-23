@@ -12,8 +12,10 @@ import {
   Flame,
   CheckCircle2
 } from 'lucide-react';
+import { useTranslation } from '../i18n/useTranslation';
 
 export const AboutFaqSection: React.FC = () => {
+  const { t, isUrdu } = useTranslation();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const toggleFaq = (index: number) => {
@@ -22,43 +24,26 @@ export const AboutFaqSection: React.FC = () => {
 
   const corePillars = [
     {
-      title: 'Why We Boycott',
-      description: 'Economic resistance is an absolute moral duty. Every dollar withheld directly deprives multinational corporations of revenue used to finance apartheid infrastructure, military operations, and illegal land theft in Palestine.',
+      title: t.pillar1Title,
+      description: t.pillar1Desc,
       icon: <Flame className="w-4 h-4 text-rose-600 dark:text-rose-400" />
     },
     {
-      title: 'How We Boycott',
-      description: 'Systematically purge boycotted brands from your daily life. Check every barcode and product label before purchasing, completely replace them with authentic Pakistani alternatives, and demand local stores stop stocking complicit goods.',
+      title: t.pillar2Title,
+      description: t.pillar2Desc,
       icon: <ShieldAlert className="w-4 h-4 text-amber-500" />
     },
     {
-      title: 'Ending the Oppression',
-      description: 'Collective consumer action has historically dismantled apartheid regimes. By building economic sovereignty and strengthening our local Pakistani manufacturers, we break foreign corporate dominance and stand unyielding with Palestine.',
+      title: t.pillar3Title,
+      description: t.pillar3Desc,
       icon: <HeartHandshake className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
     }
   ];
 
-  const boycottFaqs = [
-    {
-      question: 'Does my individual boycott really make a difference?',
-      answer: 'Yes. Multinational corporations operate on market sentiment and profit margins. In 2023–2024 alone, boycott campaigns caused documented billions of dollars in revenue losses and forced major conglomerates to divest from Israeli franchises. Collective refusal to purchase is devastating to complicit corporations.'
-    },
-    {
-      question: 'How do I identify Israeli products by barcode?',
-      answer: 'Products manufactured directly in Israel carry barcodes starting with the prefix "729". Use our built-in camera scanner to verify any product in 1 second before placing it in your basket.'
-    },
-    {
-      question: 'What is the role of Takweyat Foundation in this initiative?',
-      answer: 'Takweyat Foundation provides verified, research-backed consumer intelligence to empower Pakistani households to achieve 100% ethical, boycott-free shopping. We verify corporate parentage, document complicity evidence, and promote high-quality Pakistani local alternatives.'
-    },
-    {
-      question: 'What should I do if a store only sells boycotted products?',
-      answer: 'Refuse to buy. Inform the store owner or manager directly that you are boycotting complicit brands and ask them to stock Pakistani alternatives like Gourmet, Pakola, Sufi, Dalda, Tapal, and English Toothpaste.'
-    }
-  ];
+  const boycottFaqs = t.faqList;
 
   return (
-    <div className="max-w-4xl mx-auto py-4 space-y-6 pb-24">
+    <div className={`max-w-4xl mx-auto py-4 space-y-6 pb-24 ${isUrdu ? 'font-urdu' : ''}`}>
       
       {/* Header with Official Logos */}
       <div className="space-y-2">
@@ -77,10 +62,10 @@ export const AboutFaqSection: React.FC = () => {
           </div>
         </div>
         <h2 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-          Boycott to End Oppression
+          {t.aboutTitle}
         </h2>
         <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          Understanding the power of economic resistance, how to purge complicit brands, and how we achieve victory.
+          {t.aboutSubtitle}
         </p>
       </div>
 
@@ -106,7 +91,7 @@ export const AboutFaqSection: React.FC = () => {
       <div className="space-y-2.5">
         <div className="flex items-center gap-2 px-1 text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
           <HelpCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-          <span>Strategic Boycott Questions & Answers</span>
+          <span>{t.faqHeader}</span>
         </div>
 
         <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xs overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -118,7 +103,7 @@ export const AboutFaqSection: React.FC = () => {
                   onClick={() => toggleFaq(idx)}
                   className="w-full px-4 py-3.5 text-left flex items-center justify-between gap-3 font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
                 >
-                  <span>{faq.question}</span>
+                  <span>{faq.q}</span>
                   {isOpen ? (
                     <ChevronUp className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
                   ) : (
@@ -127,7 +112,7 @@ export const AboutFaqSection: React.FC = () => {
                 </button>
                 {isOpen && (
                   <div className="px-4 pb-4 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed pt-1 bg-zinc-50/50 dark:bg-zinc-800/20">
-                    {faq.answer}
+                    {faq.a}
                   </div>
                 )}
               </div>
@@ -139,3 +124,4 @@ export const AboutFaqSection: React.FC = () => {
     </div>
   );
 };
+

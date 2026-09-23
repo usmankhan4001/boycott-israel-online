@@ -60,3 +60,17 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(120, 120, 128, 0.45);
 }
+
+/* Urdu Nastaliq & RTL Typography */
+.font-urdu, [lang="ur"] {
+  font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.85;
+}
+
+[lang="ur"] input, [lang="ur"] button {
+  font-family: inherit;
+}
+
+[dir="rtl"] .rtl-mirror {
+  transform: scaleX(-1);
+}

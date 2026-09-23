@@ -23,6 +23,7 @@ import {
   sendGazaNotification 
 } from '../utils/notifications';
 import { saveStoredNotificationSettings } from '../utils/storage';
+import { useTranslation } from '../i18n/useTranslation';
 
 interface Props {
   groceryList: GroceryItem[];
@@ -39,6 +40,7 @@ export const GroceryPlanner: React.FC<Props> = ({
   setNotificationSettings,
   products
 }) => {
+  const { t, isUrdu } = useTranslation();
   const [newItemName, setNewItemName] = useState('');
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [notifSuccessMsg, setNotifSuccessMsg] = useState('');
@@ -125,26 +127,28 @@ export const GroceryPlanner: React.FC<Props> = ({
 
   // Share via WhatsApp / Clipboard
   const handleShareList = () => {
-    let msg = `🇵🇸 *My 100% Boycott-Free Grocery Checklist for Gaza:*\n\n`;
+    let msg = isUrdu 
+      ? `🇵🇸 *میری بائیکاٹ سے پاک گروسری لسٹ:*\n\n`
+      : `🇵🇸 *My 100% Boycott-Free Grocery Checklist for Gaza:*\n\n`;
     groceryList.forEach((item, idx) => {
       const status = item.checked ? '✅' : '⬜';
       const boycState = item.isBoycott 
-        ? `⚠️ [DON'T BUY: ${item.name} - Replace with safe alternative!]` 
+        ? (isUrdu ? `⚠️ [نہ خریدیں: ${item.name} - محفوظ متبادل لیں!]` : `⚠️ [DON'T BUY: ${item.name} - Replace with safe alternative!]`) 
         : `✓ ${item.name}`;
       msg += `${status} ${idx + 1}. ${boycState}\n`;
     });
-    msg += `\n*Conscience Score: ${conscienceScore}% Ethical Basket*\n`;
-    msg += `_"Do not buy the blood of your brothers and sisters in Gaza."_\n`;
-    msg += `Checked on Free Palestine PWA`;
+    msg += `\n*${isUrdu ? 'محفوظ خریداری اسکور' : 'Conscience Score'}: ${conscienceScore}%*\n`;
+    msg += `_"${isUrdu ? 'غزہ کے مظلومین کا خون نہ خریدیں۔' : 'Do not buy the blood of your brothers and sisters in Gaza.'}"_\n`;
+    msg += `Checked on Free Palestine App (boycottisraelonline.com)`;
 
     if (navigator.share) {
       navigator.share({
-        title: 'Boycott-Free Grocery List',
+        title: isUrdu ? 'بائیکاٹ سے پاک گروسری لسٹ' : 'Boycott-Free Grocery List',
         text: msg
       }).catch(() => {});
     } else {
       navigator.clipboard.writeText(msg);
-      alert('✓ Grocery checklist copied to clipboard! Paste it in WhatsApp or Notes.');
+      alert(isUrdu ? '✓ گروسری لسٹ کاپی ہوگئی! واٹس ایپ پر شیئر کریں۔' : '✓ Grocery checklist copied to clipboard! Paste it in WhatsApp or Notes.');
     }
   };
 
@@ -160,10 +164,10 @@ export const GroceryPlanner: React.FC<Props> = ({
       };
       setNotificationSettings(updated);
       saveStoredNotificationSettings(updated);
-      setNotifSuccessMsg(`✓ Reminder set for the ${day}${day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : 'th'} of every month`);
+      setNotifSuccessMsg(isUrdu ? `✓ ہر ماہ کی ${day} تاریخ کے لیے یاد دہانی محفوظ!` : `✓ Reminder set for the ${day}${day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : 'th'} of every month`);
       setTimeout(() => setNotifSuccessMsg(''), 4000);
     } else {
-      alert('Please allow notification permissions in your browser or phone settings.');
+      alert(isUrdu ? 'براہ کرم براؤزر کی سیٹنگز میں نوٹیفکیشن کی اجازت دیں۔' : 'Please allow notification permissions in your browser or phone settings.');
     }
   };
 
@@ -172,8 +176,8 @@ export const GroceryPlanner: React.FC<Props> = ({
     const granted = await requestNotificationPermission();
     if (granted) {
       const sent = sendGazaNotification(
-        '🇵🇸 Gaza Conscience Grocery Alert',
-        'Don’t buy the blood of your children: Review your monthly grocery list before heading to the supermarket!'
+        isUrdu ? '🇵🇸 ماہانہ گروسری الرٹ' : '🇵🇸 Gaza Conscience Grocery Alert',
+        isUrdu ? 'شاپنگ پر جانے سے پہلے اپنی گروسری لسٹ چیک کریں اور بائیکاٹ سے پاک خریداری یقینی بنائیں۔' : 'Don’t buy the blood of your children: Review your monthly grocery list before heading to the supermarket!'
       );
       if (sent) {
         setTestNotificationSent(true);
@@ -183,11 +187,18 @@ export const GroceryPlanner: React.FC<Props> = ({
   };
 
   const householdStaples = [
-    'Cooking Oil', 'Black Tea', 'Basmati Rice', 'Laundry Detergent', 'Bath Soap', 'Toothpaste', 'Dishwashing Bar', 'Baby Diapers'
+    { label: t.staples.oil, query: 'Cooking Oil' },
+    { label: t.staples.tea, query: 'Black Tea' },
+    { label: t.staples.rice, query: 'Basmati Rice' },
+    { label: t.staples.detergent, query: 'Laundry Detergent' },
+    { label: t.staples.soap, query: 'Bath Soap' },
+    { label: t.staples.toothpaste, query: 'Toothpaste' },
+    { label: t.staples.dishwashing, query: 'Dishwashing Bar' },
+    { label: t.staples.diapers, query: 'Baby Diapers' }
   ];
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-4 pb-24 md:pb-12 space-y-5">
+    <div className={`max-w-3xl mx-auto px-4 sm:px-6 pt-4 pb-24 md:pb-12 space-y-5 ${isUrdu ? 'font-urdu' : ''}`}>
       
       {/* App Header */}
       <div className="flex items-center justify-between">
@@ -197,11 +208,11 @@ export const GroceryPlanner: React.FC<Props> = ({
               <ShoppingCart className="w-4 h-4" />
             </div>
             <h1 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-              Grocery Conscience List
+              {t.groceryTitle}
             </h1>
           </div>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Keep your monthly shopping 100% free of complicit brands
+            {t.grocerySubtitle}
           </p>
         </div>
 
@@ -209,7 +220,7 @@ export const GroceryPlanner: React.FC<Props> = ({
           <button
             onClick={() => setShowNotificationModal(true)}
             className="p-2.5 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-sm transition-all"
-            title="Monthly Reminder Settings"
+            title={t.monthlyAlert}
           >
             <Bell className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           </button>
@@ -219,7 +230,7 @@ export const GroceryPlanner: React.FC<Props> = ({
             className="px-3.5 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
           >
             <Share2 className="w-3.5 h-3.5" />
-            <span>Share List</span>
+            <span>{t.shareList}</span>
           </button>
         </div>
       </div>
@@ -235,12 +246,12 @@ export const GroceryPlanner: React.FC<Props> = ({
             {boycottedItems.length > 0 ? (
               <>
                 <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
-                <span className="text-rose-700 dark:text-rose-300">{boycottedItems.length} Boycotted Item{boycottedItems.length > 1 ? 's' : ''} in Basket!</span>
+                <span className="text-rose-700 dark:text-rose-300">{boycottedItems.length} {t.boycottedItemsInBasket}</span>
               </>
             ) : (
               <>
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-emerald-700 dark:text-emerald-300">100% Ethical Basket</span>
+                <span className="text-emerald-700 dark:text-emerald-300">{t.ethicalBasket}</span>
               </>
             )}
           </span>
@@ -259,8 +270,8 @@ export const GroceryPlanner: React.FC<Props> = ({
 
         <p className="text-xs leading-relaxed text-zinc-700 dark:text-zinc-300">
           {boycottedItems.length > 0
-            ? "⚠️ Gaza Conscience Warning: Do not buy the blood of your brothers and sisters in Gaza. Tap 'Swap' below to replace boycotted brands with safe local ones."
-            : "🕊️ None of your hard-earned money will fund weapons or illegal settlements in Palestine today."}
+            ? t.groceryWarning
+            : t.groceryClean}
         </p>
       </div>
 
@@ -271,7 +282,7 @@ export const GroceryPlanner: React.FC<Props> = ({
             type="text"
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
-            placeholder="Type item name (e.g. Cooking Oil, Oreo, Surf, Tea)..."
+            placeholder={isUrdu ? "چیز کا نام درج کریں (مثلاً کوکنگ آئل، اوریو، سرف، چائے)..." : "Type item name (e.g. Cooking Oil, Oreo, Surf, Tea)..."}
             className="flex-1 px-4 py-2.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-medium"
           />
           <button
@@ -279,20 +290,20 @@ export const GroceryPlanner: React.FC<Props> = ({
             className="px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1 shrink-0 shadow-sm active:scale-95 transition-all"
           >
             <Plus className="w-4 h-4" />
-            <span>Add</span>
+            <span>{isUrdu ? 'شامل کریں' : 'Add'}</span>
           </button>
         </form>
 
         {/* Quick Staple Suggestions */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs text-zinc-500 dark:text-zinc-400">
-          <span className="text-[11px] shrink-0 font-medium">Quick add:</span>
-          {householdStaples.map((staple) => (
+          <span className="text-[11px] shrink-0 font-medium">{t.quickAdd}</span>
+          {householdStaples.map((staple, i) => (
             <button
-              key={staple}
-              onClick={() => handleAddItem(staple)}
+              key={i}
+              onClick={() => handleAddItem(staple.label)}
               className="px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 text-[11px] font-medium shrink-0 transition-colors"
             >
-              + {staple}
+              + {staple.label}
             </button>
           ))}
         </div>
@@ -301,13 +312,13 @@ export const GroceryPlanner: React.FC<Props> = ({
       {/* Grocery Items List */}
       <div className="space-y-3">
         <div className="flex items-center justify-between text-xs px-1 text-zinc-500 dark:text-zinc-400">
-          <span>Items ({checkedItems.length}/{totalItems} purchased)</span>
+          <span>{t.itemCount} ({checkedItems.length}/{totalItems} {t.purchased})</span>
           {checkedItems.length > 0 && (
             <button
               onClick={handleClearChecked}
               className="text-rose-600 dark:text-rose-400 hover:underline font-medium"
             >
-              Clear Checked
+              {t.clearChecked}
             </button>
           )}
         </div>
@@ -317,9 +328,9 @@ export const GroceryPlanner: React.FC<Props> = ({
             <div className="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mx-auto text-zinc-400">
               <ShoppingCart className="w-6 h-6" />
             </div>
-            <p className="text-sm font-bold text-zinc-700 dark:text-zinc-300">Your grocery checklist is empty</p>
+            <p className="text-sm font-bold text-zinc-700 dark:text-zinc-300">{t.emptyGrocery}</p>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto">
-              Add everyday items above before heading to the store to ensure 100% ethical shopping.
+              {t.emptyGroceryPrompt}
             </p>
           </div>
         ) : (
@@ -361,7 +372,7 @@ export const GroceryPlanner: React.FC<Props> = ({
                         </span>
                         {item.isBoycott && (
                           <span className="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 text-[10px] font-bold border border-rose-200 dark:border-rose-800 shrink-0">
-                            Boycott Target
+                            {t.boycottTarget}
                           </span>
                         )}
                       </div>
@@ -370,7 +381,7 @@ export const GroceryPlanner: React.FC<Props> = ({
                       {item.isBoycott ? (
                         <div className="space-y-1.5 pt-1">
                           <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">
-                            Complicit: {item.parentCompany || 'Supports Israeli Occupation'}
+                            {t.parentCompany} {item.parentCompany || 'Supports Israeli Occupation'}
                           </p>
                           
                           {/* Swap Alternatives Pills */}
@@ -378,7 +389,7 @@ export const GroceryPlanner: React.FC<Props> = ({
                             <div className="flex flex-wrap items-center gap-1.5 pt-1">
                               <span className="text-[11px] font-bold text-zinc-600 dark:text-zinc-400 flex items-center gap-1">
                                 <ArrowRightLeft className="w-3 h-3 text-emerald-500" />
-                                Safe Choice:
+                                {t.safeAlt}:
                               </span>
                               {item.suggestedAlternatives.slice(0, 3).map((alt) => (
                                 <button
@@ -386,7 +397,7 @@ export const GroceryPlanner: React.FC<Props> = ({
                                   onClick={() => handleSwapAlternative(item, alt.name, alt.country, alt.logo)}
                                   className="px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold transition-all flex items-center gap-1"
                                 >
-                                  <span>Swap to {alt.name}</span>
+                                  <span>{t.swapTo} {alt.name}</span>
                                   <span className="text-[10px] opacity-75">({alt.country})</span>
                                 </button>
                               ))}
@@ -396,7 +407,7 @@ export const GroceryPlanner: React.FC<Props> = ({
                       ) : (
                         <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3" />
-                          <span>Safe Choice: Local / Ethical Brand</span>
+                          <span>{t.safeLocalChoice}</span>
                         </p>
                       )}
                     </div>
@@ -419,7 +430,7 @@ export const GroceryPlanner: React.FC<Props> = ({
 
       {/* Monthly Reminder Configuration Modal */}
       {showNotificationModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 ${isUrdu ? 'font-urdu' : ''}`}>
           <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5">
             
             <div className="flex items-center justify-between">
@@ -429,10 +440,10 @@ export const GroceryPlanner: React.FC<Props> = ({
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-                    Monthly Conscience Alert
+                    {t.monthlyAlert}
                   </h3>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Never forget before you do your monthly grocery
+                    {t.monthlyAlertSub}
                   </p>
                 </div>
               </div>
@@ -447,17 +458,19 @@ export const GroceryPlanner: React.FC<Props> = ({
 
             <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/60 space-y-2">
               <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                _"Do not buy the blood of your brothers and sisters in Gaza. Remind yourself to buy safe, local alternatives."_
+                {isUrdu 
+                  ? '„غزہ کے مظلومین کا خون نہ خریدیں۔ محفوظ اور معیاری پاکستانی متبادل اپنائیں۔‟'
+                  : '_"Do not buy the blood of your brothers and sisters in Gaza. Remind yourself to buy safe, local alternatives."_'}
               </p>
               <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                You will receive a notification on your chosen day each month before shopping.
+                {isUrdu ? 'ہر ماہ منتخب تاریخ کو آپ کو شاپنگ سے پہلے الرٹ نوٹیفکیشن موصول ہوگا۔' : 'You will receive a notification on your chosen day each month before shopping.'}
               </p>
             </div>
 
             {/* Choose Day of Month */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                Select Your Grocery Shopping Day:
+                {t.selectShoppingDay}
               </label>
               <div className="grid grid-cols-4 gap-2">
                 {[1, 5, 10, 25].map((day) => (
@@ -470,7 +483,7 @@ export const GroceryPlanner: React.FC<Props> = ({
                         : 'bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:border-emerald-500'
                     }`}
                   >
-                    {day}{day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : 'th'}
+                    {isUrdu ? `${day} تاریخ` : `${day}${day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : 'th'}`}
                   </button>
                 ))}
               </div>
@@ -483,12 +496,12 @@ export const GroceryPlanner: React.FC<Props> = ({
                 className="w-full py-2.5 px-4 rounded-2xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 text-xs font-bold flex items-center justify-center gap-2 transition-colors"
               >
                 <Volume2 className="w-4 h-4 text-emerald-500" />
-                <span>🔔 Test Notification Now</span>
+                <span>{t.testNotification}</span>
               </button>
               
               {testNotificationSent && (
                 <p className="text-center text-xs font-bold text-emerald-600 dark:text-emerald-400 animate-in fade-in">
-                  ✓ Notification sent! Check your notification center / status bar.
+                  {isUrdu ? '✓ نوٹیفکیشن بھیج دیا گیا ہے!' : '✓ Notification sent! Check your notification center / status bar.'}
                 </p>
               )}
               {notifSuccessMsg && (
@@ -502,7 +515,7 @@ export const GroceryPlanner: React.FC<Props> = ({
               onClick={() => setShowNotificationModal(false)}
               className="w-full py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition-all"
             >
-              Done
+              {t.done}
             </button>
           </div>
         </div>
@@ -511,3 +524,4 @@ export const GroceryPlanner: React.FC<Props> = ({
     </div>
   );
 };
+

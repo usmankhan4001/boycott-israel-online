@@ -7,13 +7,14 @@ import {
   Plus, 
   ChevronDown, 
   ChevronUp, 
-  ChevronRight,
+  ChevronRight, 
   Barcode, 
-  AlertOctagon,
-  Share2,
-  ShieldAlert,
-  ArrowRight
+  AlertOctagon, 
+  Share2, 
+  ShieldAlert, 
+  ArrowRight 
 } from 'lucide-react';
+import { useTranslation } from '../i18n/useTranslation';
 
 interface Props {
   product: ProductItem;
@@ -27,11 +28,12 @@ export const NoThanksProductCard: React.FC<Props> = ({
   onSelect
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t, isUrdu } = useTranslation();
   const topAlternative = product.alternatives[0];
 
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const text = `🚨 STOP BUYING: ${product.name} (${product.parentCompany})\n\nWhy to Boycott: ${product.boycottReason}\n\n✅ Safe Alternative: ${product.alternatives.map(a => `${a.name} (${a.country})`).join(', ')}\n\nBoycott to end oppression — BoycottIsrael by Takweyat Foundation.`;
+    const text = `🚨 ${t.doNotBuy}: ${product.name} (${product.parentCompany})\n\n${product.boycottReason}\n\n✅ ${t.safeAlt}: ${product.alternatives.map(a => `${a.name} (${a.country})`).join(', ')}\n\nhttps://boycottisraelonline.com/product/${product.id}`;
     if (navigator.share) {
       navigator.share({
         title: `Boycott: ${product.name}`,
@@ -40,7 +42,7 @@ export const NoThanksProductCard: React.FC<Props> = ({
       }).catch(() => {});
     } else {
       navigator.clipboard.writeText(text);
-      alert('Evidence and alternatives copied to clipboard!');
+      alert(isUrdu ? 'معلومات کاپی کر لی گئی ہیں' : 'Evidence and alternatives copied to clipboard!');
     }
   };
 
@@ -68,7 +70,7 @@ export const NoThanksProductCard: React.FC<Props> = ({
           <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md text-white shadow-2xs tracking-wider ${
             isCelebrity ? 'bg-purple-700' : 'bg-rose-600'
           }`}>
-            {isCelebrity ? 'ENDORSER' : 'DO NOT BUY'}
+            {isCelebrity ? t.endorser : t.doNotBuy}
           </span>
           {product.israelBarcode && (
             <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 bg-white/90 dark:bg-zinc-900/90 px-1.5 py-0.5 rounded-md border border-rose-200 dark:border-rose-800 shadow-2xs flex items-center gap-0.5">
@@ -93,7 +95,7 @@ export const NoThanksProductCard: React.FC<Props> = ({
         {product.behaviorNotes && (
           <div className="absolute bottom-2 left-2.5 z-10">
             <span className="text-[9px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50/90 dark:bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-200/80 dark:border-amber-900/60 flex items-center gap-0.5">
-              <ShieldAlert className="w-2.5 h-2.5" /> Documented
+              <ShieldAlert className="w-2.5 h-2.5" /> {isUrdu ? 'مصدقہ' : 'Documented'}
             </span>
           </div>
         )}
@@ -105,7 +107,7 @@ export const NoThanksProductCard: React.FC<Props> = ({
           {product.name}
         </h3>
         <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-          {isCelebrity ? 'Promoted Entity: ' : ''}<strong className="text-zinc-700 dark:text-zinc-300 font-semibold">{product.parentCompany}</strong>
+          {isCelebrity ? (isUrdu ? 'پروموٹڈ برانڈ: ' : 'Promoted: ') : ''}<strong className="text-zinc-700 dark:text-zinc-300 font-semibold">{product.parentCompany}</strong>
         </p>
       </div>
 
@@ -113,7 +115,7 @@ export const NoThanksProductCard: React.FC<Props> = ({
       {product.endorsedBrands && product.endorsedBrands.length > 0 && (
         <div className="p-2 rounded-xl bg-purple-50/60 dark:bg-purple-950/30 border border-purple-200/60 dark:border-purple-900/40 text-xs">
           <span className="text-[9px] font-black uppercase tracking-wider text-purple-700 dark:text-purple-400 block mb-1">
-            Boycotted Brands Promoted:
+            {t.promotedBrands}
           </span>
           <div className="flex flex-wrap gap-1">
             {product.endorsedBrands.slice(0, 3).map((brand, idx) => (
@@ -130,21 +132,21 @@ export const NoThanksProductCard: React.FC<Props> = ({
         {isCelebrity ? (
           <div className="flex items-center justify-between w-full group/alt text-purple-700 dark:text-purple-400">
             <span className="text-xs font-bold truncate flex items-center gap-1">
-              <span>Action:</span>
-              <span className="text-zinc-900 dark:text-zinc-100 font-extrabold">Demand Contract Termination</span>
+              <span>{isUrdu ? 'مطالبہ:' : 'Action:'}</span>
+              <span className="text-zinc-900 dark:text-zinc-100 font-extrabold">{isUrdu ? 'معاہدہ منسوخ کریں' : 'Cancel Brand Deals'}</span>
             </span>
             <ChevronRight className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 transition-transform group-hover:translate-x-0.5" />
           </div>
         ) : topAlternative ? (
           <div className="flex items-center justify-between w-full group/alt">
             <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 truncate flex items-center gap-1">
-              <span>Alt:</span>
+              <span>{t.safeAlt}:</span>
               <span className="text-zinc-900 dark:text-zinc-100 font-extrabold">{topAlternative.name}</span>
             </span>
             <ChevronRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 transition-transform group-hover:translate-x-0.5" />
           </div>
         ) : (
-          <span className="text-xs text-zinc-400 italic">Use ethical local alternative</span>
+          <span className="text-xs text-zinc-400 italic">{isUrdu ? 'مقامی متبادل اپنائیں' : 'Use ethical local alternative'}</span>
         )}
       </div>
 

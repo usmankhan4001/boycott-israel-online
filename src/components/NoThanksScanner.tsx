@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { ProductItem } from '../types';
 import { BrandLogo } from './BrandLogo';
+import { useTranslation } from '../i18n/useTranslation';
 
 interface Props {
   isOpen: boolean;
@@ -33,6 +34,7 @@ export const NoThanksScanner: React.FC<Props> = ({
   onAddToGrocery,
   onViewProof
 }) => {
+  const { t, isUrdu } = useTranslation();
   const [activeTab, setActiveTab] = useState<'camera' | 'manual'>('camera');
   const [manualInput, setManualInput] = useState('');
   const [isScanning, setIsScanning] = useState(false);
@@ -115,12 +117,12 @@ export const NoThanksScanner: React.FC<Props> = ({
       }
 
       if (typeof window !== 'undefined' && !window.isSecureContext && window.location.hostname !== 'localhost') {
-        setCameraError('Camera access requires HTTPS. Please type barcode or upload an image below.');
+        setCameraError(t.cameraErrorMsg);
         return;
       }
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setCameraError('Camera is not supported on this browser. Please use manual entry or upload image.');
+        setCameraError(t.cameraErrorMsg);
         return;
       }
 
@@ -183,7 +185,7 @@ export const NoThanksScanner: React.FC<Props> = ({
       } catch (errFallback) {
         console.warn('All camera initialization failed:', errFallback);
         setIsScanning(false);
-        setCameraError('Camera permission was denied or camera is unavailable. You can enter the barcode/name or upload an image below.');
+        setCameraError(t.cameraErrorMsg);
       }
     }
   };
@@ -219,7 +221,7 @@ export const NoThanksScanner: React.FC<Props> = ({
       const decodedText = await qrEngine.scanFile(file, true);
       handleCheckCode(decodedText);
     } catch (err) {
-      alert('Could not detect a clear barcode or QR code in this image. Please try another photo or enter manually.');
+      alert(isUrdu ? 'تصویر سے بارکوڈ نہیں پڑھا جا سکا۔ براہ کرم دستی درج کریں۔' : 'Could not detect a clear barcode in this image. Please try another photo or enter manually.');
     } finally {
       setIsProcessingImage(false);
       if (fileInputRef.current) {
@@ -279,7 +281,7 @@ export const NoThanksScanner: React.FC<Props> = ({
     (scanResult?.product?.id && scanResult.product.id.startsWith('celeb-'));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/90 backdrop-blur-md animate-in fade-in">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/90 backdrop-blur-md animate-in fade-in ${isUrdu ? 'font-urdu' : ''}`}>
       <div 
         className="relative w-full max-w-lg bg-[#18181B] rounded-3xl border border-white/[0.1] shadow-2xl overflow-hidden flex flex-col max-h-[94vh]"
         onClick={(e) => e.stopPropagation()}
@@ -290,8 +292,8 @@ export const NoThanksScanner: React.FC<Props> = ({
           <div className="flex items-center gap-2.5">
             <span className="text-xl">🇵🇸</span>
             <div>
-              <h3 className="text-base font-black text-white">Barcode & 729 Scanner</h3>
-              <p className="text-[11px] text-gray-400">Live barcode scanning, photo scanner & 729 detector</p>
+              <h3 className="text-base font-black text-white">{t.scannerTitle}</h3>
+              <p className="text-[11px] text-gray-400">{t.scannerSubtitle}</p>
             </div>
           </div>
           <button
@@ -313,7 +315,7 @@ export const NoThanksScanner: React.FC<Props> = ({
                 }`}
               >
                 <Camera className="w-3.5 h-3.5" />
-                <span>Camera Scanner</span>
+                <span>{t.cameraScanner}</span>
               </button>
               <button
                 onClick={() => setActiveTab('manual')}
@@ -322,7 +324,7 @@ export const NoThanksScanner: React.FC<Props> = ({
                 }`}
               >
                 <Barcode className="w-3.5 h-3.5" />
-                <span>Manual Lookup</span>
+                <span>{t.manualLookup}</span>
               </button>
             </div>
           </div>
@@ -346,10 +348,10 @@ export const NoThanksScanner: React.FC<Props> = ({
 
                   <div>
                     <h2 className="text-2xl font-black tracking-tight uppercase">
-                      {isCelebrity ? 'COMPLICIT ENDORSER ALERT' : 'DO NOT BUY! BOYCOTT TARGET'}
+                      {isCelebrity ? t.complicitAlert : `${t.doNotBuy}! ${t.boycottTarget}`}
                     </h2>
                     <p className="text-xs font-bold uppercase tracking-widest mt-0.5 opacity-90">
-                      {isCelebrity ? 'Demanded Action: Cancel brand contracts' : 'This item directly finances apartheid & oppression'}
+                      {isCelebrity ? t.complicitActionPrompt : t.financesOppression}
                     </p>
                   </div>
 
@@ -371,17 +373,17 @@ export const NoThanksScanner: React.FC<Props> = ({
                         </div>
                         <div className="text-xs opacity-90 font-semibold truncate">
                           {scanResult.is729 
-                            ? '🚨 Registered in Israel (GS1 729 Barcode Prefix)' 
+                            ? t.barcode729Label 
                             : isCelebrity
-                              ? `Promotes: ${scanResult.product?.endorsedBrands?.join(', ') || scanResult.product?.parentCompany}`
-                              : `Parent: ${scanResult.product?.parentCompany || 'Boycotted Conglomerate'}`}
+                              ? `${t.promotedBrands} ${scanResult.product?.endorsedBrands?.join(', ') || scanResult.product?.parentCompany}`
+                              : `${t.parentCompany} ${scanResult.product?.parentCompany || 'Boycotted Conglomerate'}`}
                         </div>
                       </div>
                     </div>
 
                     <p className="text-xs text-gray-200 leading-relaxed pt-1">
                       {scanResult.is729
-                        ? 'Barcodes starting with 729 are registered directly in Israel, channeling export proceeds to the Israeli economy.'
+                        ? t.barcode729Desc
                         : scanResult.product?.boycottReason}
                     </p>
                   </div>
@@ -391,10 +393,12 @@ export const NoThanksScanner: React.FC<Props> = ({
                     <div className="bg-white rounded-xl p-4 text-black text-left space-y-2 shadow-md">
                       <div className="text-xs font-black text-purple-800 uppercase tracking-wider flex items-center gap-1.5">
                         <Users className="w-4 h-4 text-purple-600" />
-                        <span>Public Accountability Demand:</span>
+                        <span>{t.ethicalDemands}:</span>
                       </div>
                       <p className="text-xs text-zinc-700 leading-relaxed">
-                        Do not patronize campaigns, events, or products promoted by this figure until sponsorship deals with boycotted multinationals are terminated.
+                        {isUrdu 
+                          ? 'اس شخصیت کے پروموٹ کردہ ایونٹس اور مصنوعات کا بائیکاٹ کریں جب تک بائیکاٹ کمپنیوں سے معاہدے ختم نہ ہوں۔' 
+                          : 'Do not patronize campaigns, events, or products promoted by this figure until sponsorship deals with boycotted multinationals are terminated.'}
                       </p>
                       {scanResult.product && (
                         <button
@@ -405,7 +409,7 @@ export const NoThanksScanner: React.FC<Props> = ({
                           className="w-full mt-2 py-2.5 rounded-lg bg-purple-700 hover:bg-purple-800 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md"
                         >
                           <ExternalLink className="w-4 h-4" />
-                          <span>View Full Record & Timeline</span>
+                          <span>{t.viewRecord}</span>
                         </button>
                       )}
                     </div>
@@ -415,7 +419,7 @@ export const NoThanksScanner: React.FC<Props> = ({
                       <div className="bg-white rounded-xl p-4 text-black text-left space-y-2 shadow-md">
                         <div className="text-xs font-black text-emerald-700 uppercase tracking-wider flex items-center gap-1">
                           <CheckCircle className="w-4 h-4 text-emerald-600" />
-                          <span>Buy These Safe Local Alternatives:</span>
+                          <span>{t.buySafeAltsPrompt}</span>
                         </div>
 
                         <div className="flex flex-wrap gap-1.5">
@@ -434,7 +438,7 @@ export const NoThanksScanner: React.FC<Props> = ({
                           className="w-full mt-2 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md"
                         >
                           <Plus className="w-4 h-4" />
-                          Add Safe Alternative to Grocery List
+                          {t.addAltToGrocery}
                         </button>
                       </div>
                     )
@@ -446,7 +450,7 @@ export const NoThanksScanner: React.FC<Props> = ({
                       className="flex-1 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors"
                     >
                       <RotateCcw className="w-4 h-4" />
-                      Scan Another
+                      {t.scanAnother}
                     </button>
                     {scanResult.product && !isCelebrity && (
                       <button
@@ -457,7 +461,7 @@ export const NoThanksScanner: React.FC<Props> = ({
                         className="py-2.5 px-3 rounded-xl bg-black/40 hover:bg-black/60 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors border border-white/20"
                       >
                         <ExternalLink className="w-4 h-4" />
-                        <span>Evidence</span>
+                        <span>{t.shareEvidence}</span>
                       </button>
                     )}
                   </div>
@@ -471,15 +475,15 @@ export const NoThanksScanner: React.FC<Props> = ({
 
                   <div>
                     <h2 className="text-2xl font-black tracking-tight uppercase">
-                      SAFE TO BUY!
+                      {t.safeToBuy}
                     </h2>
                     <p className="text-xs font-bold text-emerald-100 uppercase tracking-widest mt-0.5">
-                      Not found on the boycott list
+                      {t.safeDesc}
                     </p>
                   </div>
 
                   <div className="bg-black/30 rounded-xl p-4 text-xs text-gray-200 leading-relaxed text-left border border-white/20">
-                    No Israeli 729 barcode prefix or boycotted parent conglomerate match found for <strong className="text-white">"{scanResult.code}"</strong>.
+                    {t.noMatchFound} <strong className="text-white">"{scanResult.code}"</strong>.
                   </div>
 
                   <button
@@ -487,7 +491,7 @@ export const NoThanksScanner: React.FC<Props> = ({
                     className="w-full py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors"
                   >
                     <RotateCcw className="w-4 h-4" />
-                    Scan Another Product
+                    {t.scanAnother}
                   </button>
                 </div>
               )}
@@ -513,7 +517,7 @@ export const NoThanksScanner: React.FC<Props> = ({
                 <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-400 pointer-events-none p-4 text-center bg-black/60 backdrop-blur-xs">
                   <div className="space-y-2">
                     <div className="w-8 h-8 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto" />
-                    <span>Accessing camera viewfinder...</span>
+                    <span>{t.accessingCamera}</span>
                   </div>
                 </div>
               )}
@@ -538,13 +542,13 @@ export const NoThanksScanner: React.FC<Props> = ({
                   className="px-3 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white text-xs font-bold flex items-center gap-1.5 transition-colors"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
-                  <span>Switch Camera</span>
+                  <span>{t.switchCamera}</span>
                 </button>
               )}
 
               <label className="flex-1 px-3 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-white text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors">
                 <Upload className="w-3.5 h-3.5 text-rose-400" />
-                <span>{isProcessingImage ? 'Scanning Image...' : 'Scan from Photo'}</span>
+                <span>{isProcessingImage ? t.scanningImage : t.scanFromPhoto}</span>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -563,20 +567,20 @@ export const NoThanksScanner: React.FC<Props> = ({
                   value={manualInput}
                   onChange={(e) => setManualInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleCheckCode(manualInput)}
-                  placeholder="Or type barcode (729...) / brand name"
+                  placeholder={isUrdu ? "بارکوڈ (729...) یا نام درج کریں" : "Or type barcode (729...) / brand name"}
                   className="flex-1 px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/[0.1] text-white text-xs focus:outline-none focus:border-rose-500 font-medium"
                 />
                 <button
                   onClick={() => handleCheckCode(manualInput)}
                   className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow-md active:scale-95 transition-all"
                 >
-                  Check
+                  {t.check}
                 </button>
               </div>
             </div>
 
             <p className="text-[11px] text-gray-400 text-center font-medium">
-              Align barcode inside frame. Barcodes with <strong>729</strong> (Israel) or matching boycotted multinationals are instantly identified.
+              {t.alignBarcode}
             </p>
           </div>
 
@@ -587,7 +591,7 @@ export const NoThanksScanner: React.FC<Props> = ({
           >
             <div>
               <label className="block text-xs font-bold text-gray-300 mb-1.5">
-                Enter Barcode (e.g. 729...) or Brand Name:
+                {t.enterBarcodeOrName}
               </label>
               <div className="flex gap-2">
                 <input
@@ -595,7 +599,7 @@ export const NoThanksScanner: React.FC<Props> = ({
                   value={manualInput}
                   onChange={(e) => setManualInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleCheckCode(manualInput)}
-                  placeholder="e.g. 72900123 or Pepsi, KFC, Oreo..."
+                  placeholder={isUrdu ? "مثال: 72900123 یا Pepsi, KFC, Oreo..." : "e.g. 72900123 or Pepsi, KFC, Oreo..."}
                   className="flex-1 px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/[0.1] text-white text-sm focus:outline-none focus:border-rose-500 font-medium"
                   autoFocus
                 />
@@ -603,17 +607,17 @@ export const NoThanksScanner: React.FC<Props> = ({
                   onClick={() => handleCheckCode(manualInput)}
                   className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow-md active:scale-95 transition-all"
                 >
-                  Verify
+                  {t.verify}
                 </button>
               </div>
             </div>
 
             {/* Quick sample tests */}
             <div>
-              <span className="text-[11px] text-gray-400 block mb-1.5 font-bold">Quick Barcode & Brand Checks:</span>
+              <span className="text-[11px] text-gray-400 block mb-1.5 font-bold">{t.quickChecks}</span>
               <div className="flex flex-wrap gap-1.5 text-xs">
                 {[
-                  { label: 'Israeli Barcode (72900123)', val: '72900123' },
+                  { label: isUrdu ? 'اسرائیلی بارکوڈ (72900123)' : 'Israeli Barcode (72900123)', val: '72900123' },
                   { label: 'SodaStream (72901234)', val: '72901234' },
                   { label: 'McDonalds', val: "McDonald's" },
                   { label: 'KFC', val: 'KFC' },
