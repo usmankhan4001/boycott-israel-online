@@ -156,7 +156,7 @@ export const translations: Record<'en' | 'ur', Translations> = {
     whyBoycott: 'Why Boycott',
     scanner: '729 Scanner',
     suggest: 'Suggest',
-    searchPlaceholder: 'Search brand, restaurant, celebrity or barcode...',
+    searchPlaceholder: 'Search brand, item or barcode...',
     install: 'Install',
     back: 'Back',
     share: 'Share',
@@ -322,7 +322,7 @@ export const translations: Record<'en' | 'ur', Translations> = {
     whyBoycott: 'بائیکاٹ کیوں؟',
     scanner: '۷۲۹ سکینر',
     suggest: 'تجویز دیں',
-    searchPlaceholder: 'برانڈ، ریسٹورنٹ، شخصیت یا بارکوڈ تلاش کریں...',
+    searchPlaceholder: 'برانڈ، نام یا بارکوڈ تلاش کریں...',
     install: 'انسٹال کریں',
     back: 'واپس',
     share: 'شیئر کریں',
@@ -482,15 +482,24 @@ export const translations: Record<'en' | 'ur', Translations> = {
 };
 
 export const getCategoryTranslation = (category: string, lang: 'en' | 'ur'): string => {
-  if (lang === 'en') return category;
+  if (lang === 'en' || !category) return category;
   
-  const lower = category.toLowerCase();
-  if (lower.includes('food') || lower.includes('beverage')) return 'کھانے پینے کی اشیاء';
+  const lower = category.toLowerCase().trim();
+  if (lower === 'all' || lower === 'تمام') return 'تمام';
+  if (lower.includes('restaurant') || lower.includes('place') || lower.includes('cafe') || lower.includes('food chain') || lower.includes('fast food')) return 'ریسٹورنٹس';
+  if (lower.includes('celeb') || lower.includes('endorser') || lower.includes('actor') || lower.includes('cricketer')) return 'مشہور شخصیات';
+  if (lower.includes('drink') || lower.includes('juice') || lower.includes('beverage') || lower.includes('soda') || lower.includes('cola')) return 'مشروبات';
+  if (lower.includes('biscuit') || lower.includes('snack') || lower.includes('chip') || lower.includes('cookie')) return 'بسکٹ و سنیکس';
+  if (lower.includes('tea') || lower.includes('coffee') || lower.includes('kahwa')) return 'چائے و کافی';
+  if (lower.includes('detergent') || lower.includes('wash') || lower.includes('clean') || lower.includes('dishwash')) return 'سرف و صفائی';
+  if (lower.includes('soap') || lower.includes('shampoo') || lower.includes('hygiene') || lower.includes('body wash') || lower.includes('skin')) return 'صابن و شیمپو';
+  if (lower.includes('baby') || lower.includes('diaper') || lower.includes('infant')) return 'بے بی کیئر';
+  if (lower.includes('toothpaste') || lower.includes('dental') || lower.includes('oral') || lower.includes('brush')) return 'ٹوتھ پیسٹ';
+  if (lower.includes('cloth') || lower.includes('fashion') || lower.includes('apparel') || lower.includes('sportswear') || lower.includes('shoe')) return 'لباس و فیشن';
+  if (lower.includes('tech') || lower.includes('electronic') || lower.includes('hardware') || lower.includes('software') || lower.includes('laptop')) return 'ٹیکنالوجی';
   if (lower.includes('personal') || lower.includes('care') || lower.includes('cosmetic')) return 'ذاتی نگہداشت';
-  if (lower.includes('tech') || lower.includes('electronic')) return 'ٹیکنالوجی';
-  if (lower.includes('cloth') || lower.includes('fashion') || lower.includes('apparel')) return 'لباس و فیشن';
-  if (lower.includes('restaurant') || lower.includes('place') || lower.includes('cafe')) return 'ریسٹورنٹس';
-  if (lower.includes('celeb') || lower.includes('endorser')) return 'مشہور شخصیات';
+  if (lower.includes('food') || lower.includes('grocery')) return 'کھانے پینے کی اشیاء';
+  
   return category;
 };
 

@@ -103,10 +103,10 @@ export const NoThanksProductCard: React.FC<Props> = ({
 
       {/* Target Details */}
       <div className="space-y-1">
-        <h3 className="font-black text-base text-zinc-900 dark:text-zinc-100 truncate group-hover:text-rose-600 transition-colors">
+        <h3 className="font-black text-base text-zinc-900 dark:text-zinc-100 truncate group-hover:text-rose-600 transition-colors block" dir="auto">
           {product.name}
         </h3>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate block" dir="auto">
           {isCelebrity ? (isUrdu ? 'پروموٹڈ برانڈ: ' : 'Promoted: ') : ''}<strong className="text-zinc-700 dark:text-zinc-300 font-semibold">{product.parentCompany}</strong>
         </p>
       </div>
@@ -131,19 +131,19 @@ export const NoThanksProductCard: React.FC<Props> = ({
       <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-2">
         {isCelebrity ? (
           <div className="flex items-center justify-between w-full group/alt text-purple-700 dark:text-purple-400">
-            <span className="text-xs font-bold truncate flex items-center gap-1">
+            <span className="text-xs font-bold truncate flex items-center gap-1" dir="auto">
               <span>{isUrdu ? 'مطالبہ:' : 'Action:'}</span>
               <span className="text-zinc-900 dark:text-zinc-100 font-extrabold">{isUrdu ? 'معاہدہ منسوخ کریں' : 'Cancel Brand Deals'}</span>
             </span>
-            <ChevronRight className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 transition-transform group-hover:translate-x-0.5" />
+            <ChevronRight className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 rtl-mirror transition-transform group-hover:translate-x-0.5" />
           </div>
         ) : topAlternative ? (
           <div className="flex items-center justify-between w-full group/alt">
-            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 truncate flex items-center gap-1">
+            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 truncate flex items-center gap-1" dir="auto">
               <span>{t.safeAlt}:</span>
               <span className="text-zinc-900 dark:text-zinc-100 font-extrabold">{topAlternative.name}</span>
             </span>
-            <ChevronRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 transition-transform group-hover:translate-x-0.5" />
+            <ChevronRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 rtl-mirror transition-transform group-hover:translate-x-0.5" />
           </div>
         ) : (
           <span className="text-xs text-zinc-400 italic">{isUrdu ? 'مقامی متبادل اپنائیں' : 'Use ethical local alternative'}</span>

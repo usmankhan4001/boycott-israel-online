@@ -20,7 +20,7 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        urdu: ['Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', 'serif'],
+        urdu: ['Jameel Noori Nastaleeq', 'Mehr Nastaliq', 'Gulzar', 'Noto Nastaliq Urdu', 'Urdu Typesetting', 'serif'],
         arabic: ['Amiri', 'Traditional Arabic', 'serif']
       }
     },

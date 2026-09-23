@@ -105,19 +105,23 @@ export const HomePage: React.FC = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <div className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-2xs">
             <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 mb-1">
-              <ShieldAlert className="w-4 h-4" />
+              <ShieldAlert className="w-4 h-4 shrink-0" />
               <span className="text-[11px] font-black uppercase">{isUrdu ? 'بائیکاٹ اہداف' : 'Boycott Targets'}</span>
             </div>
-            <p className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white">{totalBoycotts || '3,400'}+</p>
+            <p className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight" dir="ltr">
+              <bdi>+{totalBoycotts || '3,400'}</bdi>
+            </p>
             <span className="text-[10px] text-zinc-500">{isUrdu ? 'مصدقہ بائیکاٹ شدہ برانڈز' : 'Verified complicit entities'}</span>
           </div>
 
           <div className="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-2xs">
             <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 mb-1">
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span className="text-[11px] font-black uppercase">{isUrdu ? 'پاکستانی متبادل' : 'Safe Swaps'}</span>
             </div>
-            <p className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white">{totalAlternatives || '1,800'}+</p>
+            <p className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight" dir="ltr">
+              <bdi>+{totalAlternatives || '1,800'}</bdi>
+            </p>
             <span className="text-[10px] text-zinc-500">{isUrdu ? 'محفوظ اور معیاری متبادل' : 'Pakistani & ethical brands'}</span>
           </div>
 
@@ -174,6 +178,7 @@ export const HomePage: React.FC = () => {
 
           {POPULAR_CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === (cat.categoryName || 'All') && (cat.query ? searchQuery === cat.query : true);
+            const label = translateCategory(cat.name);
             return (
               <button
                 key={cat.id}
@@ -185,7 +190,7 @@ export const HomePage: React.FC = () => {
                 }`}
               >
                 <CategoryIcon name={cat.iconName} className="w-3.5 h-3.5" />
-                <span>{translateCategory(cat.name)}</span>
+                <span>{label}</span>
               </button>
             );
           })}
@@ -213,13 +218,15 @@ export const HomePage: React.FC = () => {
                   className="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-rose-500 shadow-2xs hover:shadow-sm transition-all flex flex-col items-center gap-2 text-center group active:scale-95"
                 >
                   <BrandLogo name={item.name} domain={item.domain} logo={item.logo} size="md" isBoycott={true} />
-                  <div className="min-w-0 w-full">
-                    <h3 className="font-bold text-xs text-zinc-900 dark:text-white group-hover:text-rose-600 transition-colors truncate">
+                  <div className="min-w-0 w-full text-center">
+                    <h3 className="font-bold text-xs text-zinc-900 dark:text-white group-hover:text-rose-600 transition-colors truncate block" dir="auto">
                       {item.name}
                     </h3>
-                    <p className="text-[10px] text-zinc-500 truncate mt-0.5">{item.parentCompany || translateCategory(item.category)}</p>
+                    <p className="text-[10px] text-zinc-500 truncate mt-0.5 block" dir="auto">
+                      {item.parentCompany || translateCategory(item.category)}
+                    </p>
                     {item.alternatives && item.alternatives[0] && (
-                      <span className="mt-1.5 inline-block text-[9px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded-md truncate max-w-full">
+                      <span className="mt-1.5 inline-block text-[9px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded-md truncate max-w-full" dir="auto">
                         ✓ {item.alternatives[0].name}
                       </span>
                     )}
@@ -241,7 +248,7 @@ export const HomePage: React.FC = () => {
               <h3 className="text-base font-black text-zinc-900 dark:text-white group-hover:text-rose-600 transition-colors">
                 {isUrdu ? 'ریسٹورنٹس اور فاسٹ فوڈ' : 'Restaurants & Fast Food Chains'}
               </h3>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
                 {isUrdu ? 'میکڈونلڈز، کے ایف سی، پیزا ہٹ، سب وے وغیرہ کے بائیکاٹ شواہد اور محفوظ پاکستانی ریسٹورنٹس۔' : "Complicity logs for McDonald's, KFC, Pizza Hut, Subway, Starbucks & safe local eateries."}
               </p>
             </div>
@@ -256,7 +263,7 @@ export const HomePage: React.FC = () => {
               <h3 className="text-base font-black text-zinc-900 dark:text-white group-hover:text-purple-600 transition-colors">
                 {isUrdu ? 'مشہور شخصیات اور سفیر' : 'Celebrity Endorsers & Personalities'}
               </h3>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
                 {isUrdu ? 'بائیکاٹ شدہ برانڈز کو پروموٹ کرنے والی شخصیات اور ان کے معاہدوں کی تفصیلات۔' : 'Track ambassadors promoting complicit brands and demand severance of brand contracts.'}
               </p>
             </div>

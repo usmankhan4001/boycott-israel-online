@@ -108,6 +108,7 @@ export const Navbar: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.searchPlaceholder}
+              dir="auto"
               className="w-full px-2 py-2 bg-transparent text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 text-xs sm:text-sm font-semibold focus:outline-none"
             />
             {searchQuery && (

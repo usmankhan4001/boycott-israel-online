@@ -61,10 +61,41 @@
   background: rgba(120, 120, 128, 0.45);
 }
 
+/* Web Fonts for Authentic Urdu Nastaliq */
+@font-face {
+  font-family: 'Jameel Noori Nastaleeq';
+  src: url('https://cdn.jsdelivr.net/gh/tariq-abdullah/urdu-web-font-CDN/JameelNooriNastaleeq.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mehr Nastaliq';
+  src: url('https://cdn.jsdelivr.net/gh/tariq-abdullah/urdu-web-font-CDN/MehrNastaliq.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Urdu Nastaliq & RTL Typography */
 .font-urdu, [lang="ur"] {
-  font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', -apple-system, BlinkMacSystemFont, sans-serif;
-  line-height: 1.85;
+  font-family: 'Jameel Noori Nastaleeq', 'Mehr Nastaliq', 'Gulzar', 'Noto Nastaliq Urdu', 'Urdu Typesetting', -apple-system, sans-serif;
+  letter-spacing: 0 !important;
+  word-spacing: 0.05em;
+}
+
+[lang="ur"] {
+  line-height: 2.1;
+}
+
+[lang="ur"] h1, [lang="ur"] h2, [lang="ur"] h3, [lang="ur"] h4, [lang="ur"] h5 {
+  line-height: 2.0;
+  letter-spacing: 0 !important;
+}
+
+[lang="ur"] p, [lang="ur"] span, [lang="ur"] button, [lang="ur"] a, [lang="ur"] input {
+  letter-spacing: 0 !important;
 }
 
 [lang="ur"] input, [lang="ur"] button {
@@ -74,3 +105,4 @@
 [dir="rtl"] .rtl-mirror {
   transform: scaleX(-1);
 }
+

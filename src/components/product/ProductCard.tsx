@@ -110,18 +110,18 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
               </span>
             </div>
             
-            <h4 className="font-black text-sm text-zinc-900 dark:text-zinc-50 group-hover:text-rose-600 transition-colors truncate mt-1">
+            <h4 className="font-black text-sm text-zinc-900 dark:text-zinc-50 group-hover:text-rose-600 transition-colors truncate mt-1 block" dir="auto">
               {product.name}
             </h4>
             
-            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate block" dir="auto">
               {product.parentCompany || translateCategory(product.category)}
             </p>
           </div>
         </div>
 
         {/* Reason summary snippet */}
-        <p className="text-[11px] text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-relaxed bg-zinc-50 dark:bg-zinc-800/40 p-2.5 rounded-2xl border border-zinc-100 dark:border-zinc-800/60">
+        <p className="text-[11px] text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-relaxed bg-zinc-50 dark:bg-zinc-800/40 p-2.5 rounded-2xl border border-zinc-100 dark:border-zinc-800/60" dir="auto">
           {product.boycottReason}
         </p>
 
@@ -129,7 +129,7 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
         {isCelebrity ? (
           <div className="flex items-center gap-1.5 p-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200/80 dark:border-purple-900/60 text-purple-800 dark:text-purple-300 text-xs font-bold">
             <Users className="w-3.5 h-3.5 shrink-0 text-purple-500" />
-            <span className="truncate text-[11px]">
+            <span className="truncate text-[11px]" dir="auto">
               {t.demandContractCancellation}
             </span>
           </div>
@@ -137,12 +137,12 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
           <div className="flex items-center justify-between p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold">
             <div className="flex items-center gap-1.5 min-w-0 pr-2">
               <span className="shrink-0 text-sm">🇵🇰</span>
-              <span className="truncate text-[11px]">
+              <span className="truncate text-[11px]" dir="auto">
                 {t.safeAlt}: <strong>{topAlternative.name}</strong>
               </span>
             </div>
             {product.alternatives.length > 1 && (
-              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0" dir="ltr">
                 +{product.alternatives.length - 1}
               </span>
             )}
