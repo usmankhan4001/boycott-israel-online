@@ -18,6 +18,11 @@ import {
 import { ProductItem } from '../types';
 import { BrandLogo } from './BrandLogo';
 import { useTranslation } from '../i18n/useTranslation';
+import { 
+  getLocalizedProductName, 
+  getLocalizedParentCompany, 
+  getLocalizedBoycottReason 
+} from '../utils/urduProductTranslator';
 
 interface Props {
   isOpen: boolean;
@@ -34,7 +39,7 @@ export const NoThanksScanner: React.FC<Props> = ({
   onAddToGrocery,
   onViewProof
 }) => {
-  const { t, isUrdu } = useTranslation();
+  const { t, isUrdu, language } = useTranslation();
   const [activeTab, setActiveTab] = useState<'camera' | 'manual'>('camera');
   const [manualInput, setManualInput] = useState('');
   const [isScanning, setIsScanning] = useState(false);
@@ -368,23 +373,23 @@ export const NoThanksScanner: React.FC<Props> = ({
                         />
                       )}
                       <div className="min-w-0">
-                        <div className="font-extrabold text-base text-white truncate">
-                          {scanResult.product ? scanResult.product.name : `Barcode: ${scanResult.code}`}
+                        <div className="font-extrabold text-base text-white truncate" dir="auto">
+                          {scanResult.product ? getLocalizedProductName(scanResult.product, language) : `Barcode: ${scanResult.code}`}
                         </div>
-                        <div className="text-xs opacity-90 font-semibold truncate">
+                        <div className="text-xs opacity-90 font-semibold truncate" dir="auto">
                           {scanResult.is729 
                             ? t.barcode729Label 
                             : isCelebrity
-                              ? `${t.promotedBrands} ${scanResult.product?.endorsedBrands?.join(', ') || scanResult.product?.parentCompany}`
-                              : `${t.parentCompany} ${scanResult.product?.parentCompany || 'Boycotted Conglomerate'}`}
+                              ? `${t.promotedBrands} ${scanResult.product?.endorsedBrands?.map(b => getLocalizedProductName({ name: b }, language)).join(', ') || getLocalizedParentCompany(scanResult.product?.parentCompany, language)}`
+                              : `${t.parentCompany} ${getLocalizedParentCompany(scanResult.product?.parentCompany, language) || 'Boycotted Conglomerate'}`}
                         </div>
                       </div>
                     </div>
 
-                    <p className="text-xs text-gray-200 leading-relaxed pt-1">
+                    <p className="text-xs text-gray-200 leading-relaxed pt-1" dir="auto">
                       {scanResult.is729
                         ? t.barcode729Desc
-                        : scanResult.product?.boycottReason}
+                        : getLocalizedBoycottReason(scanResult.product?.boycottReason, language)}
                     </p>
                   </div>
 

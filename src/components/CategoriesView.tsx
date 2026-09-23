@@ -48,6 +48,24 @@ export const CategoriesView: React.FC<Props> = ({ products, onSelectCategory }) 
           const count = categoryStats[categoryKey] || 0;
           const displayTitle = isUrdu ? getCategoryTranslation(cat.name, language) : cat.name;
 
+          const getCategorySubtitle = (id: string, def: string) => {
+            if (!isUrdu) return def;
+            switch (id) {
+              case 'restaurants-places': return 'کے ایف سی، میکڈونلڈز، سب وے، اسٹاربکس، فاسٹ فوڈ...';
+              case 'celebrities-endorsers': return 'اداکار، کرکٹرز اور بائیکاٹ برانڈز کے اشتہاری سفیر...';
+              case 'drinks': return 'پیپسی، کوک، سلائس، سیون اپ، مرنڈا...';
+              case 'biscuits': return 'اوریو، لیز، کرکرے، پرنگلز، ٹک بسکٹ...';
+              case 'tea-coffee': return 'لپٹن، نیس کیفے، ایوری ڈے، سپریم...';
+              case 'detergents': return 'سرف ایکسل، ایریئل، ہارپک، وِم بار...';
+              case 'soaps-hygiene': return 'ڈو، لکس، سن سلک، پینٹین، ہیڈ اینڈ شولڈرز...';
+              case 'baby': return 'پیمپرز، سیریلاک، نیڈو، ہگیز ڈائپرز...';
+              case 'toothpaste': return 'کولگیٹ، سینسوڈائن، اورل بی، کلوز اپ...';
+              case 'apparel': return 'زارا، پوما، ایچ اینڈ ایم، نائیکی، ایڈیڈاس...';
+              case 'tech': return 'ایچ پی، سیمنز، وکس، فائیور، انٹیل...';
+              default: return def;
+            }
+          };
+
           return (
             <button
               key={cat.id}
@@ -59,11 +77,11 @@ export const CategoriesView: React.FC<Props> = ({ products, onSelectCategory }) 
                   <CategoryIcon name={cat.iconName} className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
+                  <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate" dir="auto">
                     {displayTitle}
                   </h3>
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
-                    {cat.subtitle}
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate" dir="auto">
+                    {getCategorySubtitle(cat.id, cat.subtitle)}
                   </p>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span className="text-[10px] font-bold px-2 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">

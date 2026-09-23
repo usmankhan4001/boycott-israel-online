@@ -14,6 +14,12 @@ import {
   Users
 } from 'lucide-react';
 import { useTranslation } from '../i18n/useTranslation';
+import { 
+  getLocalizedProductName, 
+  getLocalizedParentCompany, 
+  getLocalizedBoycottReason,
+  getLocalizedBehaviorNotes 
+} from '../utils/urduProductTranslator';
 
 interface Props {
   product: ProductItem;
@@ -26,7 +32,7 @@ export const ProductDetailView: React.FC<Props> = ({
   onBack,
   onAddToGrocery
 }) => {
-  const { t, isUrdu, translateCategory } = useTranslation();
+  const { t, isUrdu, language, translateCategory } = useTranslation();
   const topAlternative = product.alternatives[0];
 
   const handleShare = () => {
@@ -127,11 +133,11 @@ export const ProductDetailView: React.FC<Props> = ({
             </div>
 
             <div>
-              <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-                {product.name}
+              <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight" dir="auto">
+                {getLocalizedProductName(product, language)}
               </h1>
-              <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mt-0.5">
-                {isCelebrity ? (isUrdu ? 'پروموٹڈ برانڈ:' : 'Promoted Brand:') : t.parentCompany} <strong className="text-zinc-800 dark:text-zinc-200">{product.parentCompany}</strong>
+              <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mt-0.5" dir="auto">
+                {isCelebrity ? (isUrdu ? 'پروموٹڈ برانڈ:' : 'Promoted Brand:') : t.parentCompany} <strong className="text-zinc-800 dark:text-zinc-200">{getLocalizedParentCompany(product.parentCompany, language)}</strong>
               </p>
             </div>
 
@@ -143,8 +149,8 @@ export const ProductDetailView: React.FC<Props> = ({
                 </span>
                 <div className="flex flex-wrap items-center justify-center gap-1.5">
                   {product.endorsedBrands.map((brand, idx) => (
-                    <span key={idx} className="px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 font-bold text-xs border border-purple-200 dark:border-purple-800">
-                      {brand}
+                    <span key={idx} className="px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 font-bold text-xs border border-purple-200 dark:border-purple-800" dir="auto">
+                      {getLocalizedProductName({ name: brand }, language)}
                     </span>
                   ))}
                 </div>
@@ -179,8 +185,8 @@ export const ProductDetailView: React.FC<Props> = ({
               <span>{t.whyBoycottTitle}</span>
             </div>
 
-            <p className="text-sm text-zinc-900 dark:text-zinc-100 leading-relaxed font-semibold">
-              {product.boycottReason}
+            <p className="text-sm text-zinc-900 dark:text-zinc-100 leading-relaxed font-semibold" dir="auto">
+              {getLocalizedBoycottReason(product.boycottReason, language)}
             </p>
 
             <div className="p-3.5 rounded-xl bg-white/90 dark:bg-zinc-900/90 border border-purple-200 dark:border-purple-900/60 text-xs text-zinc-700 dark:text-zinc-300 space-y-1.5">
@@ -204,8 +210,8 @@ export const ProductDetailView: React.FC<Props> = ({
               </div>
 
               {product.behaviorNotes && (
-                <p className="text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed font-medium bg-white/80 dark:bg-zinc-900/80 p-3 rounded-xl border border-amber-200/70 dark:border-amber-900/40">
-                  {product.behaviorNotes}
+                <p className="text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed font-medium bg-white/80 dark:bg-zinc-900/80 p-3 rounded-xl border border-amber-200/70 dark:border-amber-900/40" dir="auto">
+                  {getLocalizedBehaviorNotes(product.behaviorNotes, language)}
                 </p>
               )}
 

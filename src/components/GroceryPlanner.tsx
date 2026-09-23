@@ -24,6 +24,7 @@ import {
 } from '../utils/notifications';
 import { saveStoredNotificationSettings } from '../utils/storage';
 import { useTranslation } from '../i18n/useTranslation';
+import { getLocalizedProductName, getLocalizedParentCompany } from '../utils/urduProductTranslator';
 
 interface Props {
   groceryList: GroceryItem[];
@@ -40,7 +41,7 @@ export const GroceryPlanner: React.FC<Props> = ({
   setNotificationSettings,
   products
 }) => {
-  const { t, isUrdu } = useTranslation();
+  const { t, isUrdu, language } = useTranslation();
   const [newItemName, setNewItemName] = useState('');
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [notifSuccessMsg, setNotifSuccessMsg] = useState('');
@@ -367,8 +368,8 @@ export const GroceryPlanner: React.FC<Props> = ({
                           item.checked 
                             ? 'line-through text-zinc-400 dark:text-zinc-500' 
                             : 'text-zinc-900 dark:text-zinc-100'
-                        }`}>
-                          {item.name}
+                        }`} dir="auto">
+                          {item.isBoycott ? getLocalizedProductName(item, language) : item.name}
                         </span>
                         {item.isBoycott && (
                           <span className="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 text-[10px] font-bold border border-rose-200 dark:border-rose-800 shrink-0">
@@ -380,8 +381,8 @@ export const GroceryPlanner: React.FC<Props> = ({
                       {/* Safe Alternative Note or Warning */}
                       {item.isBoycott ? (
                         <div className="space-y-1.5 pt-1">
-                          <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">
-                            {t.parentCompany} {item.parentCompany || 'Supports Israeli Occupation'}
+                          <p className="text-xs text-rose-600 dark:text-rose-400 font-medium" dir="auto">
+                            {t.parentCompany} {getLocalizedParentCompany(item.parentCompany, language) || 'Supports Israeli Occupation'}
                           </p>
                           
                           {/* Swap Alternatives Pills */}

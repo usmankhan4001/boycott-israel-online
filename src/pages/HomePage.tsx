@@ -8,6 +8,7 @@ import { POPULAR_CATEGORIES } from '../data/laymanCategories';
 import { CategoryIcon } from '../components/CategoryIcon';
 import { GAZA_CONSCIENCE_MESSAGES } from '../data/gazaQuotes';
 import { useTranslation } from '../i18n/useTranslation';
+import { getLocalizedProductName, getLocalizedParentCompany } from '../utils/urduProductTranslator';
 import { 
   ScanLine, 
   ShoppingCart, 
@@ -27,7 +28,7 @@ import {
 export const HomePage: React.FC = () => {
   const { products, searchQuery, selectedCategory, setSelectedCategory, setSearchQuery, isLoading } = useProducts();
   const { filteredProducts } = useSearch();
-  const { t, isUrdu, translateCategory } = useTranslation();
+  const { t, isUrdu, language, translateCategory } = useTranslation();
   const [itemsToShow, setItemsToShow] = useState(24);
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [severityFilter, setSeverityFilter] = useState<'All' | 'Critical'>('All');
@@ -220,10 +221,10 @@ export const HomePage: React.FC = () => {
                   <BrandLogo name={item.name} domain={item.domain} logo={item.logo} size="md" isBoycott={true} />
                   <div className="min-w-0 w-full text-center">
                     <h3 className="font-bold text-xs text-zinc-900 dark:text-white group-hover:text-rose-600 transition-colors truncate block" dir="auto">
-                      {item.name}
+                      {getLocalizedProductName(item, language)}
                     </h3>
                     <p className="text-[10px] text-zinc-500 truncate mt-0.5 block" dir="auto">
-                      {item.parentCompany || translateCategory(item.category)}
+                      {getLocalizedParentCompany(item.parentCompany, language) || translateCategory(item.category)}
                     </p>
                     {item.alternatives && item.alternatives[0] && (
                       <span className="mt-1.5 inline-block text-[9px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded-md truncate max-w-full" dir="auto">

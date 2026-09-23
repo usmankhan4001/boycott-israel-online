@@ -6,6 +6,7 @@ import { Plus, CheckCircle2, ShieldAlert, Share2, Users } from 'lucide-react';
 import { useGroceryStore } from '../../stores/groceryStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useTranslation } from '../../i18n/useTranslation';
+import { getLocalizedProductName, getLocalizedParentCompany, getLocalizedBoycottReason } from '../../utils/urduProductTranslator';
 
 interface Props {
   product: ProductItem;
@@ -14,7 +15,7 @@ interface Props {
 export const ProductCard: React.FC<Props> = ({ product }) => {
   const addItem = useGroceryStore(state => state.addItem);
   const showToast = useUIStore(state => state.showToast);
-  const { t, isUrdu, translateCategory } = useTranslation();
+  const { t, isUrdu, language, translateCategory } = useTranslation();
 
   const isCelebrity = 
     product.category === 'Celebrities & Endorsers' || 
@@ -111,18 +112,18 @@ export const ProductCard: React.FC<Props> = ({ product }) => {
             </div>
             
             <h4 className="font-black text-sm text-zinc-900 dark:text-zinc-50 group-hover:text-rose-600 transition-colors truncate mt-1 block" dir="auto">
-              {product.name}
+              {getLocalizedProductName(product, language)}
             </h4>
             
             <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate block" dir="auto">
-              {product.parentCompany || translateCategory(product.category)}
+              {getLocalizedParentCompany(product.parentCompany, language) || translateCategory(product.category)}
             </p>
           </div>
         </div>
 
         {/* Reason summary snippet */}
         <p className="text-[11px] text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-relaxed bg-zinc-50 dark:bg-zinc-800/40 p-2.5 rounded-2xl border border-zinc-100 dark:border-zinc-800/60" dir="auto">
-          {product.boycottReason}
+          {getLocalizedBoycottReason(product.boycottReason, language)}
         </p>
 
         {/* Section: Safe Alternative (for goods) OR Callout Notice (for celebrities) */}

@@ -15,6 +15,7 @@ import {
   ArrowRight 
 } from 'lucide-react';
 import { useTranslation } from '../i18n/useTranslation';
+import { getLocalizedProductName, getLocalizedParentCompany, getLocalizedBoycottReason } from '../utils/urduProductTranslator';
 
 interface Props {
   product: ProductItem;
@@ -28,7 +29,7 @@ export const NoThanksProductCard: React.FC<Props> = ({
   onSelect
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { t, isUrdu } = useTranslation();
+  const { t, isUrdu, language } = useTranslation();
   const topAlternative = product.alternatives[0];
 
   const handleShare = (e: React.MouseEvent) => {
@@ -104,10 +105,10 @@ export const NoThanksProductCard: React.FC<Props> = ({
       {/* Target Details */}
       <div className="space-y-1">
         <h3 className="font-black text-base text-zinc-900 dark:text-zinc-100 truncate group-hover:text-rose-600 transition-colors block" dir="auto">
-          {product.name}
+          {getLocalizedProductName(product, language)}
         </h3>
         <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate block" dir="auto">
-          {isCelebrity ? (isUrdu ? 'پروموٹڈ برانڈ: ' : 'Promoted: ') : ''}<strong className="text-zinc-700 dark:text-zinc-300 font-semibold">{product.parentCompany}</strong>
+          {isCelebrity ? (isUrdu ? 'پروموٹڈ برانڈ: ' : 'Promoted: ') : ''}<strong className="text-zinc-700 dark:text-zinc-300 font-semibold">{getLocalizedParentCompany(product.parentCompany, language)}</strong>
         </p>
       </div>
 
