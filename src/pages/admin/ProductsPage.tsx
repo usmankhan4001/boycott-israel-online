@@ -198,23 +198,23 @@ export function ProductsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Products Catalog</h2>
+          <h2 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white">Products Catalog</h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
             Manage boycott targets and verified local alternatives ({products.length} total)
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap">
           <button
             onClick={loadProducts}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl font-bold text-xs hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl font-bold text-xs hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
           >
             <RefreshCw className="w-3.5 h-3.5" /> Refresh
           </button>
           <button 
             onClick={openAddModal}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs shadow-sm transition-colors"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs shadow-sm transition-colors"
           >
-            <Plus className="w-4 h-4" /> Add Boycott Target
+            <Plus className="w-4 h-4" /> Add Target
           </button>
         </div>
       </div>
@@ -231,8 +231,8 @@ export function ProductsPage() {
       )}
 
       {/* Search & Category Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
+      <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 w-full">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
           <input 
             type="text"
@@ -245,7 +245,7 @@ export function ProductsPage() {
         <select
           value={selectedCat}
           onChange={e => setSelectedCat(e.target.value)}
-          className="px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-xs font-bold focus:outline-none focus:border-red-500"
+          className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white text-xs font-bold focus:outline-none focus:border-red-500"
         >
           {categoriesList.map(cat => (
             <option key={cat} value={cat}>{cat}</option>
@@ -254,9 +254,9 @@ export function ProductsPage() {
       </div>
 
       {/* Products Table */}
-      <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-xs">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-xs">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full min-w-[640px] text-left border-collapse">
             <thead>
               <tr className="bg-zinc-50 dark:bg-zinc-800/60 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 text-xs font-black uppercase tracking-wider">
                 <th className="p-4">Brand / Logo</th>
@@ -339,23 +339,26 @@ export function ProductsPage() {
 
       {/* Add / Edit Product Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 max-w-xl w-full space-y-5 my-8 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
-              <div>
-                <h3 className="text-lg font-black text-zinc-900 dark:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-xl w-full max-h-[92vh] flex flex-col my-auto shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3 shrink-0">
+              <div className="min-w-0 pr-2">
+                <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white truncate">
                   {editingId ? `Edit "${name || 'Product'}"` : 'Add New Boycott Target'}
                 </h3>
-                <p className="text-[11px] text-zinc-500">
+                <p className="text-[11px] text-zinc-500 truncate">
                   {editingId ? 'Modify boycott evidence, logo, severity, or safe alternatives' : 'Fill in the target details, logo, and verified local alternatives'}
                 </p>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+              <button 
+                onClick={() => setIsModalOpen(false)} 
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 shrink-0"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            <form onSubmit={handleSubmit} className="space-y-4 text-xs overflow-y-auto pr-1 flex-1 py-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-zinc-700 dark:text-zinc-300 mb-1">Brand / Entity Name *</label>
@@ -423,13 +426,13 @@ export function ProductsPage() {
                       <ImageIcon className="w-5 h-5 text-zinc-400" />
                     )}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <input 
                       type="url" 
                       value={logo} 
                       onChange={e => setLogo(e.target.value)} 
-                      placeholder="https://upload.wikimedia.org/wikipedia/commons/.../logo.svg"
-                      className="w-full px-3 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white text-xs"
+                      placeholder="https://upload.wikimedia.org/.../logo.svg"
+                      className="w-full px-3 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white text-xs truncate"
                     />
                     <span className="text-[10px] text-zinc-400 mt-1 block">
                       Direct image link (Wikimedia SVG/PNG, Brandfetch, or direct HTTPS link)
@@ -475,19 +478,19 @@ export function ProductsPage() {
 
               {/* Safe Alternatives Section */}
               <div className="space-y-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-1">
                   <label className="font-bold text-zinc-700 dark:text-zinc-300">Verified Safe Alternatives</label>
                   <button 
                     type="button" 
                     onClick={handleAddAlternativeRow}
-                    className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline"
+                    className="text-emerald-600 dark:text-emerald-400 font-bold text-xs hover:underline"
                   >
-                    + Add Another Alternative
+                    + Add Alternative
                   </button>
                 </div>
                 {alternatives.map((alt, idx) => (
                   <div key={idx} className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/60 space-y-2">
-                    <div className="flex gap-2 items-center">
+                    <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
                       <input 
                         type="text" 
                         placeholder="Alternative Brand (e.g. Gourmet / Tapal)" 
@@ -495,22 +498,24 @@ export function ProductsPage() {
                         onChange={e => handleAlternativeChange(idx, 'name', e.target.value)}
                         className="flex-1 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
                       />
-                      <input 
-                        type="text" 
-                        placeholder="Country" 
-                        value={alt.country} 
-                        onChange={e => handleAlternativeChange(idx, 'country', e.target.value)}
-                        className="w-24 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
-                      />
-                      {alternatives.length > 1 && (
-                        <button 
-                          type="button" 
-                          onClick={() => handleRemoveAlternativeRow(idx)}
-                          className="p-1 text-zinc-400 hover:text-rose-500"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <input 
+                          type="text" 
+                          placeholder="Country" 
+                          value={alt.country} 
+                          onChange={e => handleAlternativeChange(idx, 'country', e.target.value)}
+                          className="flex-1 sm:w-24 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white"
+                        />
+                        {alternatives.length > 1 && (
+                          <button 
+                            type="button" 
+                            onClick={() => handleRemoveAlternativeRow(idx)}
+                            className="p-1.5 text-zinc-400 hover:text-rose-500 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <input 
@@ -518,7 +523,7 @@ export function ProductsPage() {
                         placeholder="Alternative Logo URL (optional)" 
                         value={alt.logo || ''} 
                         onChange={e => handleAlternativeChange(idx, 'logo', e.target.value)}
-                        className="flex-1 px-3 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white text-[11px]"
+                        className="flex-1 px-3 py-1 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white text-[11px] truncate"
                       />
                       {alt.logo && (
                         <div className="w-6 h-6 rounded bg-white p-0.5 border border-zinc-200 shrink-0">
@@ -530,7 +535,7 @@ export function ProductsPage() {
                 ))}
               </div>
 
-              <div className="flex justify-end gap-2 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+              <div className="flex justify-end gap-2 pt-4 border-t border-zinc-100 dark:border-zinc-800 shrink-0">
                 <button 
                   type="button" 
                   onClick={() => setIsModalOpen(false)}
@@ -541,7 +546,7 @@ export function ProductsPage() {
                 <button 
                   type="submit" 
                   disabled={isSaving}
-                  className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold disabled:opacity-50 shadow-xs"
                 >
                   {isSaving ? 'Saving...' : editingId ? 'Update Target' : 'Save Target'}
                 </button>

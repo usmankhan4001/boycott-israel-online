@@ -51,59 +51,59 @@ export function DashboardPage() {
   const totalAlternatives = products.reduce((acc, p) => acc + (p.alternatives?.length || 0), 0);
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="space-y-5 sm:space-y-6 max-w-5xl min-w-0">
       <div>
-        <h2 className="text-2xl font-black text-zinc-900 dark:text-white">Admin Dashboard</h2>
+        <h2 className="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white">Admin Dashboard</h2>
         <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
           Real-time metrics & moderation queue for Boycott Israel Online
         </p>
       </div>
       
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
           <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Boycott Targets</span>
-            <ShieldAlert className="w-5 h-5 text-rose-500" />
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-zinc-500 truncate">Targets</span>
+            <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5 text-rose-500 shrink-0" />
           </div>
-          <p className="text-3xl font-black text-zinc-900 dark:text-white">{loading ? '...' : totalProducts}</p>
-          <span className="text-[11px] text-zinc-400 font-semibold mt-1 block">Active in catalog</span>
+          <p className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white">{loading ? '...' : totalProducts}</p>
+          <span className="text-[10px] sm:text-[11px] text-zinc-400 font-semibold mt-1 block truncate">In catalog</span>
         </div>
 
-        <div className="p-5 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
+        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
           <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Safe Alternatives</span>
-            <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-zinc-500 truncate">Alternatives</span>
+            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500 shrink-0" />
           </div>
-          <p className="text-3xl font-black text-zinc-900 dark:text-white">{loading ? '...' : totalAlternatives}</p>
-          <span className="text-[11px] text-zinc-400 font-semibold mt-1 block">Pakistani & safe brands</span>
+          <p className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white">{loading ? '...' : totalAlternatives}</p>
+          <span className="text-[10px] sm:text-[11px] text-zinc-400 font-semibold mt-1 block truncate">Safe brands</span>
         </div>
 
-        <div className="p-5 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
+        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
           <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Pending Reviews</span>
-            <Inbox className="w-5 h-5 text-amber-500" />
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-zinc-500 truncate">Reviews</span>
+            <Inbox className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 shrink-0" />
           </div>
-          <p className="text-3xl font-black text-zinc-900 dark:text-white">{loading ? '...' : pendingSuggestions}</p>
-          <span className="text-[11px] text-zinc-400 font-semibold mt-1 block">Community submissions</span>
+          <p className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white">{loading ? '...' : pendingSuggestions}</p>
+          <span className="text-[10px] sm:text-[11px] text-zinc-400 font-semibold mt-1 block truncate">Submissions</span>
         </div>
 
-        <div className="p-5 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
+        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
           <div className="flex items-center justify-between text-zinc-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Categories</span>
-            <Layers className="w-5 h-5 text-blue-500" />
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-zinc-500 truncate">Categories</span>
+            <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 shrink-0" />
           </div>
-          <p className="text-3xl font-black text-zinc-900 dark:text-white">{loading ? '...' : totalCategories}</p>
-          <span className="text-[11px] text-zinc-400 font-semibold mt-1 block">Distinct sectors</span>
+          <p className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white">{loading ? '...' : totalCategories}</p>
+          <span className="text-[10px] sm:text-[11px] text-zinc-400 font-semibold mt-1 block truncate">Sectors</span>
         </div>
       </div>
 
       {/* Quick Action & Recent Submissions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Recent Submissions */}
-        <div className="lg:col-span-2 p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-4 shadow-xs">
+        <div className="lg:col-span-2 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-4 shadow-xs">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-zinc-900 dark:text-white">Recent Community Submissions</h3>
+            <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white">Recent Submissions</h3>
             <Link to="/admin/suggestions" className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 hover:underline">
               View All ({suggestions.length}) <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -111,8 +111,8 @@ export function DashboardPage() {
 
           <div className="space-y-2.5">
             {suggestions.slice(0, 4).map(s => (
-              <div key={s.id} className="flex justify-between items-center p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-800">
-                <div className="min-w-0 pr-3">
+              <div key={s.id} className="flex justify-between items-center p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-800">
+                <div className="min-w-0 pr-3 flex-1">
                   <p className="font-bold text-sm text-zinc-900 dark:text-white truncate">{s.brandName}</p>
                   <p className="text-[11px] text-zinc-500 truncate">{s.category} • {s.reasonOrProof}</p>
                 </div>
@@ -130,13 +130,13 @@ export function DashboardPage() {
         </div>
 
         {/* Database Status Card */}
-        <div className="p-6 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-4 shadow-xs flex flex-col justify-between">
-          <div className="space-y-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <Database className="w-5 h-5" />
+        <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-4 shadow-xs flex flex-col justify-between">
+          <div className="space-y-2 sm:space-y-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <Database className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <h3 className="text-base font-bold text-zinc-900 dark:text-white">Cloudflare D1 Backend</h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-white">Cloudflare D1 Backend</h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
               {dbInfo?.d1Configured 
                 ? 'Your Cloudflare Edge SQL database is active and serving live product queries.' 
                 : 'Running on local fallback mode. Bind "DB" in Cloudflare Pages to activate serverless SQL.'}
