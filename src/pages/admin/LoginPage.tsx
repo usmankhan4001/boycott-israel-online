@@ -9,6 +9,21 @@ export function LoginPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const savedLang = localStorage.getItem('app_language') || 'en';
+    document.documentElement.lang = 'en';
+    document.documentElement.dir = 'ltr';
+    document.documentElement.classList.remove('font-urdu');
+
+    return () => {
+      document.documentElement.lang = savedLang;
+      document.documentElement.dir = savedLang === 'ur' ? 'rtl' : 'ltr';
+      if (savedLang === 'ur') {
+        document.documentElement.classList.add('font-urdu');
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (isAuthenticated) {
       navigate('/admin/dashboard');
     }
@@ -23,7 +38,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 p-4 font-sans" dir="ltr" lang="en">
       <div className="max-w-md w-full p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xl space-y-6 text-center">
         <div className="w-14 h-14 rounded-2xl bg-red-600 text-white mx-auto flex items-center justify-center shadow-lg shadow-red-500/20">
           <ShieldAlert className="w-7 h-7" />

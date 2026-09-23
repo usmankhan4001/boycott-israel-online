@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { useAdmin } from '../../hooks/useAdmin';
@@ -9,12 +9,27 @@ export function AdminLayout() {
   const logout = useAuthStore(state => state.logout);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const savedLang = localStorage.getItem('app_language') || 'en';
+    document.documentElement.lang = 'en';
+    document.documentElement.dir = 'ltr';
+    document.documentElement.classList.remove('font-urdu');
+
+    return () => {
+      document.documentElement.lang = savedLang;
+      document.documentElement.dir = savedLang === 'ur' ? 'rtl' : 'ltr';
+      if (savedLang === 'ur') {
+        document.documentElement.classList.add('font-urdu');
+      }
+    };
+  }, []);
+
   if (isLoading) {
-    return <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center text-zinc-500">Loading...</div>;
+    return <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center text-zinc-500 font-sans" dir="ltr" lang="en">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col md:flex-row font-sans" dir="ltr" lang="en">
       <aside className="w-full md:w-64 bg-zinc-900 text-zinc-100 flex flex-col">
         <div className="p-4 border-b border-zinc-800">
           <div className="flex items-center gap-2 mb-4 text-red-500">
