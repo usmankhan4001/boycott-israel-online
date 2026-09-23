@@ -37,7 +37,7 @@ export const TabBar: React.FC = () => {
             }`}
           >
             <Search className="w-5 h-5" />
-            <span className={`text-[10px] ${isUrdu ? 'leading-none mt-0.5' : ''}`}>{t.allBrands}</span>
+            <span className={`text-[11px] sm:text-xs ${isUrdu ? 'font-bold leading-tight mt-0.5' : ''}`}>{t.allBrands}</span>
           </NavLink>
         </li>
 
@@ -53,7 +53,7 @@ export const TabBar: React.FC = () => {
             }`}
           >
             <LayoutGrid className="w-5 h-5" />
-            <span className={`text-[10px] ${isUrdu ? 'leading-none mt-0.5' : ''}`}>{t.categories}</span>
+            <span className={`text-[11px] sm:text-xs ${isUrdu ? 'font-bold leading-tight mt-0.5' : ''}`}>{t.categories}</span>
           </NavLink>
         </li>
 
@@ -83,12 +83,12 @@ export const TabBar: React.FC = () => {
             <div className="relative">
               <ShoppingCart className="w-5 h-5" />
               {groceryList.length > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 min-w-4 h-4 px-1 rounded-full bg-rose-600 text-white flex items-center justify-center text-[9px] font-black shadow-xs animate-in zoom-in-50">
+                <span className="absolute -top-1.5 -right-2.5 min-w-4 h-4 px-1 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] font-black shadow-xs animate-in zoom-in-50">
                   {groceryList.length}
                 </span>
               )}
             </div>
-            <span className={`text-[10px] ${isUrdu ? 'leading-none mt-0.5' : ''}`}>{t.grocery}</span>
+            <span className={`text-[11px] sm:text-xs ${isUrdu ? 'font-bold leading-tight mt-0.5' : ''}`}>{t.grocery}</span>
           </NavLink>
         </li>
 
@@ -104,7 +104,7 @@ export const TabBar: React.FC = () => {
             }`}
           >
             <Info className="w-5 h-5" />
-            <span className={`text-[10px] ${isUrdu ? 'leading-none mt-0.5' : ''}`}>{t.whyBoycott}</span>
+            <span className={`text-[11px] sm:text-xs ${isUrdu ? 'font-bold leading-tight mt-0.5' : ''}`}>{t.whyBoycott}</span>
           </NavLink>
         </li>
       </ul>

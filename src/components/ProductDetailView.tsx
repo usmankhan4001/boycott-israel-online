@@ -106,13 +106,13 @@ export const ProductDetailView: React.FC<Props> = ({
             
             {/* Top Status Tag */}
             <div className="flex items-center justify-center gap-2 flex-wrap">
-              <span className={`px-3 py-1 rounded-md text-white text-[11px] font-black tracking-wide uppercase shadow-2xs ${
+              <span className={`px-3.5 py-1.5 rounded-lg text-white text-xs sm:text-sm font-black tracking-wide uppercase shadow-2xs ${
                 isCelebrity ? 'bg-purple-700' : 'bg-rose-600'
               }`}>
                 {isCelebrity ? `👤 ${t.complicitEndorser}` : `🚨 ${t.doNotBuy}`}
               </span>
               {product.israelBarcode && (
-                <span className="px-2.5 py-1 rounded-md bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800 text-[11px] font-bold flex items-center gap-1">
+                <span className="px-3 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800 text-xs sm:text-sm font-bold flex items-center gap-1">
                   <Barcode className="w-3.5 h-3.5" /> {t.barcode729}
                 </span>
               )}
@@ -133,10 +133,10 @@ export const ProductDetailView: React.FC<Props> = ({
             </div>
 
             <div>
-              <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight" dir="auto">
+              <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight" dir="auto">
                 {getLocalizedProductName(product, language)}
               </h1>
-              <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 mt-0.5" dir="auto">
+              <p className="text-sm sm:text-base font-semibold text-zinc-500 dark:text-zinc-400 mt-1" dir="auto">
                 {isCelebrity ? (isUrdu ? 'پروموٹڈ برانڈ:' : 'Promoted Brand:') : t.parentCompany} <strong className="text-zinc-800 dark:text-zinc-200">{getLocalizedParentCompany(product.parentCompany, language)}</strong>
               </p>
             </div>
@@ -144,12 +144,12 @@ export const ProductDetailView: React.FC<Props> = ({
             {/* Endorsed Brands Tags (If Celebrity) */}
             {product.endorsedBrands && product.endorsedBrands.length > 0 && (
               <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                <span className="text-[11px] font-black text-purple-700 dark:text-purple-400 uppercase tracking-wider block mb-1.5">
+                <span className="text-xs sm:text-sm font-black text-purple-700 dark:text-purple-400 uppercase tracking-wider block mb-1.5">
                   {t.promotedBrands}
                 </span>
                 <div className="flex flex-wrap items-center justify-center gap-1.5">
                   {product.endorsedBrands.map((brand, idx) => (
-                    <span key={idx} className="px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 font-bold text-xs border border-purple-200 dark:border-purple-800" dir="auto">
+                    <span key={idx} className="px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 font-bold text-xs sm:text-sm border border-purple-200 dark:border-purple-800" dir="auto">
                       {getLocalizedProductName({ name: brand }, language)}
                     </span>
                   ))}
@@ -158,11 +158,11 @@ export const ProductDetailView: React.FC<Props> = ({
             )}
 
             {/* Metadata Badges */}
-            <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs font-bold text-zinc-600 dark:text-zinc-400">
-              <span className="px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-400">
+              <span className="px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
                 {isUrdu ? 'کیٹیگری:' : 'Category:'} {translateCategory(product.category)}
               </span>
-              <span className={`px-2.5 py-1 rounded-lg border ${
+              <span className={`px-3 py-1.5 rounded-lg border ${
                 isCelebrity
                   ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800'
                   : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800'
@@ -173,24 +173,24 @@ export const ProductDetailView: React.FC<Props> = ({
           </div>
 
           {/* WHY TO BOYCOTT */}
-          <div className={`p-5 rounded-2xl border space-y-3 ${
+          <div className={`p-5 sm:p-6 rounded-2xl border space-y-3.5 ${
             isCelebrity 
               ? 'bg-purple-50/70 dark:bg-purple-950/30 border-purple-200 dark:border-purple-900/60'
               : 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900/60'
           }`}>
-            <div className={`flex items-center gap-2 font-black text-sm uppercase tracking-wide ${
+            <div className={`flex items-center gap-2 font-black text-base sm:text-lg uppercase tracking-wide ${
               isCelebrity ? 'text-purple-800 dark:text-purple-400' : 'text-rose-800 dark:text-rose-400'
             }`}>
-              <AlertOctagon className="w-5 h-5" />
+              <AlertOctagon className="w-5 h-5 sm:w-6 sm:h-6" />
               <span>{t.whyBoycottTitle}</span>
             </div>
 
-            <p className="text-sm text-zinc-900 dark:text-zinc-100 leading-relaxed font-semibold" dir="auto">
+            <p className="text-sm sm:text-base text-zinc-900 dark:text-zinc-100 leading-relaxed font-bold" dir="auto">
               {getLocalizedBoycottReason(product.boycottReason, language)}
             </p>
 
-            <div className="p-3.5 rounded-xl bg-white/90 dark:bg-zinc-900/90 border border-purple-200 dark:border-purple-900/60 text-xs text-zinc-700 dark:text-zinc-300 space-y-1.5">
-              <p className={`font-bold ${isCelebrity ? 'text-purple-700 dark:text-purple-400' : 'text-rose-700 dark:text-rose-400'}`}>
+            <div className="p-4 rounded-xl bg-white/90 dark:bg-zinc-900/90 border border-purple-200 dark:border-purple-900/60 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 space-y-1.5">
+              <p className={`font-bold text-xs sm:text-sm ${isCelebrity ? 'text-purple-700 dark:text-purple-400' : 'text-rose-700 dark:text-rose-400'}`}>
                 {isCelebrity ? (isUrdu ? 'اخلاقی ذمہ داری:' : 'Ethical Responsibility:') : t.financialImpact}
               </p>
               <p className="leading-relaxed">
@@ -203,14 +203,14 @@ export const ProductDetailView: React.FC<Props> = ({
 
           {/* DOCUMENTED ACTIONS */}
           {(product.behaviorNotes || product.behaviorTimeline) && (
-            <div className="p-5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 space-y-3">
-              <div className="flex items-center gap-2 text-amber-900 dark:text-amber-300 font-black text-sm">
+            <div className="p-5 sm:p-6 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 space-y-3">
+              <div className="flex items-center gap-2 text-amber-900 dark:text-amber-300 font-black text-base sm:text-lg">
                 <ShieldAlert className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 <span>{isUrdu ? 'مصدقہ شواہد اور اقدامات' : 'Documented Corporate Actions'}</span>
               </div>
 
               {product.behaviorNotes && (
-                <p className="text-xs text-zinc-800 dark:text-zinc-200 leading-relaxed font-medium bg-white/80 dark:bg-zinc-900/80 p-3 rounded-xl border border-amber-200/70 dark:border-amber-900/40" dir="auto">
+                <p className="text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed font-medium bg-white/80 dark:bg-zinc-900/80 p-3.5 rounded-xl border border-amber-200/70 dark:border-amber-900/40" dir="auto">
                   {getLocalizedBehaviorNotes(product.behaviorNotes, language)}
                 </p>
               )}

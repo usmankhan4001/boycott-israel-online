@@ -82,7 +82,19 @@
 
 /* Responsive Fluid Typography for Urdu Mode */
 html[lang="ur"] {
-  font-size: clamp(15px, 1.1vw + 11.5px, 17.5px);
+  font-size: 17.5px;
+}
+
+@media (min-width: 640px) {
+  html[lang="ur"] {
+    font-size: 18.5px;
+  }
+}
+
+@media (min-width: 1024px) {
+  html[lang="ur"] {
+    font-size: 19.5px;
+  }
 }
 
 /* Urdu Nastaliq & RTL Typography */
@@ -95,63 +107,80 @@ html[lang="ur"] {
 }
 
 [lang="ur"] {
-  line-height: 2.1;
-}
-
-[lang="ur"] h1 {
-  font-size: clamp(1.4rem, 2.8vw, 2.15rem);
-  line-height: 1.8;
-  letter-spacing: 0 !important;
-}
-
-[lang="ur"] h2 {
-  font-size: clamp(1.2rem, 2.2vw, 1.65rem);
-  line-height: 1.85;
-  letter-spacing: 0 !important;
-}
-
-[lang="ur"] h3 {
-  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
-  line-height: 1.9;
-  letter-spacing: 0 !important;
-}
-
-[lang="ur"] h4, [lang="ur"] h5, [lang="ur"] h6 {
-  font-size: clamp(0.95rem, 1.4vw, 1.15rem);
-  line-height: 1.95;
-  letter-spacing: 0 !important;
-}
-
-[lang="ur"] p, [lang="ur"] li, [lang="ur"] blockquote {
-  font-size: clamp(0.9rem, 0.4vw + 0.8rem, 1.05rem);
   line-height: 2.15;
+}
+
+[lang="ur"] h1, .font-urdu h1 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem) !important;
+  line-height: 1.8 !important;
   letter-spacing: 0 !important;
 }
 
-/* Micro badges & labels fluid scaling in Urdu */
-[lang="ur"] .text-\[9px\] {
-  font-size: clamp(10.5px, 1.1vw, 12px) !important;
-  line-height: 1.6 !important;
+[lang="ur"] h2, .font-urdu h2 {
+  font-size: clamp(1.35rem, 4vw, 1.95rem) !important;
+  line-height: 1.85 !important;
+  letter-spacing: 0 !important;
 }
 
+[lang="ur"] h3, .font-urdu h3 {
+  font-size: clamp(1.2rem, 3.2vw, 1.6rem) !important;
+  line-height: 1.9 !important;
+  letter-spacing: 0 !important;
+}
+
+[lang="ur"] h4, [lang="ur"] h5, [lang="ur"] h6, .font-urdu h4 {
+  font-size: clamp(1.08rem, 2.5vw, 1.35rem) !important;
+  line-height: 1.95 !important;
+  letter-spacing: 0 !important;
+}
+
+[lang="ur"] p, [lang="ur"] li, [lang="ur"] blockquote, .font-urdu p {
+  font-size: clamp(1.02rem, 1.8vw, 1.25rem) !important;
+  line-height: 2.2 !important;
+  letter-spacing: 0 !important;
+}
+
+/* Micro badges & labels optical sizing for Nastaliq */
+[lang="ur"] .text-\[9px\], 
 [lang="ur"] .text-\[10px\] {
-  font-size: clamp(11.5px, 1.2vw, 13px) !important;
+  font-size: 0.82rem !important;
   line-height: 1.65 !important;
 }
 
-[lang="ur"] .text-\[11px\] {
-  font-size: clamp(12.5px, 1.25vw, 14px) !important;
-  line-height: 1.75 !important;
-}
-
+[lang="ur"] .text-\[11px\],
 [lang="ur"] .text-xs {
-  font-size: clamp(13px, 1.3vw, 14.5px) !important;
+  font-size: 0.95rem !important;
   line-height: 1.85 !important;
 }
 
 [lang="ur"] .text-sm {
-  font-size: clamp(14px, 1.4vw, 16px) !important;
+  font-size: 1.12rem !important;
   line-height: 1.95 !important;
+}
+
+[lang="ur"] .text-base {
+  font-size: 1.28rem !important;
+  line-height: 1.9 !important;
+}
+
+[lang="ur"] .text-lg {
+  font-size: 1.45rem !important;
+  line-height: 1.85 !important;
+}
+
+[lang="ur"] .text-xl {
+  font-size: 1.7rem !important;
+  line-height: 1.8 !important;
+}
+
+[lang="ur"] .text-2xl {
+  font-size: 2.1rem !important;
+  line-height: 1.75 !important;
+}
+
+[lang="ur"] .text-3xl {
+  font-size: 2.5rem !important;
+  line-height: 1.7 !important;
 }
 
 [lang="ur"] input, [lang="ur"] button {
