@@ -10,7 +10,11 @@ const STORAGE_KEYS = {
   CUSTOM_PRODUCTS: 'bio_custom_products',
   EDITED_PRODUCTS: 'bio_edited_products_map',
   DELETED_PRODUCT_IDS: 'bio_deleted_product_ids',
-  ADMIN_WEBHOOK_URL: 'bio_admin_webhook_url'
+  ADMIN_WEBHOOK_URL: 'bio_admin_webhook_url',
+  COMMUNITY_POSTS: 'bio_community_posts',
+  POST_COMMENTS: 'bio_post_comments',
+  APP_NOTIFICATIONS: 'bio_app_notifications',
+  UPVOTED_POST_IDS: 'bio_upvoted_post_ids'
 };
 
 // Grocery List Operations

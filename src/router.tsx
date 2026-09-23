@@ -7,6 +7,8 @@ import { AboutPage } from './pages/AboutPage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
 import { ScannerPage } from './pages/ScannerPage';
 import { SuggestionPage } from './pages/SuggestionPage';
+import { CommunityPage } from './pages/CommunityPage';
+import { PostDetailPage } from './pages/PostDetailPage';
 
 import { AdminLayout } from './pages/admin/AdminLayout';
 import { LoginPage } from './pages/admin/LoginPage';
@@ -33,6 +35,8 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'categories', element: <CategoriesPage /> },
+      { path: 'community', element: <CommunityPage /> },
+      { path: 'community/:id', element: <PostDetailPage /> },
       { path: 'grocery', element: <GroceryPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'product/:id', element: <ProductDetailPage /> },

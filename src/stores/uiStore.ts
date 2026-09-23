@@ -9,6 +9,10 @@ interface UIState {
   setLanguage: (lang: Language) => void;
   showLanguageModal: boolean;
   setShowLanguageModal: (show: boolean) => void;
+  isCommandPaletteOpen: boolean;
+  setCommandPaletteOpen: (open: boolean) => void;
+  isNotificationDrawerOpen: boolean;
+  setNotificationDrawerOpen: (open: boolean) => void;
   toastMessage: string | null;
   showToast: (msg: string, duration?: number) => void;
   isOffline: boolean;
@@ -60,13 +64,17 @@ export const useUIStore = create<UIState>((set, get) => ({
     set({ theme: newTheme });
   },
   language: initialLang,
-  showLanguageModal: !hasSavedLanguage(),
-  setShowLanguageModal: (show: boolean) => set({ showLanguageModal: show }),
   setLanguage: (lang: Language) => {
     localStorage.setItem('app_language', lang);
     applyLanguageToDOM(lang);
     set({ language: lang, showLanguageModal: false });
   },
+  showLanguageModal: !hasSavedLanguage(),
+  setShowLanguageModal: (show: boolean) => set({ showLanguageModal: show }),
+  isCommandPaletteOpen: false,
+  setCommandPaletteOpen: (open: boolean) => set({ isCommandPaletteOpen: open }),
+  isNotificationDrawerOpen: false,
+  setNotificationDrawerOpen: (open: boolean) => set({ isNotificationDrawerOpen: open }),
   toastMessage: null,
   showToast: (msg, duration = 3000) => {
     set({ toastMessage: msg });

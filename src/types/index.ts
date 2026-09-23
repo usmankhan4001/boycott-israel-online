@@ -62,3 +62,40 @@ export interface NotificationSettings {
   reminderTime: string; // "10:00"
   lastTriggered?: string;
 }
+
+export type CommunityCategory = 'Story' | 'Campaign' | 'AlternativeReview' | 'News' | 'Question';
+
+export interface CommunityPost {
+  id: string;
+  title: string;
+  content: string;
+  authorName: string;
+  authorLocation?: string;
+  category: CommunityCategory;
+  tags: string[];
+  upvotes: number;
+  commentsCount: number;
+  createdAt: string;
+  status: 'published' | 'pending';
+  pinned?: boolean;
+  readTime?: string;
+}
+
+export interface PostComment {
+  id: string;
+  postId: string;
+  authorName: string;
+  authorLocation?: string;
+  content: string;
+  createdAt: string;
+}
+
+export interface AppNotification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'post' | 'comment' | 'system' | 'reminder';
+  link?: string;
+  isRead: boolean;
+  createdAt: string;
+}

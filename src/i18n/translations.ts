@@ -2,11 +2,14 @@ export interface Translations {
   // Navigation & Tabs
   allBrands: string;
   categories: string;
+  community: string;
   grocery: string;
   whyBoycott: string;
   scanner: string;
   suggest: string;
   searchPlaceholder: string;
+  commandSearch: string;
+  notifications: string;
   install: string;
   back: string;
   share: string;
@@ -152,11 +155,14 @@ export const translations: Record<'en' | 'ur', Translations> = {
     // Navigation & Tabs
     allBrands: 'All Brands',
     categories: 'Categories',
+    community: 'Community',
     grocery: 'Grocery',
     whyBoycott: 'Why Boycott',
     scanner: '729 Scanner',
     suggest: 'Suggest',
     searchPlaceholder: 'Search brand, item or barcode...',
+    commandSearch: 'Search or press ⌘K',
+    notifications: 'Notifications',
     install: 'Install',
     back: 'Back',
     share: 'Share',
@@ -318,11 +324,14 @@ export const translations: Record<'en' | 'ur', Translations> = {
     // Navigation & Tabs (Short & Crisp)
     allBrands: 'تمام برانڈز',
     categories: 'کیٹیگریز',
+    community: 'کمیونٹی فورم',
     grocery: 'گروسری لسٹ',
     whyBoycott: 'بائیکاٹ کیوں؟',
     scanner: '۷۲۹ سکینر',
     suggest: 'تجویز دیں',
     searchPlaceholder: 'برانڈ، نام یا بارکوڈ تلاش کریں...',
+    commandSearch: 'تلاش کریں یا ⌘K دبائیں',
+    notifications: 'اطلاعات',
     install: 'انسٹال کریں',
     back: 'واپس',
     share: 'شیئر کریں',

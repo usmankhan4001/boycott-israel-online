@@ -1,4 +1,4 @@
-import { ProductItem, UserSuggestion } from '../types';
+import { ProductItem, UserSuggestion, CommunityPost, PostComment, AppNotification } from '../types';
 
 const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   const token = sessionStorage.getItem('admin_token');
@@ -72,6 +72,62 @@ export const api = {
     }),
     delete: (id: string) => fetchWithAuth(`/api/suggestions/${id}`, {
       method: 'DELETE'
+    })
+  },
+  community: {
+    posts: {
+      list: (params?: { category?: string; tag?: string; q?: string; sort?: 'latest' | 'popular'; limit?: number; offset?: number }) => {
+        const sp = new URLSearchParams();
+        if (params?.category) sp.set('category', params.category);
+        if (params?.tag) sp.set('tag', params.tag);
+        if (params?.q) sp.set('q', params.q);
+        if (params?.sort) sp.set('sort', params.sort);
+        if (params?.limit) sp.set('limit', String(params.limit));
+        if (params?.offset) sp.set('offset', String(params.offset));
+        const qs = sp.toString();
+        return fetchWithAuth(`/api/community/posts${qs ? `?${qs}` : ''}`);
+      },
+      get: (id: string): Promise<CommunityPost> => fetchWithAuth(`/api/community/posts/${id}`),
+      create: (post: Partial<CommunityPost>) => fetchWithAuth('/api/community/posts', {
+        method: 'POST',
+        body: JSON.stringify(post)
+      }),
+      upvote: (id: string) => fetchWithAuth(`/api/community/posts/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ action: 'upvote' })
+      }),
+      delete: (id: string) => fetchWithAuth(`/api/community/posts/${id}`, {
+        method: 'DELETE'
+      })
+    },
+    comments: {
+      list: (postId: string): Promise<{ comments: PostComment[] }> => {
+        return fetchWithAuth(`/api/community/comments?postId=${encodeURIComponent(postId)}`);
+      },
+      create: (comment: { postId: string; authorName: string; authorLocation?: string; content: string }) => fetchWithAuth('/api/community/comments', {
+        method: 'POST',
+        body: JSON.stringify(comment)
+      })
+    }
+  },
+  notifications: {
+    list: (params?: { limit?: number }): Promise<{ notifications: AppNotification[] }> => {
+      const sp = new URLSearchParams();
+      if (params?.limit) sp.set('limit', String(params.limit));
+      const qs = sp.toString();
+      return fetchWithAuth(`/api/notifications${qs ? `?${qs}` : ''}`);
+    },
+    create: (notification: Partial<AppNotification>) => fetchWithAuth('/api/notifications', {
+      method: 'POST',
+      body: JSON.stringify(notification)
+    }),
+    markRead: (id: string) => fetchWithAuth('/api/notifications', {
+      method: 'PUT',
+      body: JSON.stringify({ id })
+    }),
+    markAllRead: () => fetchWithAuth('/api/notifications', {
+      method: 'PUT',
+      body: JSON.stringify({ markAllRead: true })
     })
   }
 };
