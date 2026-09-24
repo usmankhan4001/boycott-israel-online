@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { Navbar } from './Navbar';
+import { AppHeader } from './AppHeader';
 import { TabBar } from './TabBar';
 import { CommandPalette } from '../ui/CommandPalette';
 import { NotificationDrawer } from '../NotificationDrawer';
@@ -52,9 +52,9 @@ export const AppShell: React.FC = () => {
   }, [isCommandPaletteOpen, setCommandPaletteOpen]);
 
   return (
-    <div className={`min-h-screen bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 flex flex-col items-center justify-start selection:bg-emerald-600 selection:text-white pb-20 lg:pb-10 transition-colors duration-200 ${isUrdu ? 'font-urdu' : ''}`}>
-      <div className="w-full max-w-xl lg:max-w-6xl xl:max-w-7xl min-h-screen bg-white dark:bg-zinc-900 lg:border-x border-zinc-200/80 dark:border-zinc-800 flex flex-col shadow-sm relative">
-        <Navbar />
+    <div className={`min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 flex flex-col items-center justify-start selection:bg-rose-600 selection:text-white pb-24 lg:pb-12 transition-colors duration-200 ${isUrdu ? 'font-urdu' : ''}`}>
+      <div className="w-full max-w-5xl min-h-screen bg-white dark:bg-zinc-950 sm:border-x border-zinc-200/60 dark:border-zinc-800/60 flex flex-col shadow-sm relative">
+        <AppHeader />
         
         {isOffline && (
           <div className="bg-rose-600 text-white text-xs font-bold py-2 px-4 flex items-center justify-center gap-2">

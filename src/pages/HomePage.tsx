@@ -1,99 +1,44 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useProducts } from '../hooks/useProducts';
 import { useSearch } from '../hooks/useSearch';
-import { useCommunityStore } from '../stores/communityStore';
-import { useDemographicStore } from '../stores/demographicStore';
 import { ProductCard } from '../components/product/ProductCard';
-import { BrandLogo } from '../components/BrandLogo';
-import { Link } from 'react-router-dom';
-import { POPULAR_CATEGORIES } from '../data/laymanCategories';
-import { CategoryIcon } from '../components/CategoryIcon';
-import { GAZA_CONSCIENCE_MESSAGES } from '../data/gazaQuotes';
+import { ProductDetailSheet } from '../components/product/ProductDetailSheet';
+import { ProductItem } from '../types';
 import { useTranslation } from '../i18n/useTranslation';
-import { getLocalizedProductName, getLocalizedParentCompany } from '../utils/urduProductTranslator';
-import { ThreeWayEntryFork } from '../components/home/ThreeWayEntryFork';
-import { DemographicLensSwitcher } from '../components/home/DemographicLensSwitcher';
+import { WebOfComplicityGraph } from '../components/complicity/WebOfComplicityGraph';
+import { ToxicSwapWarning } from '../components/tayyib/ToxicSwapWarning';
+import { BountyBoardView } from '../components/bounty/BountyBoardView';
 import { SwipeableDiscoveryFeed } from '../components/home/SwipeableDiscoveryFeed';
+import { POPULAR_CATEGORIES } from '../data/laymanCategories';
 import { 
-  ScanLine, 
-  ShoppingCart, 
-  ShieldAlert, 
-  CheckCircle2, 
+  Search, 
+  X, 
   Sparkles, 
-  ArrowRight, 
-  UtensilsCrossed, 
-  Users, 
+  ShieldAlert, 
+  Globe2, 
   Flame, 
-  Search,
   Filter,
-  RefreshCw,
-  HeartHandshake,
-  MessageSquare,
-  BookOpen,
-  Heart,
-  Globe2,
-  Target
+  CheckCircle2,
+  ScanLine
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+type AppTab = 'catalog' | 'complicity' | 'tayyib' | 'bounties' | 'swipe';
 
 export const HomePage: React.FC = () => {
-  const { products, searchQuery, selectedCategory, setSelectedCategory, setSearchQuery, isLoading } = useProducts();
-  const { posts } = useCommunityStore();
-  const { demographicLens } = useDemographicStore();
+  const { products, searchQuery, setSearchQuery, selectedCategory, setSelectedCategory } = useProducts();
   const { filteredProducts } = useSearch();
-  const { t, isUrdu, language, translateCategory } = useTranslation();
-  const [itemsToShow, setItemsToShow] = useState(24);
-  const [quoteIndex, setQuoteIndex] = useState(0);
+  const { t, isUrdu } = useTranslation();
+  
+  const [activeTab, setActiveTab] = useState<AppTab>('catalog');
+  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
   const [severityFilter, setSeverityFilter] = useState<'All' | 'Critical'>('All');
 
-  // Rotate quotes periodically
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setQuoteIndex(prev => (prev + 1) % GAZA_CONSCIENCE_MESSAGES.length);
-    }, 12000);
-    return () => clearInterval(timer);
+  const categories = useMemo(() => {
+    return ['All', 'Food & Beverages', 'Personal Care', 'Technology', 'Clothing', 'Restaurants & Places', 'Celebrities & Endorsers'];
   }, []);
 
-  const activeQuote = GAZA_CONSCIENCE_MESSAGES[quoteIndex];
-
-  // Featured Priority Boycott Targets filtered by lens
-  const featuredTargets = useMemo(() => {
-    let priorityIds = ['coca-cola', 'pepsi', 'mcdonalds', 'kfc', 'starbucks', 'nestle', 'hp', 'caterpillar', 'puma', 'sabra', 'disney', 'zara'];
-    
-    if (demographicLens === 'students') {
-      priorityIds = ['hp', 'dell', 'starbucks', 'kfc', 'mcdonalds', 'puma'];
-    } else if (demographicLens === 'mothers') {
-      priorityIds = ['nestle', 'unilever', 'ariel', 'pampers', 'johnson', 'coca-cola'];
-    } else if (demographicLens === 'men') {
-      priorityIds = ['caterpillar', 'gillette', 'puma', 'nike', 'hp', 'pepsi'];
-    } else if (demographicLens === 'elders') {
-      priorityIds = ['nestle', 'pfizer', 'teva', 'johnson', 'unilever', 'colgate'];
-    }
-
-    return products
-      .filter(p => priorityIds.some(target => p.id.includes(target) || p.name.toLowerCase().includes(target)))
-      .slice(0, 6);
-  }, [products, demographicLens]);
-
-  // Featured Community Stories
-  const featuredStories = useMemo(() => {
-    return posts.slice(0, 3);
-  }, [posts]);
-
-  // Calculations for stats
-  const totalBoycotts = products.length;
-  const totalAlternatives = products.reduce((acc, p) => acc + (p.alternatives?.length || 0), 0);
-
-  const handleCategoryClick = (catName: string, query?: string) => {
-    if (selectedCategory === catName && searchQuery === (query || '')) {
-      setSelectedCategory('All');
-      setSearchQuery('');
-    } else {
-      setSelectedCategory(catName || 'All');
-      setSearchQuery(query || '');
-    }
-  };
-
-  const displayedProducts = useMemo(() => {
+  const displayedList = useMemo(() => {
     let list = filteredProducts;
     if (severityFilter === 'Critical') {
       list = list.filter(p => p.severity === 'Critical');
@@ -102,349 +47,181 @@ export const HomePage: React.FC = () => {
   }, [filteredProducts, severityFilter]);
 
   return (
-    <div className={`space-y-6 ${isUrdu ? 'font-urdu' : ''}`}>
-      
-      {/* 🇵🇸 Gaza Conscience Banner */}
-      <div className="p-3.5 sm:p-4 rounded-3xl bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900 text-white border border-zinc-700/60 shadow-xs relative overflow-hidden flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="w-8 h-8 rounded-xl bg-red-600/20 text-red-400 border border-red-500/30 flex items-center justify-center shrink-0">
-            <HeartHandshake className="w-4 h-4 text-red-400" />
-          </div>
-          <div className="min-w-0">
-            <span className="text-[10px] font-black uppercase tracking-wider text-red-400 flex items-center gap-1.5">
-              <span>{isUrdu ? 'فلسطین کے ساتھ یکجہتی' : 'Solidarity with Gaza'}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
-            </span>
-            <p className="text-xs font-semibold text-zinc-200 truncate mt-0.5">
-              "{isUrdu ? (activeQuote?.quoteUrdu || activeQuote?.quote) : activeQuote?.quote}"
-            </p>
-          </div>
+    <div className="space-y-4 max-w-4xl mx-auto min-w-0 pb-12">
+      {/* Search Bar (Spotlight) */}
+      <div className="relative sticky top-16 z-30 pt-1 pb-1">
+        <div className="relative flex items-center bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl sm:rounded-3xl shadow-xs transition-all focus-within:border-zinc-400 dark:focus-within:border-zinc-700 focus-within:shadow-md">
+          <Search className="w-4 h-4 text-zinc-400 ml-4 shrink-0" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={isUrdu ? 'برانڈ، پیرنٹ کمپنی، یا بارکوڈ تلاش کریں...' : 'Search brand, parent company, or barcode...'}
+            className="w-full px-3.5 py-3 rounded-2xl bg-transparent text-sm text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-none"
+            dir={isUrdu ? 'rtl' : 'ltr'}
+          />
+          {searchQuery ? (
+            <button 
+              onClick={() => setSearchQuery('')}
+              className="p-1.5 mr-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-full"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          ) : (
+            <Link
+              to="/scan"
+              className="mr-3 p-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:text-rose-500 transition-colors"
+              title="Barcode Scanner"
+            >
+              <ScanLine className="w-4 h-4" />
+            </Link>
+          )}
         </div>
-        <button 
-          onClick={() => setQuoteIndex(prev => (prev + 1) % GAZA_CONSCIENCE_MESSAGES.length)}
-          className="text-zinc-400 hover:text-white shrink-0 p-1.5 transition-colors"
-          title="Next quote"
+      </div>
+
+      {/* Segmented Mode Switcher (Clean Pills) */}
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 text-xs font-bold shrink-0">
+        <button
+          onClick={() => setActiveTab('catalog')}
+          className={`px-3.5 py-2 rounded-2xl whitespace-nowrap transition-all ${
+            activeTab === 'catalog'
+              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-xs'
+              : 'bg-zinc-100 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+          }`}
         >
-          <RefreshCw className="w-3.5 h-3.5" />
+          {isUrdu ? '🇵🇰 برانڈز اور متبادل' : '🇵🇰 Brands & Swaps'}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('complicity')}
+          className={`px-3.5 py-2 rounded-2xl whitespace-nowrap transition-all ${
+            activeTab === 'complicity'
+              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-xs'
+              : 'bg-zinc-100 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+          }`}
+        >
+          {isUrdu ? '🌐 کمپلیسیٹی گراف' : '🌐 Complicity Web'}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('tayyib')}
+          className={`px-3.5 py-2 rounded-2xl whitespace-nowrap transition-all ${
+            activeTab === 'tayyib'
+              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-xs'
+              : 'bg-zinc-100 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+          }`}
+        >
+          {isUrdu ? '🛡️ طیب و صحت' : '🛡️ Tayyib vs Toxic'}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('bounties')}
+          className={`px-3.5 py-2 rounded-2xl whitespace-nowrap transition-all ${
+            activeTab === 'bounties'
+              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-xs'
+              : 'bg-zinc-100 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+          }`}
+        >
+          {isUrdu ? '💡 مارکیٹ باؤنٹیز' : '💡 Market Bounties'}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('swipe')}
+          className={`px-3.5 py-2 rounded-2xl whitespace-nowrap transition-all ${
+            activeTab === 'swipe'
+              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-xs'
+              : 'bg-zinc-100 dark:bg-zinc-900/80 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+          }`}
+        >
+          {isUrdu ? '⚡ ریلز فیڈ' : '⚡ 3D Reel Cards'}
         </button>
       </div>
 
-      {/* 🧭 Demographic Lens Switcher */}
-      <DemographicLensSwitcher />
-
-      {/* ⚡ 3-Way Mental State Entry Fork (Action Mode / Skeptical / Scholar) */}
-      <ThreeWayEntryFork />
-
-      {/* 📱 TikTok / Reels Style Swipeable Discovery Feed */}
-      <SwipeableDiscoveryFeed />
-
-      {/* 📊 High-Impact Hero Stats Cards */}
-      {!searchQuery && selectedCategory === 'All' && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <div className="p-4 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-2xs">
-            <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 mb-1">
-              <ShieldAlert className="w-4 h-4 shrink-0" />
-              <span className="text-[11px] font-black uppercase">{isUrdu ? 'بائیکاٹ اہداف' : 'Boycott Targets'}</span>
-            </div>
-            <p className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight" dir="ltr">
-              <bdi>+{totalBoycotts || '3,400'}</bdi>
-            </p>
-            <span className="text-[10px] text-zinc-500">{isUrdu ? 'مصدقہ بائیکاٹ شدہ برانڈز' : 'Verified complicit entities'}</span>
-          </div>
-
-          <div className="p-4 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-2xs">
-            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 mb-1">
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
-              <span className="text-[11px] font-black uppercase">{isUrdu ? 'پاکستانی متبادل' : 'Safe Swaps'}</span>
-            </div>
-            <p className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight" dir="ltr">
-              <bdi>+{totalAlternatives || '1,800'}</bdi>
-            </p>
-            <span className="text-[10px] text-zinc-500">{isUrdu ? 'محفوظ اور معیاری متبادل' : 'Pakistani & ethical brands'}</span>
-          </div>
-
-          <div className="col-span-2 sm:col-span-1 p-4 rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-xs flex flex-col justify-between">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-black uppercase tracking-wider text-emerald-100">{isUrdu ? 'فوری ٹولز' : 'Conscience Tools'}</span>
-              <ScanLine className="w-4 h-4" />
-            </div>
-            <div className="flex items-center gap-2 mt-3">
-              <Link 
-                to="/scan" 
-                className="flex-1 text-center py-1.5 px-2 bg-white text-emerald-900 rounded-xl font-bold text-xs shadow-2xs hover:bg-emerald-50 active:scale-95 transition-all"
-              >
-                {t.scanner}
-              </Link>
-              <Link 
-                to="/complicity" 
-                className="flex-1 text-center py-1.5 px-2 bg-emerald-900/40 border border-white/20 text-white rounded-xl font-bold text-xs hover:bg-emerald-900/60 active:scale-95 transition-all"
-              >
-                {isUrdu ? 'کمپلیسیٹی' : 'Complicity'}
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 🏷️ Interactive Category Filter Pills */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
-            <Filter className="w-3.5 h-3.5" /> {isUrdu ? 'کیٹیگریز منتخب کریں' : 'Filter by Category'}
-          </span>
-          {selectedCategory !== 'All' && (
-            <button 
-              onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }}
-              className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline"
-            >
-              {isUrdu ? 'تمام دکھائیں' : 'Reset Filters'}
-            </button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-          <button
-            onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }}
-            className={`px-3.5 py-2 rounded-2xl text-xs font-black transition-all shrink-0 flex items-center gap-1.5 shadow-2xs active:scale-95 ${
-              selectedCategory === 'All' && !searchQuery
-                ? 'bg-rose-600 text-white shadow-sm'
-                : 'bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300'
-            }`}
-          >
-            {t.catAll}
-          </button>
-
-          {POPULAR_CATEGORIES.map((cat) => {
-            const isSelected = selectedCategory === (cat.categoryName || 'All') && (cat.query ? searchQuery === cat.query : true);
-            const label = translateCategory(cat.name);
-            return (
-              <button
-                key={cat.id}
-                onClick={() => handleCategoryClick(cat.categoryName || 'All', cat.query)}
-                className={`px-3.5 py-2 rounded-2xl text-xs font-black transition-all shrink-0 flex items-center gap-1.5 shadow-2xs active:scale-95 ${
-                  isSelected
-                    ? 'bg-rose-600 text-white shadow-sm'
-                    : 'bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300'
-                }`}
-              >
-                <CategoryIcon name={cat.iconName} className="w-3.5 h-3.5" />
-                <span>{label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 🎯 Main Content Area */}
-      {(!searchQuery && selectedCategory === 'All') ? (
-        <>
-          {/* Featured Primary Targets Section */}
-          <section className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                {isUrdu ? 'بڑے بائیکاٹ اہداف' : 'Primary Boycott Targets'}
-                <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse" />
-              </h2>
-              <span className="text-xs text-zinc-400 font-semibold">{isUrdu ? 'اہم ترین اہداف' : 'High Priority'}</span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {featuredTargets.map(item => (
-                <Link
-                  key={item.id}
-                  to={`/product/${item.id}`}
-                  className="p-3.5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-rose-500 shadow-2xs hover:shadow-sm transition-all flex flex-col items-center gap-2 text-center group active:scale-95"
+      {/* Tab Content 1: Catalog & Swaps */}
+      {activeTab === 'catalog' && (
+        <div className="space-y-3.5">
+          {/* Category Filter Chips */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(selectedCategory === cat ? 'All' : cat)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                    selectedCategory === cat
+                      ? 'bg-emerald-600 text-white shadow-2xs'
+                      : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+                  }`}
                 >
-                  <BrandLogo name={item.name} domain={item.domain} logo={item.logo} size="md" isBoycott={true} />
-                  <div className="min-w-0 w-full text-center">
-                    <h3 className="font-bold text-xs text-zinc-900 dark:text-white group-hover:text-rose-600 transition-colors truncate block" dir="auto">
-                      {getLocalizedProductName(item, language)}
-                    </h3>
-                    <p className="text-[10px] text-zinc-500 truncate mt-0.5 block" dir="auto">
-                      {getLocalizedParentCompany(item.parentCompany, language) || translateCategory(item.category)}
-                    </p>
-                    {item.alternatives && item.alternatives[0] && (
-                      <span className="mt-1.5 inline-block text-[9px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded-md truncate max-w-full" dir="auto">
-                        ✓ {item.alternatives[0].name}
-                      </span>
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          {/* 🌟 Community Voices Spotlight Section */}
-          <section className="space-y-3 pt-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Flame className="w-4 h-4 text-amber-500" />
-                <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white">
-                  {isUrdu ? 'کمیونٹی کہانیاں اور عوامی تجربات' : 'Community Voices & Experiences'}
-                </h2>
-              </div>
-              <Link 
-                to="/community" 
-                className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
-              >
-                <span>{isUrdu ? 'تمام دیکھیں' : 'View All'}</span>
-                <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {featuredStories.map((story) => (
-                <Link
-                  key={story.id}
-                  to={`/community/${story.id}`}
-                  className="p-4 rounded-3xl bg-gradient-to-b from-white to-zinc-50/50 dark:from-zinc-900 dark:to-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 hover:border-emerald-500 transition-all shadow-2xs group flex flex-col justify-between"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-[10px] text-zinc-400">
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                        {story.category}
-                      </span>
-                      <span>{story.readTime || '2 min read'}</span>
-                    </div>
-                    <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white group-hover:text-emerald-600 line-clamp-2 leading-snug">
-                      {story.title}
-                    </h3>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 mt-2 border-t border-zinc-100 dark:border-zinc-800/60 text-[11px] text-zinc-400">
-                    <span className="truncate font-semibold">{story.authorName}</span>
-                    <span className="flex items-center gap-1 text-rose-500 font-bold shrink-0">
-                      <Heart className="w-3 h-3 fill-rose-500" />
-                      {story.upvotes || 0}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          {/* 🍔 Spotlight Categories */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div 
-              onClick={() => handleCategoryClick('Restaurants & Places')} 
-              className="p-5 rounded-3xl bg-gradient-to-br from-rose-50 to-orange-50 dark:from-rose-950/40 dark:to-orange-950/20 border border-rose-200/80 dark:border-rose-900/60 cursor-pointer group hover:border-rose-500 transition-all shadow-2xs active:scale-[0.99]"
-            >
-              <div className="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center mb-3 shadow-sm">
-                <UtensilsCrossed className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-black text-zinc-900 dark:text-white group-hover:text-rose-600 transition-colors">
-                {isUrdu ? 'ریسٹورنٹس اور فاسٹ فوڈ' : 'Restaurants & Fast Food Chains'}
-              </h3>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
-                {isUrdu ? 'میکڈونلڈز، کے ایف سی، پیزا ہٹ، سب وے وغیرہ کے بائیکاٹ شواہد اور محفوظ پاکستانی ریسٹورنٹس۔' : "Complicity logs for McDonald's, KFC, Pizza Hut, Subway, Starbucks & safe local eateries."}
-              </p>
-            </div>
-
-            <div 
-              onClick={() => handleCategoryClick('Celebrities & Endorsers')} 
-              className="p-5 rounded-3xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/40 dark:to-pink-950/20 border border-purple-200/80 dark:border-purple-900/60 cursor-pointer group hover:border-purple-500 transition-all shadow-2xs active:scale-[0.99]"
-            >
-              <div className="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center mb-3 shadow-sm">
-                <Users className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-black text-zinc-900 dark:text-white group-hover:text-purple-600 transition-colors">
-                {isUrdu ? 'مشہور شخصیات اور سفیر' : 'Celebrity Endorsers & Personalities'}
-              </h3>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
-                {isUrdu ? 'بائیکاٹ شدہ برانڈز کو پروموٹ کرنے والی شخصیات اور ان کے معاہدوں کی تفصیلات۔' : 'Track ambassadors promoting complicit brands and demand severance of brand contracts.'}
-              </p>
-            </div>
-          </div>
-
-          {/* Full Explore Catalog Header */}
-          <div className="pt-2">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base font-black text-zinc-900 dark:text-white">
-                {isUrdu ? 'تمام بائیکاٹ اہداف' : 'All Boycott Targets'} ({displayedProducts.length})
-              </h2>
-              <button
-                onClick={() => setSeverityFilter(prev => prev === 'All' ? 'Critical' : 'All')}
-                className={`text-xs font-bold px-3 py-1.5 rounded-xl transition-colors ${
-                  severityFilter === 'Critical' 
-                    ? 'bg-rose-600 text-white' 
-                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200'
-                }`}
-              >
-                {severityFilter === 'Critical' ? (isUrdu ? '✓ صرف شدید اہداف' : '✓ Showing Critical Only') : (isUrdu ? 'صرف شدید اہداف' : 'Filter Critical Only')}
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-              {displayedProducts.slice(0, itemsToShow).map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-
-            {itemsToShow < displayedProducts.length && (
-              <div className="text-center pt-6 pb-4">
-                <button 
-                  onClick={() => setItemsToShow(prev => prev + 24)}
-                  className="px-6 py-2.5 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 rounded-2xl text-xs font-black shadow-xs active:scale-95 transition-all"
-                >
-                  {isUrdu ? `مزید دکھائیں (${displayedProducts.length - itemsToShow})` : `Load More (${displayedProducts.length - itemsToShow} remaining)`}
+                  {cat}
                 </button>
-              </div>
-            )}
-          </div>
-        </>
-      ) : (
-        /* Search / Category Results View */
-        <div className="space-y-4">
-          <div className="flex items-center justify-between text-xs font-bold text-zinc-500">
-            <span>
-              {searchQuery 
-                ? (isUrdu ? `"${searchQuery}" کے لیے ${displayedProducts.length} نتائج ملے` : `Found ${displayedProducts.length} results for "${searchQuery}"`)
-                : (isUrdu ? `${translateCategory(selectedCategory)} میں ${displayedProducts.length} برانڈز` : `${displayedProducts.length} Brands in ${selectedCategory}`)}
-            </span>
+              ))}
+            </div>
+
+            {/* Severity Toggle */}
             <button
-              onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }}
-              className="text-rose-600 dark:text-rose-400 hover:underline"
+              onClick={() => setSeverityFilter(severityFilter === 'All' ? 'Critical' : 'All')}
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-bold shrink-0 transition-colors border ${
+                severityFilter === 'Critical'
+                  ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30'
+                  : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-500 border-zinc-200 dark:border-zinc-800'
+              }`}
             >
-              {isUrdu ? 'سرچ صاف کریں' : 'Clear Search'}
+              {severityFilter === 'Critical' ? '🔴 Critical Only' : 'All Severity'}
             </button>
           </div>
 
-          {displayedProducts.length === 0 ? (
-            <div className="p-12 text-center rounded-3xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 space-y-3">
-              <Search className="w-8 h-8 text-zinc-400 mx-auto" />
-              <h3 className="font-black text-sm text-zinc-700 dark:text-zinc-300">
-                {isUrdu ? 'کوئی برانڈ نہیں ملا' : 'No matching boycott targets found'}
-              </h3>
-              <p className="text-xs text-zinc-400 max-w-sm mx-auto">
-                {isUrdu ? 'اگر یہ برانڈ بائیکاٹ لسٹ کا حصہ ہونا چاہیے تو آپ ہمیں تجویز بھیج سکتے ہیں۔' : 'If this brand is complicit, you can submit it to our team for verification.'}
-              </p>
-              <Link 
-                to="/suggest"
-                className="inline-block mt-2 px-4 py-2 bg-emerald-600 text-white rounded-2xl text-xs font-bold shadow-xs hover:bg-emerald-500"
-              >
-                + {t.suggest}
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-              {displayedProducts.slice(0, itemsToShow).map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
+          {/* Results Count Summary */}
+          <div className="flex items-center justify-between text-[11px] font-bold text-zinc-400 px-1">
+            <span>
+              {displayedList.length} {isUrdu ? 'ہدف برانڈز' : 'targets found'}
+              {searchQuery && ` for "${searchQuery}"`}
+            </span>
+            <span>{isUrdu ? 'تفصیل کے لیے کلک کریں' : 'Tap any card for details'}</span>
+          </div>
 
-          {itemsToShow < displayedProducts.length && (
-            <div className="text-center pt-6 pb-4">
-              <button 
-                onClick={() => setItemsToShow(prev => prev + 24)}
-                className="px-6 py-2.5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-2xl text-xs font-black shadow-xs active:scale-95 transition-all"
-              >
-                {isUrdu ? 'مزید لوڈ کریں' : 'Load More'}
-              </button>
+          {/* Product Feed Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
+            {displayedList.map((product) => (
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                onClick={() => setSelectedProduct(product)} 
+              />
+            ))}
+          </div>
+
+          {displayedList.length === 0 && (
+            <div className="p-12 text-center rounded-3xl border border-dashed border-zinc-200 dark:border-zinc-800 space-y-2">
+              <ShieldAlert className="w-8 h-8 text-zinc-400 mx-auto" />
+              <h3 className="font-bold text-sm text-zinc-700 dark:text-zinc-300">
+                {isUrdu ? 'کوئی برانڈ نہیں ملا' : 'No matching brand found'}
+              </h3>
+              <p className="text-xs text-zinc-400">
+                {isUrdu ? 'آپ نیا ہدف یا متبادل تجویز کر سکتے ہیں' : 'Search with another term or suggest a new entry'}
+              </p>
             </div>
           )}
         </div>
       )}
+
+      {/* Tab Content 2: Web of Complicity */}
+      {activeTab === 'complicity' && <WebOfComplicityGraph />}
+
+      {/* Tab Content 3: Tayyib vs Toxic Matrix */}
+      {activeTab === 'tayyib' && <ToxicSwapWarning />}
+
+      {/* Tab Content 4: Market Gap Bounty Board */}
+      {activeTab === 'bounties' && <BountyBoardView />}
+
+      {/* Tab Content 5: Swipeable 3D Card Feed */}
+      {activeTab === 'swipe' && <SwipeableDiscoveryFeed />}
+
+      {/* Native Bottom Sheet for Product Detail */}
+      <ProductDetailSheet
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
     </div>
   );
 };
