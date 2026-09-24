@@ -9,6 +9,10 @@ import { ScannerPage } from './pages/ScannerPage';
 import { SuggestionPage } from './pages/SuggestionPage';
 import { CommunityPage } from './pages/CommunityPage';
 import { PostDetailPage } from './pages/PostDetailPage';
+import { ComplicityPage } from './pages/ComplicityPage';
+import { BountiesPage } from './pages/BountiesPage';
+import { StudioPage } from './pages/StudioPage';
+import { TayyibPage } from './pages/TayyibPage';
 
 import { AdminLayout } from './pages/admin/AdminLayout';
 import { LoginPage } from './pages/admin/LoginPage';
@@ -38,6 +42,10 @@ export const router = createBrowserRouter([
       { path: 'community', element: <CommunityPage /> },
       { path: 'community/:id', element: <PostDetailPage /> },
       { path: 'grocery', element: <GroceryPage /> },
+      { path: 'complicity', element: <ComplicityPage /> },
+      { path: 'bounties', element: <BountiesPage /> },
+      { path: 'studio', element: <StudioPage /> },
+      { path: 'tayyib', element: <TayyibPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'product/:id', element: <ProductDetailPage /> },
       { path: 'scan', element: <ScannerPage /> },

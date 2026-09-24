@@ -1,4 +1,19 @@
-import { ProductItem, UserSuggestion, CommunityPost, PostComment, AppNotification } from '../types';
+import {
+  ProductItem,
+  UserSuggestion,
+  CommunityPost,
+  PostComment,
+  AppNotification,
+  GeopoliticalZone,
+  RawResource,
+  ParentConglomerate,
+  ComplicityEdge,
+  RetailBrand,
+  AlternativeProfile,
+  MarketGap,
+  ToxicAdditive,
+  UserImpactRecord
+} from '../types';
 
 const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   const token = sessionStorage.getItem('admin_token');
@@ -128,6 +143,78 @@ export const api = {
     markAllRead: () => fetchWithAuth('/api/notifications', {
       method: 'PUT',
       body: JSON.stringify({ markAllRead: true })
+    })
+  },
+  // ==========================================
+  // TAKWEYAT GEOPOLITICAL & COMPLICITY API CLIENTS
+  // ==========================================
+  zones: {
+    list: (): Promise<{ zones: GeopoliticalZone[] }> => fetchWithAuth('/api/zones'),
+    get: (id: string): Promise<{ zone: GeopoliticalZone }> => fetchWithAuth(`/api/zones/${id}`)
+  },
+  resources: {
+    list: (): Promise<{ resources: RawResource[] }> => fetchWithAuth('/api/resources'),
+    get: (id: string): Promise<{ resource: RawResource }> => fetchWithAuth(`/api/resources/${id}`)
+  },
+  conglomerates: {
+    list: (): Promise<{ conglomerates: ParentConglomerate[] }> => fetchWithAuth('/api/conglomerates'),
+    get: (id: string): Promise<{ conglomerate: ParentConglomerate }> => fetchWithAuth(`/api/conglomerates/${id}`)
+  },
+  complicityEdges: {
+    list: (params?: { zoneId?: string; conglomerateId?: string; resourceId?: string }): Promise<{ edges: ComplicityEdge[] }> => {
+      const sp = new URLSearchParams();
+      if (params?.zoneId) sp.set('zoneId', params.zoneId);
+      if (params?.conglomerateId) sp.set('conglomerateId', params.conglomerateId);
+      if (params?.resourceId) sp.set('resourceId', params.resourceId);
+      const qs = sp.toString();
+      return fetchWithAuth(`/api/complicity-edges${qs ? `?${qs}` : ''}`);
+    },
+    get: (id: string): Promise<{ edge: ComplicityEdge }> => fetchWithAuth(`/api/complicity-edges/${id}`)
+  },
+  retailBrands: {
+    list: (params?: { brandType?: 'boycotted' | 'alternative'; category?: string }): Promise<{ brands: RetailBrand[] }> => {
+      const sp = new URLSearchParams();
+      if (params?.brandType) sp.set('brandType', params.brandType);
+      if (params?.category) sp.set('category', params.category);
+      const qs = sp.toString();
+      return fetchWithAuth(`/api/retail-brands${qs ? `?${qs}` : ''}`);
+    },
+    get: (id: string): Promise<{ brand: RetailBrand }> => fetchWithAuth(`/api/retail-brands/${id}`)
+  },
+  alternativeProfiles: {
+    list: (): Promise<{ profiles: AlternativeProfile[] }> => fetchWithAuth('/api/alternative-profiles'),
+    get: (brandId: string): Promise<{ profile: AlternativeProfile }> => fetchWithAuth(`/api/alternative-profiles/${brandId}`)
+  },
+  marketGaps: {
+    list: (params?: { category?: string; urgency?: string }): Promise<{ gaps: MarketGap[] }> => {
+      const sp = new URLSearchParams();
+      if (params?.category) sp.set('category', params.category);
+      if (params?.urgency) sp.set('urgency', params.urgency);
+      const qs = sp.toString();
+      return fetchWithAuth(`/api/market-gaps${qs ? `?${qs}` : ''}`);
+    },
+    get: (id: string): Promise<{ gap: MarketGap }> => fetchWithAuth(`/api/market-gaps/${id}`),
+    create: (gap: Partial<MarketGap>) => fetchWithAuth('/api/market-gaps', {
+      method: 'POST',
+      body: JSON.stringify(gap)
+    }),
+    upvote: (id: string) => fetchWithAuth(`/api/market-gaps/${id}/vote`, {
+      method: 'POST'
+    }),
+    pledge: (id: string, amountPkr: number) => fetchWithAuth(`/api/market-gaps/${id}/pledge`, {
+      method: 'POST',
+      body: JSON.stringify({ amountPkr })
+    })
+  },
+  toxicAdditives: {
+    list: (): Promise<{ additives: ToxicAdditive[] }> => fetchWithAuth('/api/toxic-additives'),
+    get: (code: string): Promise<{ additive: ToxicAdditive }> => fetchWithAuth(`/api/toxic-additives/${encodeURIComponent(code)}`)
+  },
+  impactLedger: {
+    list: (): Promise<{ records: UserImpactRecord[] }> => fetchWithAuth('/api/impact-ledger'),
+    record: (record: Partial<UserImpactRecord>) => fetchWithAuth('/api/impact-ledger', {
+      method: 'POST',
+      body: JSON.stringify(record)
     })
   }
 };

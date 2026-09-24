@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useProducts } from '../hooks/useProducts';
 import { useSearch } from '../hooks/useSearch';
 import { useCommunityStore } from '../stores/communityStore';
+import { useDemographicStore } from '../stores/demographicStore';
 import { ProductCard } from '../components/product/ProductCard';
 import { BrandLogo } from '../components/BrandLogo';
 import { Link } from 'react-router-dom';
@@ -10,6 +11,9 @@ import { CategoryIcon } from '../components/CategoryIcon';
 import { GAZA_CONSCIENCE_MESSAGES } from '../data/gazaQuotes';
 import { useTranslation } from '../i18n/useTranslation';
 import { getLocalizedProductName, getLocalizedParentCompany } from '../utils/urduProductTranslator';
+import { ThreeWayEntryFork } from '../components/home/ThreeWayEntryFork';
+import { DemographicLensSwitcher } from '../components/home/DemographicLensSwitcher';
+import { SwipeableDiscoveryFeed } from '../components/home/SwipeableDiscoveryFeed';
 import { 
   ScanLine, 
   ShoppingCart, 
@@ -26,12 +30,15 @@ import {
   HeartHandshake,
   MessageSquare,
   BookOpen,
-  Heart
+  Heart,
+  Globe2,
+  Target
 } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
   const { products, searchQuery, selectedCategory, setSelectedCategory, setSearchQuery, isLoading } = useProducts();
   const { posts } = useCommunityStore();
+  const { demographicLens } = useDemographicStore();
   const { filteredProducts } = useSearch();
   const { t, isUrdu, language, translateCategory } = useTranslation();
   const [itemsToShow, setItemsToShow] = useState(24);
@@ -48,13 +55,24 @@ export const HomePage: React.FC = () => {
 
   const activeQuote = GAZA_CONSCIENCE_MESSAGES[quoteIndex];
 
-  // Featured Priority Boycott Targets
+  // Featured Priority Boycott Targets filtered by lens
   const featuredTargets = useMemo(() => {
-    const priorityIds = ['coca-cola', 'pepsi', 'mcdonalds', 'kfc', 'starbucks', 'nestle', 'hp', 'caterpillar', 'puma', 'sabra', 'disney', 'zara'];
+    let priorityIds = ['coca-cola', 'pepsi', 'mcdonalds', 'kfc', 'starbucks', 'nestle', 'hp', 'caterpillar', 'puma', 'sabra', 'disney', 'zara'];
+    
+    if (demographicLens === 'students') {
+      priorityIds = ['hp', 'dell', 'starbucks', 'kfc', 'mcdonalds', 'puma'];
+    } else if (demographicLens === 'mothers') {
+      priorityIds = ['nestle', 'unilever', 'ariel', 'pampers', 'johnson', 'coca-cola'];
+    } else if (demographicLens === 'men') {
+      priorityIds = ['caterpillar', 'gillette', 'puma', 'nike', 'hp', 'pepsi'];
+    } else if (demographicLens === 'elders') {
+      priorityIds = ['nestle', 'pfizer', 'teva', 'johnson', 'unilever', 'colgate'];
+    }
+
     return products
       .filter(p => priorityIds.some(target => p.id.includes(target) || p.name.toLowerCase().includes(target)))
       .slice(0, 6);
-  }, [products]);
+  }, [products, demographicLens]);
 
   // Featured Community Stories
   const featuredStories = useMemo(() => {
@@ -84,7 +102,7 @@ export const HomePage: React.FC = () => {
   }, [filteredProducts, severityFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${isUrdu ? 'font-urdu' : ''}`}>
       
       {/* 🇵🇸 Gaza Conscience Banner */}
       <div className="p-3.5 sm:p-4 rounded-3xl bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900 text-white border border-zinc-700/60 shadow-xs relative overflow-hidden flex items-center justify-between gap-3">
@@ -110,6 +128,15 @@ export const HomePage: React.FC = () => {
           <RefreshCw className="w-3.5 h-3.5" />
         </button>
       </div>
+
+      {/* 🧭 Demographic Lens Switcher */}
+      <DemographicLensSwitcher />
+
+      {/* ⚡ 3-Way Mental State Entry Fork (Action Mode / Skeptical / Scholar) */}
+      <ThreeWayEntryFork />
+
+      {/* 📱 TikTok / Reels Style Swipeable Discovery Feed */}
+      <SwipeableDiscoveryFeed />
 
       {/* 📊 High-Impact Hero Stats Cards */}
       {!searchQuery && selectedCategory === 'All' && (
@@ -149,10 +176,10 @@ export const HomePage: React.FC = () => {
                 {t.scanner}
               </Link>
               <Link 
-                to="/community" 
+                to="/complicity" 
                 className="flex-1 text-center py-1.5 px-2 bg-emerald-900/40 border border-white/20 text-white rounded-xl font-bold text-xs hover:bg-emerald-900/60 active:scale-95 transition-all"
               >
-                {t.community}
+                {isUrdu ? 'کمپلیسیٹی' : 'Complicity'}
               </Link>
             </div>
           </div>

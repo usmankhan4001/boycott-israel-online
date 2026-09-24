@@ -192,3 +192,41 @@ html[lang="ur"] {
   transform: scaleX(-1);
 }
 
+/* ==========================================
+   ELDER ACCESSIBILITY & DEMOGRAPHIC SCALE
+   ========================================== */
+html.text-scale-125 {
+  font-size: 118%;
+}
+
+@media (min-width: 640px) {
+  html.text-scale-125 {
+    font-size: 125%;
+  }
+}
+
+html.high-contrast-mode {
+  --border-color: #000000;
+  filter: contrast(1.12);
+}
+
+html.dark.high-contrast-mode {
+  --border-color: #ffffff;
+  filter: contrast(1.15);
+}
+
+/* Card flip 3D perspective utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+

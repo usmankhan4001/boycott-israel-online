@@ -99,3 +99,150 @@ export interface AppNotification {
   isRead: boolean;
   createdAt: string;
 }
+
+// ==========================================
+// TAKWEYAT MASTER ARCHITECTURE DATA TYPES
+// ==========================================
+
+export type DemographicLens = 'general' | 'students' | 'mothers' | 'men' | 'elders';
+export type MentalState = 'action' | 'skeptical' | 'scholar';
+export type ComplexityLevel = 'beginner' | 'undergrad' | 'scholar';
+
+export interface GeopoliticalZone {
+  id: string;
+  zoneName: string;
+  historicalColonialActor: string;
+  rootCauseSummary: string;
+  currentStatus: string;
+  keyExtractionResources: string[];
+  flagEmoji?: string;
+  coordinates?: [number, number];
+  affectedPopulation?: string;
+  crisisSummary?: string;
+  unResolutions?: string[];
+}
+
+export interface RawResource {
+  id: string;
+  resourceName: string;
+  primaryExtractionZoneId: string;
+  humanCostMetric: string;
+  exploitationRatio: string;
+  isConflictMineral: boolean;
+  description: string;
+  primaryApplications?: string[];
+  environmentalCostSummary?: string;
+}
+
+export interface ParentConglomerate {
+  id: string;
+  entityName: string;
+  headquartersCountry: string;
+  annualRevenueUsd: number;
+  lobbyingSpendUsd: number;
+  isDefenseContractor: boolean;
+  topShareholders: string[];
+  subsidiaries?: string[];
+  marketCapUsd?: number;
+  complicitySummary?: string;
+  logo?: string;
+  website?: string;
+}
+
+export interface ComplicityEdge {
+  id: string;
+  conglomerateId: string;
+  geopoliticalZoneId?: string;
+  resourceId?: string;
+  complicityType: string;
+  evidenceDossier: string;
+  financialValueUsd?: number;
+  evidenceUrls: string[];
+  severity?: 'Critical' | 'High' | 'Caution';
+  verifiedSource?: string;
+}
+
+export interface RetailBrand {
+  id: string;
+  name: string;
+  slug: string;
+  brandType: 'boycotted' | 'alternative';
+  parentCompanyId?: string;
+  countryOfOrigin: string;
+  category: string;
+  subcategory: string;
+  boycottReason?: string;
+  severityTier?: number;
+  directSubstitutes?: string[];
+  logo?: string;
+  domain?: string;
+  toxicAdditiveFlags?: string[];
+  isHalalCertified?: boolean;
+  isTayyibCertified?: boolean;
+}
+
+export interface AlternativeProfile {
+  id: string;
+  brandId: string;
+  ingredientBreakdown: string;
+  isHalalCertified: boolean;
+  isOrganic: boolean;
+  isTayyib: boolean;
+  packagingType: string;
+  editorialBadge: 'fully_recommended' | 'conditionally_recommended' | 'toxic_swap_warning';
+  originCountry: string;
+  directSubstituteFor: string[];
+  toxicWarnings?: string[];
+  producerName?: string;
+  farmToTable?: boolean;
+  cleanScore?: number;
+}
+
+export interface MarketGap {
+  id: string;
+  category: string;
+  productName: string;
+  unmetDemandCount: number;
+  pledgedMonthlySpendPkr: number;
+  description: string;
+  votesCount: number;
+  urgency: 'High' | 'Medium' | 'Critical';
+  suggestedPakistaniMakers?: string[];
+  targetMarketPricePkr?: number;
+  pledgedUserIds?: string[];
+  createdAt?: string;
+}
+
+export interface ToxicAdditive {
+  id: string;
+  code: string;
+  name: string;
+  commonProducts: string[];
+  healthRisks: string[];
+  tayyibVerdict: string;
+  saferAlternatives?: string[];
+  category?: 'Preservative' | 'Artificial Color' | 'Sweetener' | 'Emulsifier' | 'Flavor Enhancer';
+}
+
+export interface UserImpactRecord {
+  id: string;
+  date: string;
+  boycottedBrandId: string;
+  boycottedBrandName: string;
+  alternativeBrandId: string;
+  alternativeBrandName: string;
+  amountSavedPkr: number;
+  amountDivertedUsd: number;
+  multiplierEffectPkr: number; // 2.5x of amountSavedPkr
+  category: string;
+  notes?: string;
+}
+
+export interface UserImpactSummary {
+  totalBoycottTransactions: number;
+  totalDivertedUsd: number;
+  totalRetainedPkr: number;
+  communityCirculationValuePkr: number;
+  currentStreakDays: number;
+  records: UserImpactRecord[];
+}

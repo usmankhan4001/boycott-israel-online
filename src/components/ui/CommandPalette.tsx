@@ -12,7 +12,11 @@ import {
   Info, 
   PlusCircle, 
   CornerDownLeft,
-  Sparkles
+  Sparkles,
+  Globe2,
+  Target,
+  Leaf,
+  Palette
 } from 'lucide-react';
 import { useProducts } from '../../hooks/useProducts';
 import { useCommunityStore } from '../../stores/communityStore';
@@ -106,6 +110,46 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
           badgeType: 'success',
           url: '/grocery',
           icon: <ShoppingCart className="w-4 h-4 text-emerald-500" />
+        },
+        {
+          id: 'action-complicity',
+          title: isUrdu ? 'کمپلیسیٹی نیٹ ورک و سپلائی چین' : 'The Web of Complicity (Conglomerate Dossiers)',
+          subtitle: isUrdu ? 'بلیک راک، وینگارڈ اور دفاعی معاہدوں کا تفصیلی جائزہ' : 'Trace institutional equity, defense contracts, & nodes',
+          category: 'action',
+          badge: isUrdu ? 'کمپلیسیٹی' : 'Complicity',
+          badgeType: 'info',
+          url: '/complicity',
+          icon: <Globe2 className="w-4 h-4 text-indigo-500" />
+        },
+        {
+          id: 'action-bounties',
+          title: isUrdu ? 'مارکیٹ باؤنٹی بورڈ' : 'Market Bounty Board & Domestic Gaps',
+          subtitle: isUrdu ? 'پاکستانی مینوفیکچررز کے لیے سرمایہ اور طلب کے وعدے' : 'Pledge capital demand for local alternatives',
+          category: 'action',
+          badge: isUrdu ? 'باؤنٹی' : 'Bounty',
+          badgeType: 'neutral',
+          url: '/bounties',
+          icon: <Target className="w-4 h-4 text-amber-500" />
+        },
+        {
+          id: 'action-tayyib',
+          title: isUrdu ? 'طیب و صحت معیار (فوڈ ایڈیٹوز)' : 'The Tayyib Standard (E-Numbers & Additives)',
+          subtitle: isUrdu ? 'کیمیکل، مصنوعی رنگ اور غیر معیاری اجزاء سے پاک غذا' : 'E-numbers breakdown & pure organic Pakistani food',
+          category: 'action',
+          badge: isUrdu ? 'طیب' : 'Tayyib',
+          badgeType: 'success',
+          url: '/tayyib',
+          icon: <Leaf className="w-4 h-4 text-teal-500" />
+        },
+        {
+          id: 'action-studio',
+          title: isUrdu ? 'ٹک بمقابلہ کراس انفوگرافک اسٹوڈیو' : 'Tick vs Cross Graphic Studio',
+          subtitle: isUrdu ? 'سوشل میڈیا اور واٹس ایپ موازنہ کارڈز تیار کریں' : 'Generate viral shareable comparison infographics',
+          category: 'action',
+          badge: isUrdu ? 'اسٹوڈیو' : 'Studio',
+          badgeType: 'neutral',
+          url: '/studio',
+          icon: <Palette className="w-4 h-4 text-purple-500" />
         },
         {
           id: 'action-suggest',
